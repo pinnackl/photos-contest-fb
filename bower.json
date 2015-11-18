@@ -14,5 +14,8 @@
     "vendor",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#1.2.0"
+  }
 }
