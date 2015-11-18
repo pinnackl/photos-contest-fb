@@ -1,0 +1,18 @@
+{
+  "name": "photos-contest-fb",
+  "version": "0.0.0",
+  "homepage": "https://github.com/pinnackl/photos-contest-fb",
+  "authors": [
+    "Syu93 <herve.tutuaku@gmail.com>"
+  ],
+  "description": "Facebook contest manager application",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ]
+}
