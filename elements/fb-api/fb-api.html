@@ -20,10 +20,15 @@
 			properties: {
 				appid: {
 					type: String
+				},
+				fb: {
+					type: Object,
+					reflectToAttribute: true
 				}
 			},
 			handleResponse: function (e) {
 				window.config = e.detail.response;
+				var fbApi = this;
 
 				window.fbAsyncInit = function() {
 					FB.init({
@@ -54,6 +59,9 @@
 				    		}, {scope: 'user_friends, email'});
 						}
 					});
+
+					fbApi.fire("fb-ready", {api: FB});
+					// fbApi.fb = FB; // Use data binding to get fb API ?
 				};
 
 				(function(d, s, id){
