@@ -1,0 +1,61 @@
+<link rel="import" href="../../vendor/polymer/polymer.html">
+<link rel="import" href="../../vendor/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../vendor/facebook-login/dist/facebook-login.html">
+
+<dom-module id="fb-login">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<iron-ajax
+		 	auto
+		 	url="../../config/config.json"
+		 	handle-as="json"
+		 	on-response="handleResponse"></iron-ajax>
+
+			<facebook-login
+				appID="0"
+				logout-link graph-url="me?fields=name,email,birthday"
+				scope="public_profile email user_birthday"
+				graph-response="{{resp}}"
+				verions="v2.5"
+
+				on-ready="loginReady"
+			></facebook-login>
+	</template>
+	<script>
+		Polymer({
+			is: 'fb-login',
+			properties: {
+				config: {
+					type: Object,
+					notify: true
+				},
+				response: {
+					type: Object,
+					notify: true
+				}
+			},
+			handleResponse: function (e) {
+				this.config = e.detail.response;
+
+				var fbLogin = this.querySelector('facebook-login');
+					fbLogin.appid = this.config.appId;
+			},
+			loginReady: function () {
+
+				this.fire("fb-ready", {sdk: window.FB, config: this.config});
+			},
+			observers: [
+				'responseChange(resp)'
+			],
+			responseChange: function (response) {
+				this.response = response;
+			},
+			ready: function (argument) {
+			}
+		});
+	</script>
+</dom-module>

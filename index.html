@@ -8,26 +8,33 @@
     <script src="vendor/webcomponentsjs/webcomponents-lite.js"></script>
 </head>
 <body unresolved class="fullbleed vertical layout">
-	<!-- <template is="dom-bind" id="app"> -->
-		<fb-api></fb-api>
+	<template is="dom-bind" id="app">
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
 		    </paper-toolbar>
 
 			<iron-pages selected="0">
-			  <div id="index"></div>
-			  <div></div>
-			  <div></div>
+				<div id="index">
+					<fb-login response="{{response}}"></fb-login>
+			        <span>[[response.name]]</span>
+			        <div>[[response.email]]</div>
+			        <div>[[response.birthday]]</div>
+				</div>
+				<div></div>
+				<div></div>
 			</iron-pages>
 		</paper-header-panel>
-	<!-- </template> -->
+	</template>
 	<script>
-	window.addEventListener('WebComponentsReady', function(e) {
-		var fb = document.querySelector('fb-api');
-			fb.addEventListener('fb-ready', function (e, detail) {
-				var API = e.detail.api;
-			})
-	});
+	(function (window, document) {
+		window.addEventListener('WebComponentsReady', function(e) {
+			var fbLogin = document.querySelector('fb-login');
+				fbLogin.addEventListener('fb-ready', function (e, detail) {
+					var FB 		= e.detail.sdk;
+					var config 	= e.detail.config
+			});
+		});
+	})(window, document);
 	</script>
 </body>
 </html>
