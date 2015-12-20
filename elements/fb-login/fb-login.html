@@ -5,6 +5,7 @@
 <dom-module id="fb-login">
 	<template>
 		<style>
+			/* FIXME : use custom variable to change properties */
 			:host {
 				display: inline-block;
 			}
@@ -19,7 +20,7 @@
 			}
 		</style>
 		<paper-button raised
-			on-tap="_customLoginAction">
+			on-tap="login">
 			<iron-icon class="icon" src="../../img/FB-f-Logo__blue_50.png"></iron-icon>
 			Login</paper-button>
 	</template>
@@ -27,47 +28,58 @@
 		Polymer({
 			is: 'fb-login',
 			properties: {
-				config: {
-					type: Object,
-					notify: true
+				// Determine if the login action is automatically call
+				// NOTE : If declared the test is true
+				autoLogin: {
+					type: Boolean,
+					value: false
 				},
+				// Graph API URL to call to get data
+				graphUrl: {
+					type: String,
+					value: ""
+				},
+				// Scope param of permission to ask for
+				scope: {
+					type: String,
+					value: "public_profile"
+				},
+				// Graph API Response Object
 				response: {
 					type: Object,
 					notify: true
 				}
 			},
-			handleResponse: function (e) {
-				this.config = e.detail.response;
-				console.log(this.config);
-			},
-			_customLoginAction: function (response) {
-				var fbLogin = this;
-				if (response.status == 'connected') {
-					FB.api('/me?fields=email', function(data) {
-						fbLogin.response = data;
-					});
-				} else {
-					console.log("variable");
-				}
+			ready: function () {
 			},
 			checkLoginStatus: function () {
 				var fbLogin = this;
 				FB.getLoginStatus(function(response) {
-				 		// Check login status on load, and if the user is
-				 		// already logged in, go directly to the welcome message.
-				 		console.log(fbLogin);
-				 		if (response.status == 'connected') {
-				 			fbLogin._customLoginAction(response);
-				 		} else {
+			 		// Check login status on load, and if the user is already logged in
+			 		if (response.status == 'connected') {
+			 			fbLogin._customLoginAction(response);
+			 		} else if (fbLogin.autoLogin) {
 				   		// Otherwise, show Login dialog first.
-				   		FB.login(function(response) {
-				   			fbLogin._customLoginAction(response);
-				   		}, {scope: 'user_friends, email'});
+				   		fbLogin.login();
 					}
 				});
 			},
-			ready: function () {
-			}
+			login: function () {
+				var fbLogin = this;
+				FB.login(function(response) {
+					fbLogin._customLoginAction(response);
+				}, {scope: fbLogin.scope});
+			},
+			_customLoginAction: function (response) {
+				var fbLogin = this;
+				if (response.status == 'connected') {
+					FB.api('/' + fbLogin.graphUrl, function(data) {
+						fbLogin.response = data;
+					});
+				} else {
+					console.log("Canceled");
+				}
+			},
 		});
 	</script>
 </dom-module>

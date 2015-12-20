@@ -16,8 +16,10 @@
 
 			<iron-pages selected="0">
 				<div id="index">
-					<fb-login response="{{resp}}"></fb-login>
-					<div>{{resp.email}}</div>
+					<fb-login
+						graph-url="me?fields=name"
+						response="{{resp}}"></fb-login>
+					<div>{{resp.name}}</div>
 				</div>
 				<div></div>
 				<div></div>
