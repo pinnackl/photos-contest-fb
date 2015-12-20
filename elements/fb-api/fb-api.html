@@ -1,0 +1,53 @@
+<link rel="import" href="../../vendor/polymer/polymer.html">
+<link rel="import" href="../../vendor/iron-ajax/iron-ajax.html">
+
+<dom-module id="fb-api">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<iron-ajax
+		 	auto
+		 	url="../../config/config.json"
+		 	handle-as="json"
+		 	on-response="handleResponse"></iron-ajax>
+	</template>
+	<script>
+		Polymer({
+			is: 'fb-api',
+			properties: {
+				config: {
+					type: Object,
+					notify: true
+				}
+			},
+			handleResponse: function (e) {
+				var fbApi = this;
+				
+				fbApi.config = e.detail.response;
+				
+				window.fbAsyncInit = function() {
+					FB.init({
+						appId      : fbApi.config.appId,
+						xfbml      : true,
+						version    : 'v2.5'
+					});
+
+					fbApi.fire("fb-ready", {api: FB, config: fbApi.config});
+				};
+
+				(function(d, s, id){
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) {return;}
+					js = d.createElement(s); js.id = id;
+					js.src = "//connect.facebook.net/en_US/sdk.js";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));				
+			},
+			ready: function (argument) {
+			}
+		});
+	</script>
+</dom-module>

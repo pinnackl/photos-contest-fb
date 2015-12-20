@@ -9,16 +9,15 @@
 </head>
 <body unresolved class="fullbleed vertical layout">
 	<template is="dom-bind" id="app">
+		<fb-api></fb-api>
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
 		    </paper-toolbar>
 
 			<iron-pages selected="0">
 				<div id="index">
-					<fb-login response="{{response}}"></fb-login>
-			        <span>[[response.name]]</span>
-			        <div>[[response.email]]</div>
-			        <div>[[response.birthday]]</div>
+					<fb-login response="{{resp}}"></fb-login>
+					<div>{{resp.email}}</div>
 				</div>
 				<div></div>
 				<div></div>
@@ -28,10 +27,14 @@
 	<script>
 	(function (window, document) {
 		window.addEventListener('WebComponentsReady', function(e) {
-			var fbLogin = document.querySelector('fb-login');
-				fbLogin.addEventListener('fb-ready', function (e, detail) {
-					var FB 		= e.detail.sdk;
-					var config 	= e.detail.config
+			var fbApi = document.querySelector('fb-api');
+				fbApi.addEventListener('fb-ready', function (e, detail) {
+					var FB 		= e.detail.api; console.log(FB);
+					var config 	= e.detail.config; console.log(config);
+					
+					// check if the user is already connected
+					var fbLogin = document.querySelector('fb-login');
+						fbLogin.checkLoginStatus();
 			});
 		});
 	})(window, document);

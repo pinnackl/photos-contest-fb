@@ -21,6 +21,7 @@
     "paper-toolbar": "PolymerElements/paper-toolbar#~1.1.2",
     "iron-pages": "PolymerElements/iron-pages#~1.0.4",
     "iron-ajax": "PolymerElements/iron-ajax#~1.1.1",
-    "facebook-login": "*"
+    "paper-button": "PolymerElements/paper-button#~1.0.11",
+    "iron-icon": "PolymerElements/iron-icon#~1.0.7"
   }
 }
