@@ -8,10 +8,19 @@
 			/* FIXME : use custom variable to change properties */
 			:host {
 				display: inline-block;
+				@apply(--fb-login-container-theme);
+			}
+
+			:host paper-button {
+				/*Shadow properties*/
+				color: 				var(--fb-login-color, #FFFFFF);
+				background-color: 	var(--fb-login-bg-color, #3B579D);
+				font-weight:		var(--fb-login-fw, bold);				
 			}
 
 			paper-button {
-				background-color: #3B579D;
+				/*Mixin to define custom theme*/
+				@apply(--fb-login-theme);
 			}
 
 			.icon {

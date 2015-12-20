@@ -3,9 +3,10 @@
 <head>
 	<title>FB app</title>
 
+	<!-- All meta tag needed -->
 
-	<link rel="import" href="elements/elements.html">
     <script src="vendor/webcomponentsjs/webcomponents-lite.js"></script>
+	<link rel="import" href="elements/elements.html">
 </head>
 <body unresolved class="fullbleed vertical layout">
 	<template is="dom-bind" id="app">
@@ -16,10 +17,12 @@
 
 			<iron-pages selected="0">
 				<div id="index">
-					<fb-login
-						graph-url="me?fields=name"
-						response="{{resp}}"></fb-login>
-					<div>{{resp.name}}</div>
+					<div class="container">
+						<fb-login
+							graph-url="me?fields=name"
+							response="{{resp}}"></fb-login>
+						<div>{{resp.name}}</div>
+					</div>
 				</div>
 				<div></div>
 				<div></div>
