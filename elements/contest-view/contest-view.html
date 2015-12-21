@@ -1,0 +1,48 @@
+<link rel="import" href="../../vendor/polymer/polymer.html">
+<link rel="import" href="../fb-login/fb-login.html">
+<dom-module id="contest-view">
+	<template>
+		<style>
+			:host {
+				display: block;
+				height: 100%;
+			}
+		    .container {
+		        width: 80%;
+		        margin: 50px auto;
+		    }
+		</style>
+		<paper-header-panel class="flex">
+		    <paper-toolbar>
+		    </paper-toolbar>
+			<iron-pages selected="0">
+				<div id="index">
+					<div class="container">
+						<fb-login
+							auto-login$=""
+							graph-url="me?fields=name"
+							response="{{resp}}"></fb-login>
+						<div>{{resp.name}}</div>
+					</div>
+				</div>
+				<div></div>
+				<div></div>
+			</iron-pages>
+		</paper-header-panel>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-view',
+			properties: {
+				apiLoaded: {
+					type: Boolean,
+					notify: true,
+					observer: '_loaded'
+				}
+			},
+			_loaded: function () {
+				console.log(this.apiLoaded);
+			}
+		});
+	</script>
+</dom-module>

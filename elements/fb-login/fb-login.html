@@ -41,7 +41,8 @@
 				// NOTE : If declared the test is true
 				autoLogin: {
 					type: Boolean,
-					value: false
+					value: false,
+					observer: "_apiObserver"
 				},
 				// Graph API URL to call to get data
 				graphUrl: {
@@ -58,8 +59,6 @@
 					type: Object,
 					notify: true
 				}
-			},
-			ready: function () {
 			},
 			checkLoginStatus: function () {
 				var fbLogin = this;
@@ -78,6 +77,11 @@
 				FB.login(function(response) {
 					fbLogin._customLoginAction(response);
 				}, {scope: fbLogin.scope});
+			},
+			_apiObserver: function  () {
+				if (this.autoLogin) {
+					this.checkLoginStatus();
+				}
 			},
 			_customLoginAction: function (response) {
 				var fbLogin = this;

@@ -10,39 +10,19 @@
 </head>
 <body unresolved class="fullbleed vertical layout">
 	<template is="dom-bind" id="app">
-		<fb-api></fb-api>
-		<paper-header-panel class="flex">
-		    <paper-toolbar>
-		    </paper-toolbar>
-
-			<iron-pages selected="0">
-				<div id="index">
-					<div class="container">
-						<fb-login
-							graph-url="me?fields=name"
-							response="{{resp}}"></fb-login>
-						<div>{{resp.name}}</div>
-					</div>
-				</div>
-				<div></div>
-				<div></div>
-			</iron-pages>
-		</paper-header-panel>
+		<fb-api loaded="{{ready}}"></fb-api>
+		<contest-view api-loaded="{{ready}}"></contest-view>
 	</template>
 	<script>
-	(function (window, document) {
-		window.addEventListener('WebComponentsReady', function(e) {
-			var fbApi = document.querySelector('fb-api');
-				fbApi.addEventListener('fb-ready', function (e, detail) {
-					var FB 		= e.detail.api; console.log(FB);
-					var config 	= e.detail.config; console.log(config);
-					
-					// check if the user is already connected
-					var fbLogin = document.querySelector('fb-login');
-						fbLogin.checkLoginStatus();
-			});
-		});
-	})(window, document);
+	// (function (window, document) {
+		// window.addEventListener('WebComponentsReady', function(e) {
+			// var fbApi = document.querySelector('fb-api');
+			// 	fbApi.addEventListener('fb-ready', function (e, detail) {
+			// 		var contestView = document.querySelector('contest-view');
+			// 			contestView
+			// });
+		// });
+	// })(window, document);
 	</script>
 </body>
 </html>

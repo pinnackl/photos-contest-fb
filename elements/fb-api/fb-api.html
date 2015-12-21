@@ -21,6 +21,10 @@
 				config: {
 					type: Object,
 					notify: true
+				},
+				loaded: {
+					type: Boolean,
+					notify: true,
 				}
 			},
 			handleResponse: function (e) {
@@ -34,8 +38,8 @@
 						xfbml      : true,
 						version    : 'v2.5'
 					});
-
-					fbApi.fire("fb-ready", {api: FB, config: fbApi.config});
+					
+					fbApi.loaded = true;
 				};
 
 				(function(d, s, id){
