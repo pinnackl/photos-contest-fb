@@ -90,7 +90,7 @@
 						fbLogin.response = data;
 					});
 				} else {
-					console.log("Canceled");
+					this.fire('fb-login-canceled');
 				}
 			},
 		});

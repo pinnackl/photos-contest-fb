@@ -1,4 +1,5 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
+<link rel="import" href="../../vendor/paper-toast/paper-toast.html">
 <link rel="import" href="../fb-login/fb-login.html">
 
 <dom-module id="contest-view">
@@ -16,13 +17,17 @@
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
 		    </paper-toolbar>
+			<paper-toast id="message"
+				text="You must be loged in to use this app"
+				duration="5000"></paper-toast>
 			<iron-pages selected="0">
 				<div id="index">
 					<div class="container">
 						<fb-login
 							auto-login="{{apiLoaded}}"
 							graph-url="me?fields=name"
-							response="{{resp}}"></fb-login>
+							response="{{resp}}"
+							on-fb-login-canceled="loginCancel"></fb-login>
 						<div>{{resp.name}}</div>
 					</div>
 				</div>
@@ -40,6 +45,9 @@
 					notify: true
 				}
 			},
+			loginCancel: function () {
+				document.querySelector('#message').open();
+			}
 		});
 	</script>
 </dom-module>
