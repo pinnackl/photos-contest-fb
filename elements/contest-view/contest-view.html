@@ -1,5 +1,6 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
 <link rel="import" href="../fb-login/fb-login.html">
+
 <dom-module id="contest-view">
 	<template>
 		<style>
@@ -19,7 +20,7 @@
 				<div id="index">
 					<div class="container">
 						<fb-login
-							auto-login$=""
+							auto-login="{{apiLoaded}}"
 							graph-url="me?fields=name"
 							response="{{resp}}"></fb-login>
 						<div>{{resp.name}}</div>
@@ -35,14 +36,10 @@
 			is: 'contest-view',
 			properties: {
 				apiLoaded: {
-					type: Boolean,
-					notify: true,
-					observer: '_loaded'
+					type: String,
+					notify: true
 				}
 			},
-			_loaded: function () {
-				console.log(this.apiLoaded);
-			}
 		});
 	</script>
 </dom-module>

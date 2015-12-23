@@ -19,12 +19,12 @@
 			is: 'fb-api',
 			properties: {
 				config: {
-					type: Object,
-					notify: true
+					type: Object
 				},
 				loaded: {
-					type: Boolean,
-					notify: true,
+					type: String,
+					value: 'unload',
+					notify: true
 				}
 			},
 			handleResponse: function (e) {
@@ -38,8 +38,9 @@
 						xfbml      : true,
 						version    : 'v2.5'
 					});
-					
-					fbApi.loaded = true;
+
+					fbApi.loaded = 'load';
+					fbApi.fire('fb-ready');
 				};
 
 				(function(d, s, id){

@@ -10,8 +10,8 @@
 </head>
 <body unresolved class="fullbleed vertical layout">
 	<template is="dom-bind" id="app">
-		<fb-api loaded="{{ready}}"></fb-api>
-		<contest-view api-loaded="{{ready}}"></contest-view>
+		<fb-api loaded="{{isLoaded}}"></fb-api>
+		<contest-view api-loaded="{{isLoaded}}"></contest-view>
 	</template>
 	<script>
 	// (function (window, document) {

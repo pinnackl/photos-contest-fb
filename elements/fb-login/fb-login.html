@@ -40,8 +40,8 @@
 				// Determine if the login action is automatically call
 				// NOTE : If declared the test is true
 				autoLogin: {
-					type: Boolean,
-					value: false,
+					type: String,
+					value: 'unload',
 					observer: "_apiObserver"
 				},
 				// Graph API URL to call to get data
@@ -79,7 +79,7 @@
 				}, {scope: fbLogin.scope});
 			},
 			_apiObserver: function  () {
-				if (this.autoLogin) {
+				if (this.autoLogin == 'load') {
 					this.checkLoginStatus();
 				}
 			},
