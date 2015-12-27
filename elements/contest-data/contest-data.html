@@ -1,4 +1,5 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
+<link rel="import" href="../../vendor/firebase-element/firebase-collection.html">
 
 <dom-module id="contest-data">
 	<template>
@@ -7,10 +8,30 @@
 			display: inline-block;
 		}
 		</style>
+		<firebase-collection data="{{fbUsers}}"
+			location="https://blinding-inferno-401.firebaseio.com/"
+			on-firebase-value="_firebaseLoaded">
+		</firebase-collection>
+		<template is="dom-repeat" items="[[users]]" as="user">
+			<h4>Name : [[user.name]] </h4>
+		</template>
 	</template>
 	<script>
-		polymer({
-			is: 'contest-data'
+		Polymer({
+			is: 'contest-data',
+			poperties: {
+				users: {
+					type: Array,
+					notify: true
+				},
+				user: {
+					notify: true
+				}
+			},
+			_firebaseLoaded: function () {
+				this.users = this.fbUsers;
+				this.linkPaths('fbUsers', 'users');
+			}
 		});
 	</script>
 </dom-module>

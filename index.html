@@ -10,8 +10,13 @@
 </head>
 <body unresolved class="fullbleed vertical layout">
 	<template is="dom-bind" id="app">
+		<!--
+			Use fb-api to load the FB API.
+			When the API is ready the property "loaded" is changed to "true".
+			Then, the contest-view property "api-loaded" which is binded to the fb-api is changed too.
+		 -->
 		<fb-api loaded="{{isLoaded}}"></fb-api>
-		<contest-view api-loaded="{{isLoaded}}"></contest-view>
+		<contest-view api-loaded="{{isLoaded}}" auto-login></contest-view>
 	</template>
 	<script>
 	// (function (window, document) {

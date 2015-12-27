@@ -23,7 +23,7 @@
 				},
 				loaded: {
 					type: String,
-					value: 'unload',
+					value: 'false',
 					notify: true
 				}
 			},
@@ -39,7 +39,7 @@
 						version    : 'v2.5'
 					});
 
-					fbApi.loaded = 'load';
+					fbApi.loaded = 'true';
 					fbApi.fire('fb-ready');
 				};
 

@@ -1,6 +1,7 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
 <link rel="import" href="../../vendor/paper-toast/paper-toast.html">
 <link rel="import" href="../fb-login/fb-login.html">
+<link rel="import" href="../contest-data/contest-data.html">
 
 <dom-module id="contest-view">
 	<template>
@@ -24,11 +25,12 @@
 				<div id="index">
 					<div class="container">
 						<fb-login
-							auto-login="{{apiLoaded}}"
+							id="loginbtn1"
 							graph-url="me?fields=name"
 							response="{{resp}}"
 							on-fb-login-canceled="loginCancel"></fb-login>
 						<div>{{resp.name}}</div>
+    					<contest-data></contest-data>
 					</div>
 				</div>
 				<div></div>
@@ -42,11 +44,23 @@
 			properties: {
 				apiLoaded: {
 					type: String,
-					notify: true
+					value: 'false',
+					notify: true,
+					observer: '_apiLoaded'
+				},
+				autoLogin: {
+					type: Boolean,
+					value: false
+				}
+			},
+			// Property "apiLoaded" observer
+			_apiLoaded: function (n, o) {
+				if (n === 'true' && this.autoLogin) {
+					this.$.loginbtn1.autoLogin = true;
 				}
 			},
 			loginCancel: function () {
-				document.querySelector('#message').open();
+				this.$.message.open();
 			}
 		});
 	</script>

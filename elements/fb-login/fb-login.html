@@ -1,6 +1,7 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
 <link rel="import" href="../../vendor/paper-button/paper-button.html">
 <link rel="import" href="../../vendor/iron-icon/iron-icon.html">
+<link rel="import" href="../../vendor/firebase-element/firebase-auth.html">
 
 <dom-module id="fb-login">
 	<template>
@@ -28,10 +29,17 @@
 			    --iron-icon-width: 32px;
 			}
 		</style>
+		<firebase-auth id="auth"
+					   location="https://blinding-inferno-401.firebaseio.com/"
+					   provider="facebook"
+					   user="{{user}}"
+					   ref="{{ref}}">
+		</firebase-auth>
 		<paper-button raised
-			on-tap="login">
+					  on-tap="login">
 			<iron-icon class="icon" src="../../img/FB-f-Logo__blue_50.png"></iron-icon>
-			Login</paper-button>
+			Login
+		</paper-button>
 	</template>
 	<script>
 		Polymer({
@@ -40,9 +48,10 @@
 				// Determine if the login action is automatically call
 				// NOTE : If declared the test is true
 				autoLogin: {
-					type: String,
-					value: 'unload',
-					observer: "_apiObserver"
+					type: Boolean,
+					value: false,
+					reflectToAttribute: true,
+					observer: '_apiObserver'
 				},
 				// Graph API URL to call to get data
 				graphUrl: {
@@ -74,23 +83,38 @@
 			},
 			login: function () {
 				var fbLogin = this;
-				FB.login(function(response) {
-					fbLogin._customLoginAction(response);
-				}, {scope: fbLogin.scope});
+				// Get the connection with the provided scope
+				this.$.auth.login({scope: this.scope});
+
+				// Bind event to the login action
+				this.$.auth.addEventListener('login', function (e) {
+					console.log(e.detail);
+					fbLogin._customLoginAction(true, e.detail);
+				});
+
+				// bind event to the error login action
+				this.$.auth.addEventListener('error', function (e) {
+					console.log(e.detail);
+					fbLogin._customLoginAction(false, e.detail);
+				});
 			},
 			_apiObserver: function  () {
-				if (this.autoLogin == 'load') {
+				if (this.autoLogin) {
 					this.checkLoginStatus();
 				}
 			},
-			_customLoginAction: function (response) {
+			_customLoginAction: function (response, param) {
+				param = (typeof param !== 'undefined')? param : {};
+				
 				var fbLogin = this;
-				if (response.status == 'connected') {
+				
+				if (response) {
 					FB.api('/' + fbLogin.graphUrl, function(data) {
 						fbLogin.response = data;
+						fbLogin.fire('fb-login', param);
 					});
 				} else {
-					this.fire('fb-login-canceled');
+					fbLogin.fire('fb-login-canceled', param);
 				}
 			},
 		});
