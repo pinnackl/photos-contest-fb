@@ -5,16 +5,13 @@
 	<template>
 		<style>
 		:host {
-			display: inline-block;
+			display: block;
 		}
 		</style>
 		<firebase-collection data="{{fbUsers}}"
 			location="https://blinding-inferno-401.firebaseio.com/"
 			on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
-		<template is="dom-repeat" items="[[users]]" as="user">
-			<h4>Name : [[user.name]] </h4>
-		</template>
 	</template>
 	<script>
 		Polymer({
