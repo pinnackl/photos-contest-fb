@@ -50,7 +50,11 @@
 				autoLogin: {
 					type: Boolean,
 					value: false,
-					reflectToAttribute: true,
+					reflectToAttribute: true
+				},
+				apiLoaded: {
+					type: Boolean,
+					value: false,
 					observer: '_apiObserver'
 				},
 				// Graph API URL to call to get data
@@ -74,44 +78,54 @@
 				FB.getLoginStatus(function(response) {
 			 		// Check login status on load, and if the user is already logged in
 			 		if (response.status == 'connected') {
-			 			fbLogin._customLoginAction(response);
+			 			console.info('Facebook account connected !');
+			 			// Populate the param object with the access token
+			 			var param =  {user: {facebook: {accessToken: response.authResponse.accessToken}}};
+			 			fbLogin._customLoginAction(response.status, param);
 			 		} else if (fbLogin.autoLogin) {
 				   		// Otherwise, show Login dialog first.
+				   		console.info('Facebook account not connected !');
 				   		fbLogin.login();
+					} else {
+						console.info('Facebook account not connected !');
 					}
 				});
 			},
 			login: function () {
 				var fbLogin = this;
+
 				// Get the connection with the provided scope
 				this.$.auth.login({scope: this.scope});
-
-				// Bind event to the login action
-				this.$.auth.addEventListener('login', function (e) {
-					console.log(e.detail);
-					fbLogin._customLoginAction(true, e.detail);
-				});
-
-				// bind event to the error login action
-				this.$.auth.addEventListener('error', function (e) {
-					console.log(e.detail);
-					fbLogin._customLoginAction(false, e.detail);
-				});
 			},
-			_apiObserver: function  () {
-				if (this.autoLogin) {
+			_apiObserver: function  (n, o) {
+				var fbLogin = this;
+				if (n) {
+					console.info('Fb API is ready !');
+					// Check if the user is actualy connected
 					this.checkLoginStatus();
+					
+					// Bind event to the login action
+					this.$.auth.addEventListener('login', function (e) {
+						console.info('Login into Facebook');
+						fbLogin._customLoginAction('connected', e.detail);
+					});
+
+					// bind event to the error login action
+					this.$.auth.addEventListener('error', function (e) {
+						console.info('Login error into Facebook');
+						fbLogin._customLoginAction('false', e.detail);
+					});
 				}
 			},
 			_customLoginAction: function (response, param) {
 				param = (typeof param !== 'undefined')? param : {};
-				
+
 				var fbLogin = this;
-				
-				if (response) {
-					FB.api('/' + fbLogin.graphUrl, function(data) {
+				if (response == 'connected') {
+					var access_token = param.user.facebook.accessToken;
+					FB.api('/' + fbLogin.graphUrl, {access_token: access_token}, function(data) {
 						fbLogin.response = data;
-						fbLogin.fire('fb-login', param);
+						fbLogin.fire('fb-login-success', param);
 					});
 				} else {
 					fbLogin.fire('fb-login-canceled', param);

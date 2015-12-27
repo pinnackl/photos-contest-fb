@@ -15,22 +15,34 @@
 		        margin: 50px auto;
 		    }
 		</style>
+		<contest-data></contest-data>
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
+		    	<div></div>
+		    	<div></div>
+				<div>{{resp.name}}</div>
 		    </paper-toolbar>
 			<paper-toast id="message"
 				text="You must be loged in to use this app"
-				duration="5000"></paper-toast>
+				duration="5000">
+			</paper-toast>
 			<iron-pages selected="0">
 				<div id="index">
 					<div class="container">
 						<fb-login
 							id="loginbtn1"
 							graph-url="me?fields=name"
+							scope="public_profile, email, user_photos"
 							response="{{resp}}"
-							on-fb-login-canceled="loginCancel"></fb-login>
-						<div>{{resp.name}}</div>
-    					<contest-data></contest-data>
+							on-fb-login-canceled="loginCancel">
+						</fb-login>
+						<fb-login
+							id="loginbtn2"
+							graph-url="me?fields=name"
+							scope="public_profile, email, user_photos"
+							response="{{resp}}"
+							on-fb-login-canceled="loginCancel">
+						</fb-login>
 					</div>
 				</div>
 				<div></div>
@@ -55,9 +67,15 @@
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (n, o) {
-				if (n === 'true' && this.autoLogin) {
-					this.$.loginbtn1.autoLogin = true;
+				if (n === 'true') {
+					this.$.loginbtn1.apiLoaded = true;
+					this.$.loginbtn2.apiLoaded = true;
 				}
+				// if (n === 'true' && this.autoLogin) {
+				// 	this.$.loginbtn1.apiLoaded = true;
+				// } else if(n === 'true') {
+				// 	this.$.loginbtn1.checkLoginStatus();
+				// }
 			},
 			loginCancel: function () {
 				this.$.message.open();
