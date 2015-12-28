@@ -71,7 +71,13 @@
 				response: {
 					type: Object,
 					notify: true
+				},
+				fireUser: {
+					notify: true
 				}
+			},
+			_userChanged: function (user) {
+				console.log('variable');
 			},
 			checkLoginStatus: function () {
 				var fbLogin = this;
@@ -80,7 +86,7 @@
 			 		if (response.status == 'connected') {
 			 			console.info('Facebook account connected !');
 			 			// Populate the param object with the access token
-			 			var param =  {user: {facebook: {accessToken: response.authResponse.accessToken}}};
+			 			var param =  {user: fbLogin.$.auth.user};
 			 			fbLogin._customLoginAction(response.status, param);
 			 		} else if (fbLogin.autoLogin) {
 				   		// Otherwise, show Login dialog first.
@@ -108,6 +114,7 @@
 					this.$.auth.addEventListener('login', function (e) {
 						console.info('Login into Facebook');
 						fbLogin._customLoginAction('connected', e.detail);
+						console.log(e.detail);
 					});
 
 					// bind event to the error login action
@@ -124,7 +131,8 @@
 				if (response == 'connected') {
 					var access_token = param.user.facebook.accessToken;
 					FB.api('/' + fbLogin.graphUrl, {access_token: access_token}, function(data) {
-						fbLogin.response = data;
+						fbLogin.response 	= data;
+						fbLogin.fireUser	= param.user;
 						fbLogin.fire('fb-login-success', param);
 					});
 				} else {

@@ -8,26 +8,29 @@
 			display: block;
 		}
 		</style>
-		<firebase-collection data="{{fbUsers}}"
+		<firebase-collection data="{{photos}}"
 			location="https://blinding-inferno-401.firebaseio.com/"
 			on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
+		<template is="dom-repeat" items="[[photos]]" as="photo">
+			<h4>Name : [[photo.name]] </h4>
+		</template>
 	</template>
 	<script>
 		Polymer({
 			is: 'contest-data',
 			poperties: {
-				users: {
-					type: Array,
-					notify: true
-				},
 				user: {
-					notify: true
+					reflectToAttribute: true,
+					observer: '_userChanged'
 				}
 			},
+			_userChanged: function (user) {
+				console.log("user");
+			},
 			_firebaseLoaded: function () {
-				this.users = this.fbUsers;
-				this.linkPaths('fbUsers', 'users');
+				// this.users = this.fbUsers;
+				// this.linkPaths('fbUsers', 'users');
 			}
 		});
 	</script>

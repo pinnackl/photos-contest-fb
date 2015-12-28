@@ -15,7 +15,7 @@
 		        margin: 50px auto;
 		    }
 		</style>
-		<contest-data></contest-data>
+		<contest-data id="data" user="[[user]]"></contest-data>
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
 		    	<div></div>
@@ -34,15 +34,17 @@
 							graph-url="me?fields=name"
 							scope="public_profile, email, user_photos"
 							response="{{resp}}"
+							fire-user="{{user}}"
 							on-fb-login-canceled="loginCancel">
 						</fb-login>
-						<fb-login
+						<!-- <fb-login
 							id="loginbtn2"
 							graph-url="me?fields=name"
 							scope="public_profile, email, user_photos"
 							response="{{resp}}"
 							on-fb-login-canceled="loginCancel">
 						</fb-login>
+ -->						<paper-button raised on-tap="test">plop</paper-button>
 					</div>
 				</div>
 				<div></div>
@@ -63,13 +65,17 @@
 				autoLogin: {
 					type: Boolean,
 					value: false
+				},
+				photos: {
+					type: Array,
+					notify: true
 				}
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (n, o) {
 				if (n === 'true') {
 					this.$.loginbtn1.apiLoaded = true;
-					this.$.loginbtn2.apiLoaded = true;
+					// this.$.loginbtn2.apiLoaded = true;
 				}
 				// if (n === 'true' && this.autoLogin) {
 				// 	this.$.loginbtn1.apiLoaded = true;
@@ -79,6 +85,10 @@
 			},
 			loginCancel: function () {
 				this.$.message.open();
+			},
+			test: function () {
+				this.photos = this.$.data.photos;
+				this.push('photos', {name: 'plop'});
 			}
 		});
 	</script>
