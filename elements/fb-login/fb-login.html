@@ -111,7 +111,6 @@
 					this.$.auth.addEventListener('login', function (e) {
 						console.info('Login into Facebook');
 						fbLogin._customLoginAction('connected', e.detail);
-						console.log(e.detail);
 					});
 
 					// bind event to the error login action
@@ -131,6 +130,7 @@
 						fbLogin.response 	= data;
 						fbLogin.fireUser	= param.user;
 						fbLogin.fire('fb-login-success', param);
+						fbLogin.style.display = 'none';
 					});
 				} else {
 					fbLogin.fire('fb-login-canceled', param);
