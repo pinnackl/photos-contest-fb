@@ -76,9 +76,6 @@
 					notify: true
 				}
 			},
-			_userChanged: function (user) {
-				console.log('variable');
-			},
 			checkLoginStatus: function () {
 				var fbLogin = this;
 				FB.getLoginStatus(function(response) {
@@ -138,7 +135,7 @@
 				} else {
 					fbLogin.fire('fb-login-canceled', param);
 				}
-			},
+			}
 		});
 	</script>
 </dom-module>

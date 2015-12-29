@@ -9,7 +9,7 @@
 		}
 		</style>
 		<firebase-collection data="{{photos}}"
-			location="https://blinding-inferno-401.firebaseio.com/"
+			location="{{userLocation}}"
 			on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
 		<template is="dom-repeat" items="[[photos]]" as="photo">
@@ -19,16 +19,25 @@
 	<script>
 		Polymer({
 			is: 'contest-data',
-			poperties: {
-				user: {
-					reflectToAttribute: true,
+			properties: {
+				location: {
+					type: String
+				},
+				userLocation: {
+					type: String
+				},
+				fireUser: {
 					observer: '_userChanged'
 				}
 			},
 			_userChanged: function (user) {
-				console.log("user");
+				this.userLocation = this.location;
+				if (user) {
+					this.userLocation = [this.location, 'users', this.fireUser.uid].join('/');
+				}
 			},
-			_firebaseLoaded: function () {
+			_firebaseLoaded: function (data) {
+				// console.log(data);
 				// this.users = this.fbUsers;
 				// this.linkPaths('fbUsers', 'users');
 			}
