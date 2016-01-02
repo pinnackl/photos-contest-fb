@@ -8,13 +8,10 @@
 			display: block;
 		}
 		</style>
-		<firebase-collection data="{{photos}}"
-			location="{{userLocation}}"
-			on-firebase-value="_firebaseLoaded">
+		<firebase-collection data="{{data}}"
+							 location="{{userLocation}}"
+							 on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
-		<template is="dom-repeat" items="[[photos]]" as="photo">
-			<h4>Name : [[photo.name]] </h4>
-		</template>
 	</template>
 	<script>
 		Polymer({
@@ -28,6 +25,12 @@
 				},
 				fireUser: {
 					observer: '_userChanged'
+				},
+				ref: {
+					observer: '_refChanged'
+				},
+				data: {
+					notify: true
 				}
 			},
 			_userChanged: function (user) {
@@ -36,10 +39,14 @@
 					this.userLocation = [this.location, 'users', this.fireUser.uid].join('/');
 				}
 			},
-			_firebaseLoaded: function (data) {
-				// console.log(data);
+			_refChanged: function (ref) {
+				// console.log(ref);
+			},
+			_firebaseLoaded: function (e) {
+				// console.log(this.data);
 				// this.users = this.fbUsers;
 				// this.linkPaths('fbUsers', 'users');
+				// this.push(data, {name:"plop"});
 			}
 		});
 	</script>

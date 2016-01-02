@@ -74,6 +74,9 @@
 				},
 				fireUser: {
 					notify: true
+				},
+				ref: {
+					notify: true
 				}
 			},
 			checkLoginStatus: function () {
@@ -126,11 +129,28 @@
 				var fbLogin = this;
 				if (response == 'connected') {
 					var access_token = param.user.facebook.accessToken;
-					FB.api('/' + fbLogin.graphUrl, {access_token: access_token}, function(data) {
-						fbLogin.response 	= data;
-						fbLogin.fireUser	= param.user;
-						fbLogin.fire('fb-login-success', param);
-						fbLogin.style.display = 'none';
+					FB.api(
+						'/' + fbLogin.graphUrl,
+						{access_token: access_token},
+						function(data) {
+							fbLogin.response 	= data;
+							fbLogin.fireUser	= param.user;
+							fbLogin.style.display = 'none';
+
+							// Get the user picture and update the data object
+							FB.api(
+								"/me/picture",
+								function (response) {
+									if (response && !response.error) {
+										var data = fbLogin.response;
+											data['picture'] = response;
+										fbLogin.response = {};
+										fbLogin.response = data;
+									}
+								}
+							);
+
+							fbLogin.fire('fb-login-success', param);
 					});
 				} else {
 					fbLogin.fire('fb-login-canceled', param);

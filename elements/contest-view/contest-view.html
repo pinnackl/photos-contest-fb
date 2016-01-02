@@ -14,16 +14,27 @@
 		        width: 80%;
 		        margin: 50px auto;
 		    }
+
+		    .avatar {
+		    	border-radius: 50%;
+		    }
 		</style>
 		<contest-data 	id="data"
 						fire-user="{{user}}"
+						ref="{{ref}}"
+						data="{{data}}"
 						location="https://blinding-inferno-401.firebaseio.com/">
 		</contest-data>
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
-		    	<div></div>
-		    	<div></div>
-				<div>{{resp.name}}</div>
+				<paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
+				<div>
+					<template is="dom-if" if={{resp.picture.data.url}}>
+						<img class="avatar" src="[[resp.picture.data.url]]" alt="Avatar">
+					</template>
+				</div>
+				<div class="title">[[resp.name]]</div>
+				<paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
 		    </paper-toolbar>
 			<paper-toast id="message"
 				text="You must be loged in to use this app"
@@ -38,6 +49,9 @@
 							scope="public_profile, email, user_photos"
 							response="{{resp}}"
 							fire-user="{{user}}"
+							ref="{{ref}}"
+							on-response-changed="test"
+							on-fb-login-success="loginSuccess"
 							on-fb-login-canceled="loginCancel">
 						</fb-login>
 						<!-- <fb-login
@@ -46,8 +60,11 @@
 							scope="public_profile, email, user_photos"
 							response="{{resp}}"
 							on-fb-login-canceled="loginCancel">
-						</fb-login>
- -->						<paper-button raised on-tap="test">plop</paper-button>
+						</fb-login> -->
+						<photo-list id="photoList"></photo-list>
+<!-- 							<template is="dom-repeat" items="[[data]]" as="item">
+								<h4>Name : [[item.value]] </h4>
+							</template> -->
 					</div>
 				</div>
 				<div></div>
@@ -81,8 +98,15 @@
 					// this.$.loginbtn2.apiLoaded = true;
 				}
 			},
+			loginSuccess: function () {
+				this.$.photoList.apiLoaded = true;
+			},
 			loginCancel: function () {
 				this.$.message.open();
+			},
+			test: function (e) {
+				// console.log(e.detail.value);
+				// this.$.data.push('data', {});
 			}
 		});
 	</script>
