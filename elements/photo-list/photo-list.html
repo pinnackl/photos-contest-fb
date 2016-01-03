@@ -1,0 +1,70 @@
+<dom-module id="photo-list">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-button raised on-tap="browsePhoto">Browse Photos</paper-button>
+		<paper-dialog id="dialog">
+			<h2>Header</h2>
+			<paper-dialog-scrollable>
+				<template is="dom-repeat" items={{photos}} 
+					as=photo index-as=index>
+					{{photo}}
+					<!-- {{index}} -->
+				</template>
+			</paper-dialog-scrollable>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button dialog-confirm>Accept</paper-button>
+			</div>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer({
+			is: 'photo-list',
+			properties: {
+				apiLoaded: {
+					observer: '_apiLoaded'
+				},
+				photos: {
+					type: Array,
+					value: [],
+					notify: true
+				}
+			},
+			_apiLoaded: function () {
+
+			},
+			browsePhoto: function (e) {
+				var photoList = this;
+				FB.api(
+					"/me/albums",
+					function (response) {
+						if (response && !response.error) {
+							for (album in response.data) {
+								FB.api(
+									response.data[album].id + '/photos?fields=images',
+									function (response) {
+										for (photo in response.data) {
+											for (image in response.data[photo].images) {
+												console.log(response.data[photo].images[image]);
+												photoList.push(
+													'photos', 
+													response.data[photo].images[image].source);
+											}
+										}
+									}
+								);
+							}
+						}
+					}
+				);
+
+				this.$.dialog.open();
+
+			}
+		});
+	</script>
+</dom-module>
