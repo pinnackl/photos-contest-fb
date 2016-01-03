@@ -4,23 +4,65 @@
 			:host {
 				display: block;
 			}
+
+			:host paper-card {
+				margin-bottom: 30px;
+			}
+
+			paper-card {
+				padding: 20px;
+				font-size: 1.2rem;
+				font-weight: 300;
+				display: inline-block;
+			}
+
+			paper-dialog.size-position {
+				position: fixed;
+				top: 16px;
+				right: 16px;
+				width: 90%;
+				overflow: auto;
+			}
+
+			paper-dialog .scroll-section {
+				background-color: #F1F1F1;
+			}
+
+			paper-radio-group {
+				width: 100%;
+			}
+
+			.photos {
+				width: 240px;
+				height: 240px;
+				background-color: white;
+				box-shadow: 0px 0px 1px rgba(0,0,0,0.1), 0px 2px 1px rgba(0,0,0,0.1);
+			}
 		</style>
 		<paper-button raised on-tap="browsePhoto">Browse Photos</paper-button>
-		<paper-dialog id="dialog">
+		<paper-dialog id="dialog" class="size-position">
 			<h2>Header</h2>
-			<paper-dialog-scrollable>
-				<template is="dom-repeat" items={{photos}} 
-					as=photo index-as=index>
-					{{photo}}
-					<!-- {{index}} -->
-				</template>
+			<paper-dialog-scrollable class="scroll-section">
+				<paper-radio-group id="group" selected="">
+					<template is="dom-repeat" items={{photos}} as=photo index-as=index>
+						<paper-radio-button name$="img[[index]]">
+							<paper-card>
+								<div class="card-content">
+										<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain" data-source$="[[_accessArray(photoSource, index)]]"></iron-image>
+								</div>
+								<div class="card-actions">
+								</div>
+							</paper-card>
+						</paper-radio-button>
+					</template>
+				</paper-radio-group>
 			</paper-dialog-scrollable>
 			<div class="buttons">
 				<paper-button dialog-dismiss>Cancel</paper-button>
 				<paper-button dialog-confirm>Accept</paper-button>
 			</div>
 		</paper-dialog>
-	</template>
+</template>
 	<script>
 		Polymer({
 			is: 'photo-list',
@@ -29,6 +71,11 @@
 					observer: '_apiLoaded'
 				},
 				photos: {
+					type: Array,
+					value: [],
+					notify: true
+				},
+				photoSource: {
 					type: Array,
 					value: [],
 					notify: true
@@ -48,22 +95,42 @@
 									response.data[album].id + '/photos?fields=images',
 									function (response) {
 										for (photo in response.data) {
-											for (image in response.data[photo].images) {
-												console.log(response.data[photo].images[image]);
-												photoList.push(
-													'photos', 
-													response.data[photo].images[image].source);
+											if (response.data[photo].images[5]) {
+												var image = response.data[photo].images[5].source;
+											} else if (response.data[photo].images[4]) {
+												var image = response.data[photo].images[4].source;
+											} else {
+												var image = response.data[photo].images[1].source;
 											}
+											var source = response.data[photo].images[0].source;
+											photoList.push('photos', image);
+											photoList.push('photoSource', source);
 										}
 									}
 								);
 							}
+							photoList.$.dialog.open();
+						} else {
+							// If the user is not loged in we dispaly message
+							document.querySelector('#message').open();
 						}
 					}
 				);
-
-				this.$.dialog.open();
-
+			},
+			listeners: {
+				'iron-overlay-opened': '_dialogOpened',
+				'iron-overlay-closed': '_dialogClosed'
+			},
+			_dialogOpened: function (e) {
+			},
+			_dialogClosed: function (e) {
+				var imageId = this.$.group.selected;
+				if (typeof image !== 'undefined') {
+					var image = document.querySelector('#' + image);
+				}
+			},
+			_accessArray: function (arr, idx) {
+				return arr[idx];
 			}
 		});
 	</script>
