@@ -30,6 +30,7 @@
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#~1.1.0",
     "paper-radio-group": "PolymerElements/paper-radio-group#~1.0.8",
     "paper-radio-button": "PolymerElements/paper-radio-button#~1.0.12",
-    "iron-image": "PolymerElements/iron-image#~1.0.4"
+    "iron-image": "PolymerElements/iron-image#~1.0.4",
+    "iron-localstorage": "PolymerElements/iron-localstorage#~1.0.5"
   }
 }
