@@ -6,14 +6,32 @@
 			}
 
 			:host paper-card {
-				margin-bottom: 30px;
 			}
 
 			paper-card {
-				padding: 20px;
 				font-size: 1.2rem;
 				font-weight: 300;
 				display: inline-block;
+				margin: 10px 5px;
+				width: 240px;
+				max-width: 240px;
+				
+				--paper-card-content : {
+					padding: 0;
+				};
+
+				--paper-card-actions: {
+				};
+
+				--paper-card-header: {
+				};
+
+				--paper-card-header-image: {
+				};
+			}
+
+			paper-card .img-selector:hover {
+				cursor: pointer;
 			}
 
 			paper-dialog.size-position {
@@ -22,41 +40,40 @@
 				right: 16px;
 				width: 90%;
 				overflow: auto;
+				box-sizing: content-box;
 			}
 
 			paper-dialog .scroll-section {
 				background-color: #F1F1F1;
 			}
 
-			paper-radio-group {
-				width: 100%;
-			}
-
 			.photos {
 				width: 240px;
-				height: 240px;
+				height: 168px;
 				background-color: white;
-				box-shadow: 0px 0px 1px rgba(0,0,0,0.1), 0px 2px 1px rgba(0,0,0,0.1);
+		        border-top-left-radius: 2px;
+		        border-top-right-radius: 2px;
 			}
 		</style>
-		<iron-localstorage name="app-storage" value="{{storage}}"></iron-localstorage>
+		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"></iron-localstorage>
 		<paper-button raised on-tap="browsePhoto">Browse Photos</paper-button>
 		<paper-dialog id="dialog" class="size-position">
 			<h2>Header</h2>
 			<paper-dialog-scrollable class="scroll-section">
-				<paper-radio-group id="group" selected="">
-					<template is="dom-repeat" items={{photos}} as=photo index-as=index>
-						<paper-radio-button name$="img[[index]]">
-							<paper-card>
-								<div class="card-content">
-										<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain" data-source$="[[_accessArray(photoSource, index)]]"></iron-image>
-								</div>
-								<div class="card-actions">
-								</div>
-							</paper-card>
-						</paper-radio-button>
-					</template>
-				</paper-radio-group>
+				<template is="dom-repeat" items={{photos}} as=photo index-as=index>
+						<paper-card elevation="1">
+							<div class="card-content">
+									<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain"></iron-image>
+							</div>
+							<div class="card-actions">
+								<paper-icon-button class="img-selector"
+									icon="radio-button-unchecked"
+									on-tap="_handleSelectImage"
+									data-source$="[[_accessArray(photoSource, index)]]"></paper-icon-button>
+								<paper-toast text="SELECTED !"></paper-toast>
+							</div>
+						</paper-card>
+				</template>
 			</paper-dialog-scrollable>
 			<div class="buttons">
 				<paper-button dialog-dismiss>Cancel</paper-button>
@@ -82,25 +99,23 @@
 					notify: true
 				},
 				storage: {
-					type: Object,
-					notify: true,
-					observer: '_ls'
+					type: Object
 				}
 			},
-			_ls: function (e) {
-				console.log(e);
+			listeners: {
+				'iron-overlay-opened': '_dialogOpened',
+				'iron-overlay-closed': '_dialogClosed'
 			},
 			_apiLoaded: function () {
-
-			},
+			}, 
 			browsePhoto: function (e) {
 				var photoList = this;
-				console.log(photoList.storage);
+					// reload the localstorage to get the data stored on login without reloading the page
+					photoList.$.ls.reload();
 				FB.api(
 					"/me/albums",
 					photoList.storage,
 					function (response) {
-						console.log(response);
 						if (response && !response.error) {
 							for (album in response.data) {
 								FB.api(
@@ -108,7 +123,11 @@
 									photoList.storage,
 									function (response) {
 										for (photo in response.data) {
-											if (response.data[photo].images[5]) {
+											if (response.data[photo].images[7]) {
+												var image = response.data[photo].images[7].source;
+											} else if (response.data[photo].images[6]) {
+												var image = response.data[photo].images[6].source;
+											} else if (response.data[photo].images[5]) {
 												var image = response.data[photo].images[5].source;
 											} else if (response.data[photo].images[4]) {
 												var image = response.data[photo].images[4].source;
@@ -130,9 +149,9 @@
 					}
 				);
 			},
-			listeners: {
-				'iron-overlay-opened': '_dialogOpened',
-				'iron-overlay-closed': '_dialogClosed'
+			_handleSelectImage: function (e, detail) {
+				// console.log(e.target);
+
 			},
 			_dialogOpened: function (e) {
 			},

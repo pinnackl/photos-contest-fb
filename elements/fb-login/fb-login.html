@@ -29,7 +29,7 @@
 			    --iron-icon-width: 32px;
 			}
 		</style>
-		<iron-localstorage name="app-storage" value="{{storage}}"
+		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"
 			on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 		<firebase-auth id="auth"
 					   location="https://blinding-inferno-401.firebaseio.com/"
@@ -101,10 +101,7 @@
 					} else {
 						console.info('Facebook account not connected !');
 						// Cleanup localstorage access_token
-						var ls = fbLogin.storage;
-							ls['access_token'] = null;
-						fbLogin.storage = {};
-						fbLogin.storage = ls;
+						fbLogin.set('storage', {});
 					}
 				});
 			},
@@ -140,11 +137,9 @@
 				var fbLogin = this;
 				if (response == 'connected') {
 					var access_token = param.user.facebook.accessToken;
-					var ls = fbLogin.storage;
-						ls['access_token'] = null;
-						ls['access_token'] = access_token;
-					fbLogin.storage = {};
-					fbLogin.storage = ls;
+
+					fbLogin.set('storage', {'access_token': access_token});
+
 					FB.api(
 						'/' + fbLogin.graphUrl,
 						{access_token: access_token},
