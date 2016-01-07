@@ -8,32 +8,6 @@
 			:host paper-card {
 			}
 
-			paper-card {
-				font-size: 1.2rem;
-				font-weight: 300;
-				display: inline-block;
-				margin: 10px 5px;
-				width: 240px;
-				max-width: 240px;
-				
-				--paper-card-content : {
-					padding: 0;
-				};
-
-				--paper-card-actions: {
-				};
-
-				--paper-card-header: {
-				};
-
-				--paper-card-header-image: {
-				};
-			}
-
-			paper-card .img-selector:hover {
-				cursor: pointer;
-			}
-
 			paper-dialog.size-position {
 				position: fixed;
 				top: 16px;
@@ -61,18 +35,11 @@
 			<h2>Header</h2>
 			<paper-dialog-scrollable class="scroll-section">
 				<template is="dom-repeat" items={{photos}} as=photo index-as=index>
-						<paper-card elevation="1">
-							<div class="card-content">
-									<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain"></iron-image>
-							</div>
-							<div class="card-actions">
-								<paper-icon-button class="img-selector"
-									icon="radio-button-unchecked"
-									on-tap="_handleSelectImage"
-									data-source$="[[_accessArray(photoSource, index)]]"></paper-icon-button>
-								<paper-toast text="SELECTED !"></paper-toast>
-							</div>
-						</paper-card>
+				<photo-card
+					photo="[[photo]]"
+					photo-source="[[_accessArray(photoSource, index)]]"
+					index="[[index]]">
+				</photo-card>
 				</template>
 			</paper-dialog-scrollable>
 			<div class="buttons">
@@ -150,7 +117,7 @@
 				);
 			},
 			_handleSelectImage: function (e, detail) {
-				// console.log(e.target);
+
 
 			},
 			_dialogOpened: function (e) {

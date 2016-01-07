@@ -1,0 +1,97 @@
+<dom-module id="photo-card">
+	<template>
+		<style>
+			:host {
+				display: inline-block;
+			}
+
+			:host:hover {
+				cursor: pointer;
+			}
+
+			:host:hover paper-card .img-selector {
+				color: #597BEB;
+			}
+
+			paper-card {
+				font-size: 1.2rem;
+				font-weight: 300;
+				display: inline-block;
+				margin: 10px 5px;
+				width: 240px;
+				max-width: 240px;
+				
+				--paper-card-content : {
+					padding: 0;
+				};
+
+				--paper-card-actions: {
+				};
+
+				--paper-card-header: {
+				};
+
+				--paper-card-header-image: {
+				};
+			}
+
+			paper-card .img-selector[active] {
+				color: #597BEB;
+			}
+
+			.photos {
+				width: 240px;
+				height: 168px;
+				background-color: white;
+				border-top-left-radius: 2px;
+				border-top-right-radius: 2px;
+			}
+		</style>
+		<paper-card elevation="1" on-tap="_handleSelectImage">
+			<div class="card-content">
+					<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain"></iron-image>
+			</div>
+			<div class="card-actions">
+				<paper-icon-button id="radioBtn" class="img-selector"
+					icon="radio-button-unchecked"
+					toggles></paper-icon-button>
+<!-- 				<paper-toast id="toast" text="SELECTED !"></paper-toast> -->
+			</div>
+		</paper-card>
+	</template>
+	<script>
+		Polymer({
+			is: 'photo-card',
+			properties: {
+				photo: {
+					notify: true
+				},
+				photoSource: {
+					notify: true
+				},
+				index: {
+					notify: true
+				}
+			},
+			_handleSelectImage: function (e) {
+				var data = {
+					photoUrl: this.photo,
+					photoSourceUrl: this.photoSource,
+					status: 'selected'
+				};
+				var imgs = document.querySelectorAll('.img-selector');
+					for (var i = 0; i < imgs.length; i++) {
+						imgs[i].icon = 'radio-button-unchecked';
+						imgs[i].removeAttribute('active');
+					};
+				var img = this.$.radioBtn;
+					img.icon = 'check-circle';
+					img.active = true;
+
+				// var toast = this.$.toast;
+				// 	toast.open();
+				console.log(data);
+			}
+		});
+	</script>
+</dom-module>
