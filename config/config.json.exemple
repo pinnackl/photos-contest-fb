@@ -1,0 +1,4 @@
+{
+	"appId": "{YOUR_APP_ID}",
+	"firebase": "{YOUR_FIREBASE_URL}"
+}
