@@ -19,11 +19,12 @@
 		    	border-radius: 50%;
 		    }
 		</style>
+
+		<!-- don't put the last slash -->
 		<contest-data 	id="data"
 						fire-user="{{user}}"
 						ref="{{ref}}"
-						data="{{data}}"
-						location="https://blinding-inferno-401.firebaseio.com/">
+						data="{{data}}">
 		</contest-data>
 		<paper-header-panel class="flex">
 		    <paper-toolbar>
@@ -61,10 +62,7 @@
 							response="{{resp}}"
 							on-fb-login-canceled="loginCancel">
 						</fb-login> -->
-						<photo-list id="photoList"></photo-list>
-							<!-- <template is="dom-repeat" items="[[data]]" as="item">
-								<h4>Name : [[item.value]] </h4>
-							</template> -->
+						<photo-list id="photoList" data="{{data}}"></photo-list>
 					</div>
 				</div>
 				<div></div>
@@ -98,15 +96,10 @@
 					// this.$.loginbtn2.apiLoaded = true;
 				}
 			},
-			loginSuccess: function () {
-				this.$.photoList.apiLoaded = true;
+			loginSuccess: function (e, detail) {
 			},
 			loginCancel: function () {
 				this.$.message.open();
-			},
-			test: function (e) {
-				// console.log(e.detail.value);
-				// this.$.data.push('data', {});
 			}
 		});
 	</script>

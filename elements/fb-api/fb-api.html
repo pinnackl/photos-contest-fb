@@ -13,13 +13,15 @@
 		 	url="../../config/config.json"
 		 	handle-as="json"
 		 	on-response="handleResponse"></iron-ajax>
+		<iron-localstorage name="app-storage" value="{{config}}"></iron-localstorage>
 	</template>
 	<script>
 		Polymer({
 			is: 'fb-api',
 			properties: {
 				config: {
-					type: Object
+					type: Object,
+					notify: true
 				},
 				loaded: {
 					type: String,
@@ -29,9 +31,10 @@
 			},
 			handleResponse: function (e) {
 				var fbApi = this;
-				
-				fbApi.config = e.detail.response;
-				
+				var tmp = Object.assign(fbApi.config, e.detail.response);
+				fbApi.set('config', {});
+				fbApi.set('config', tmp);
+
 				window.fbAsyncInit = function() {
 					FB.init({
 						appId      : fbApi.config.appId,

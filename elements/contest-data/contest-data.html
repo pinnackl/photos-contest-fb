@@ -8,6 +8,7 @@
 			display: block;
 		}
 		</style>
+		<iron-localstorage name="app-storage" value="{{_storage}}"></iron-localstorage>
 		<firebase-collection data="{{data}}"
 							 location="{{userLocation}}"
 							 on-firebase-value="_firebaseLoaded">
@@ -21,32 +22,45 @@
 					type: String
 				},
 				userLocation: {
-					type: String
+					type: String,
+					notify: true
 				},
 				fireUser: {
 					observer: '_userChanged'
 				},
 				ref: {
+					notify: true,
 					observer: '_refChanged'
 				},
 				data: {
-					notify: true
+					notify: true,
+					observer: '_dataChanged'
+				},
+				_storage: {
+					notify: true,
+					observer: '_storageChanged'
 				}
 			},
 			_userChanged: function (user) {
-				this.userLocation = this.location;
 				if (user) {
-					this.userLocation = [this.location, 'users', this.fireUser.uid].join('/');
+					var uid = this.fireUser.uid;
+						uid = uid.replace(":", "%3A");
+					this.userLocation = [this.location, 'users', uid].join('/');
 				}
 			},
 			_refChanged: function (ref) {
 				// console.log(ref);
 			},
+			_dataChanged: function (data) {
+				// console.log(data);
+			},
 			_firebaseLoaded: function (e) {
-				// console.log(this.data);
-				// this.users = this.fbUsers;
-				// this.linkPaths('fbUsers', 'users');
-				// this.push(data, {name:"plop"});
+				this.data = this.data.slice();
+			},
+			_storageChanged: function (_storage) {
+				if (_storage != null && _storage.hasOwnProperty('firebase')) {
+					this.location = _storage.firebase;
+				}
 			}
 		});
 	</script>

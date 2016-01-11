@@ -32,12 +32,13 @@
 		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"
 			on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 		<firebase-auth id="auth"
-					   location="https://blinding-inferno-401.firebaseio.com/"
+					   location="[[_location]]"
+					   on-location-changed="plop"
 					   provider="facebook"
-					   user="{{user}}"
+					   user="{{fireUser}}"
 					   ref="{{ref}}">
 		</firebase-auth>
-		<paper-button raised
+		<paper-button id="loginButton" raised
 					  on-tap="login">
 			<iron-icon class="icon" src="../../img/FB-f-Logo__blue_50.png"></iron-icon>
 			Login
@@ -75,33 +76,40 @@
 					notify: true
 				},
 				fireUser: {
-					notify: true
+					observer: '_fireUserchanded'
 				},
 				ref: {
 					notify: true
 				},
 				// Local storage
 				storage: {
-					type: Object
+					type: Object,
+					notify: true
 				}
 			},
 			checkLoginStatus: function () {
 				var fbLogin = this;
 				FB.getLoginStatus(function(response) {
-			 		// Check login status on load, and if the user is already logged in
-			 		if (response.status == 'connected') {
-			 			console.info('Facebook account connected !');
-			 			// Populate the param object with the access token
-			 			var param =  {user: fbLogin.$.auth.user};
-			 			fbLogin._customLoginAction(response.status, param);
-			 		} else if (fbLogin.autoLogin) {
-				   		// Otherwise, show Login dialog first.
-				   		console.info('Facebook account not connected !');
-				   		fbLogin.login();
+					// Check login status on load, and if the user is already logged in
+					if (response.status == 'connected') {
+						console.info('Facebook account connected !');
+						fbLogin._customLoginAction('connected', {user: fbLogin.fireUser});
+					} else if (fbLogin.autoLogin) {
+						// Otherwise, show Login dialog first.
+						console.info('Facebook account not connected !');
+						console.info('Auto login into Facebook !');
+						fbLogin.login();
 					} else {
 						console.info('Facebook account not connected !');
 						// Cleanup localstorage access_token
-						fbLogin.set('storage', {});
+						if (fbLogin.storage.access_token) {
+							fbLogin._setAccessToken("");
+						}
+
+						fbLogin.$.auth.addEventListener('login', function (e) {
+							console.info('Login success into Firebase');
+							fbLogin._customLoginAction('connected', e.detail);
+						});
 					}
 				});
 			},
@@ -111,18 +119,21 @@
 				// Get the connection with the provided scope
 				this.$.auth.login({scope: this.scope});
 			},
+			_locationChanged: function (location) {
+				console.log(location);
+			},
 			_apiObserver: function  (n, o) {
 				var fbLogin = this;
 				if (n) {
 					console.info('Fb API is ready !');
+
+					fbLogin.$.ls.reload()
+					fbLogin._location = fbLogin.storage.firebase;
+
+					console.info('Firebase connection established !');
+
 					// Check if the user is actualy connected
 					this.checkLoginStatus();
-					
-					// Bind event to the login action
-					this.$.auth.addEventListener('login', function (e) {
-						console.info('Login into Facebook');
-						fbLogin._customLoginAction('connected', e.detail);
-					});
 
 					// bind event to the error login action
 					this.$.auth.addEventListener('error', function (e) {
@@ -136,32 +147,34 @@
 
 				var fbLogin = this;
 				if (response == 'connected') {
+
 					var access_token = param.user.facebook.accessToken;
 
-					fbLogin.set('storage', {'access_token': access_token});
+					fbLogin._setAccessToken(access_token);
 
 					FB.api(
 						'/' + fbLogin.graphUrl,
 						{access_token: access_token},
 						function(data) {
 							fbLogin.response 	= data;
-							fbLogin.fireUser	= param.user;
 							fbLogin.style.display = 'none';
 
 							// Get the user picture and update the data object
 							FB.api(
 								"/me/picture",
+								{access_token: access_token},
 								function (response) {
 									if (response && !response.error) {
 										var data = fbLogin.response;
 											data['picture'] = response;
 										fbLogin.response = {};
 										fbLogin.response = data;
+
+										console.info('Login success into Facebook');
+										fbLogin.fire('fb-login-success', param);
 									}
 								}
 							);
-
-							fbLogin.fire('fb-login-success', param);
 					});
 				} else {
 					fbLogin.fire('fb-login-canceled', param);
@@ -169,6 +182,17 @@
 			},
 			_initLocalStorage: function () {
 				this.storage = {};
+			},
+			_fireUserchanded: function (fireUser) {
+				if (fireUser) {
+					console.info("Firebase access granted !");
+				}
+			},
+			_setAccessToken: function (token) {
+				var _at = {'access_token': token};
+				var tmp = Object.assign(this.storage, _at);
+				this.set('storage', {});
+				this.set('storage', tmp);
 			}
 		});
 	</script>

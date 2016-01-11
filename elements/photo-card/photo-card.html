@@ -46,6 +46,21 @@
 				border-top-left-radius: 2px;
 				border-top-right-radius: 2px;
 			}
+
+			.photo-view {
+				width: 70%;
+				height: 70%;
+			}
+
+			.photo-source {
+				width: 100%;
+				height: 360px;
+				margin-bottom: 2em;
+			}
+
+			.img-view:hover {
+				color: #597BEB;
+			}
 		</style>
 		<paper-card elevation="1" on-tap="_handleSelectImage">
 			<div class="card-content">
@@ -54,10 +69,23 @@
 			<div class="card-actions">
 				<paper-icon-button id="radioBtn" class="img-selector"
 					icon="radio-button-unchecked"
-					toggles></paper-icon-button>
-<!-- 				<paper-toast id="toast" text="SELECTED !"></paper-toast> -->
+					toggles>
+				</paper-icon-button>
+				<paper-icon-button class="img-view"
+					icon="visibility"
+					on-tap="_handleOpenLightBox">
+				</paper-icon-button>
 			</div>
 		</paper-card>
+		<paper-dialog id="lightbox" class="photo-view">
+			<div class="buttons">
+				<paper-icon-button icon="close" on-tap="_handleCloseLightBox"></paper-icon-button>
+			</div>
+			<h2>Photo view</h2>
+			<paper-dialog-scrollable>
+				<iron-image id="img[[index]]" class="photo-source" src="[[photoSource]]" sizing="contain"></iron-image>
+			</paper-dialog-scrollable>
+		</paper-dialog>
 	</template>
 	<script>
 		Polymer({
@@ -67,14 +95,18 @@
 					notify: true
 				},
 				photoSource: {
-					notify: true
+					notify: true,
+					reflectToAttributes: true
 				},
 				index: {
+					notify: true
+				},
+				data: {
 					notify: true
 				}
 			},
 			_handleSelectImage: function (e) {
-				var data = {
+				this.data = {
 					photoUrl: this.photo,
 					photoSourceUrl: this.photoSource,
 					status: 'selected'
@@ -87,10 +119,12 @@
 				var img = this.$.radioBtn;
 					img.icon = 'check-circle';
 					img.active = true;
-
-				// var toast = this.$.toast;
-				// 	toast.open();
-				console.log(data);
+			},
+			_handleOpenLightBox: function (e) {
+				this.$.lightbox.open();
+			},
+			_handleCloseLightBox: function (e) {
+				this.$.lightbox.close();
 			}
 		});
 	</script>

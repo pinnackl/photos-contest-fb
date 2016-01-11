@@ -38,13 +38,14 @@
 				<photo-card
 					photo="[[photo]]"
 					photo-source="[[_accessArray(photoSource, index)]]"
-					index="[[index]]">
+					index="[[index]]"
+					data="{{photoData}}">
 				</photo-card>
 				</template>
 			</paper-dialog-scrollable>
 			<div class="buttons">
 				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button dialog-confirm>Accept</paper-button>
+				<paper-button dialog-confirm on-tap="_handleSelectImage">Accept</paper-button>
 			</div>
 		</paper-dialog>
 </template>
@@ -67,14 +68,20 @@
 				},
 				storage: {
 					type: Object
+				},
+				photoData: {
+					notify: true,
+					observer: '_photoDataChanged'
+				},
+				data: {
+					notify: true,
+					observer: '_dataChanged'
 				}
 			},
 			listeners: {
 				'iron-overlay-opened': '_dialogOpened',
 				'iron-overlay-closed': '_dialogClosed'
 			},
-			_apiLoaded: function () {
-			}, 
 			browsePhoto: function (e) {
 				var photoList = this;
 					// reload the localstorage to get the data stored on login without reloading the page
@@ -117,19 +124,20 @@
 				);
 			},
 			_handleSelectImage: function (e, detail) {
-
-
+				console.log(this.photoData);
 			},
 			_dialogOpened: function (e) {
 			},
 			_dialogClosed: function (e) {
-				var imageId = this.$.group.selected;
-				if (typeof image !== 'undefined') {
-					var image = document.querySelector('#' + image);
-				}
 			},
 			_accessArray: function (arr, idx) {
 				return arr[idx];
+			},
+			_photoDataChanged: function (photoData) {
+
+			},
+			_dataChanged: function (data) {
+				// console.log(data);
 			}
 		});
 	</script>
