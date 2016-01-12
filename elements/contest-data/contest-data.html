@@ -9,9 +9,8 @@
 		}
 		</style>
 		<iron-localstorage name="app-storage" value="{{_storage}}"></iron-localstorage>
-		<firebase-collection data="{{data}}"
-							 location="{{userLocation}}"
-							 on-firebase-value="_firebaseLoaded">
+		<firebase-collection dataAsObject="{{data}}"
+							 location="{{userLocation}}">
 		</firebase-collection>
 	</template>
 	<script>
@@ -55,7 +54,9 @@
 				// console.log(data);
 			},
 			_firebaseLoaded: function (e) {
-				this.data = this.data.slice();
+				console.log(this.query);
+				// var _data = this.data;
+				// this.set('data', _data);
 			},
 			_storageChanged: function (_storage) {
 				if (_storage != null && _storage.hasOwnProperty('firebase')) {

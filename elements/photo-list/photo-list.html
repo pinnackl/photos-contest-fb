@@ -124,7 +124,8 @@
 				);
 			},
 			_handleSelectImage: function (e, detail) {
-				console.log(this.photoData);
+				var _data = {photo: this.photoData};
+				this.push('data', _data);
 			},
 			_dialogOpened: function (e) {
 			},
@@ -134,10 +135,8 @@
 				return arr[idx];
 			},
 			_photoDataChanged: function (photoData) {
-
 			},
 			_dataChanged: function (data) {
-				// console.log(data);
 			}
 		});
 	</script>
