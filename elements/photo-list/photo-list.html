@@ -36,8 +36,8 @@
 			<paper-dialog-scrollable class="scroll-section">
 				<template is="dom-repeat" items={{photos}} as=photo index-as=index>
 				<photo-card
-					photo="[[photo]]"
-					photo-source="[[_accessArray(photoSource, index)]]"
+					photo="[[photo.image]]"
+					photo-source="[[photo.source]]"
 					index="[[index]]"
 					data="{{photoData}}">
 				</photo-card>
@@ -111,8 +111,7 @@
 												var image = response.data[photo].images[1].source;
 											}
 											var source = response.data[photo].images[0].source;
-											photoList.push('photos', image);
-											photoList.push('photoSource', source);
+											photoList.push('photos', {image : image, source : source});
 										}
 									}
 								);
