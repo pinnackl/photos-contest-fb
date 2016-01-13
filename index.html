@@ -19,15 +19,23 @@
 		<contest-view api-loaded="{{isLoaded}}"></contest-view>
 	</template>
 	<script>
-	// (function (window, document) {
-		// window.addEventListener('WebComponentsReady', function(e) {
-			// var fbApi = document.querySelector('fb-api');
-			// 	fbApi.addEventListener('fb-ready', function (e, detail) {
-			// 		var contestView = document.querySelector('contest-view');
-			// 			contestView
-			// });
-		// });
-	// })(window, document);
+	(function (window, document) {
+		var app = document.querySelector('#app');
+			app.verbose = true;
+		window.addEventListener('WebComponentsReady', function(e) {
+			if (app.verbose) {
+				console.log("  ________________________________________    ");
+				console.log("/ The current running aplication is in     \\ ");
+				console.log("\\ verbose mode.                            / ");
+				console.log("  ----------------------------------------    ");
+				console.log("         \\   ^__^                            ");
+				console.log("          \\  (oo)\\_______                   ");
+				console.log("             (__)\\       )\\/\\              ");
+				console.log("                 ||----w |                    ");
+				console.log("                 ||     ||                    ");
+			}
+		});
+	})(window, document);
 	</script>
 </body>
 </html>
