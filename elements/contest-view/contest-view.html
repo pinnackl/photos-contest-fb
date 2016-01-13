@@ -100,7 +100,8 @@
 				}
 			},
 			loginSuccess: function (e, detail) {
-				// FIXME: Write the logged user in the database with the right status
+				var userSubscription = this;
+				userSubscription.push('data', {email: detail.user.facebook.email, role: "participant"}); // get role dynamically 
 			},
 			loginCancel: function () {
 				this.$.message.open();
