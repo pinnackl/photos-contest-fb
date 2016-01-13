@@ -87,6 +87,9 @@
 				photos: {
 					type: Array,
 					notify: true
+				},
+				data: {
+					type: Array
 				}
 			},
 			// Property "apiLoaded" observer
@@ -97,10 +100,11 @@
 				}
 			},
 			loginSuccess: function (e, detail) {
+				// FIXME: Write the logged user in the database with the right status
 			},
 			loginCancel: function () {
 				this.$.message.open();
-			}
+			},
 		});
 	</script>
 </dom-module>

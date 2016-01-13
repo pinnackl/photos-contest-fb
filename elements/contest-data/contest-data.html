@@ -9,8 +9,9 @@
 		}
 		</style>
 		<iron-localstorage name="app-storage" value="{{_storage}}"></iron-localstorage>
-		<firebase-collection dataAsObject="{{data}}"
-							 location="{{userLocation}}">
+		<firebase-collection data="{{firebaseData}}"
+							 location="{{userLocation}}"
+							 on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
 	</template>
 	<script>
@@ -33,7 +34,6 @@
 				},
 				data: {
 					notify: true,
-					observer: '_dataChanged'
 				},
 				_storage: {
 					notify: true,
@@ -53,10 +53,9 @@
 			_dataChanged: function (data) {
 				// console.log(data);
 			},
-			_firebaseLoaded: function (e) {
-				console.log(this.query);
-				// var _data = this.data;
-				// this.set('data', _data);
+			_firebaseLoaded: function() {
+				this.data = this.firebaseData;
+				this.linkPaths('data', 'firebaseData');
 			},
 			_storageChanged: function (_storage) {
 				if (_storage != null && _storage.hasOwnProperty('firebase')) {

@@ -74,6 +74,7 @@
 					observer: '_photoDataChanged'
 				},
 				data: {
+					type: Array,
 					notify: true,
 					observer: '_dataChanged'
 				}
@@ -96,6 +97,7 @@
 									response.data[album].id + '/photos?fields=images',
 									photoList.storage,
 									function (response) {
+										// FIXME : use only once photo object containing {image:"", source: ""}
 										for (photo in response.data) {
 											if (response.data[photo].images[7]) {
 												var image = response.data[photo].images[7].source;
@@ -124,8 +126,26 @@
 				);
 			},
 			_handleSelectImage: function (e, detail) {
-				var _data = {photo: this.photoData};
-				this.push('data', _data);
+				if (this.data.length > 0) {
+					var photoUpdated = false;
+					for (var i = 0; i < this.data.length; i++) {
+						if (this.data[i].hasOwnProperty('photo')) {
+							console.log('-- Action :');
+							console.info('Update registred photo');
+							this.set('data.'+i+'.photo', this.photoData);
+							photoUpdated = true;
+						}
+					};
+					if (i == this.data.length && !photoUpdated) {
+						console.log('-- Action :');
+						console.info('Set registred photo');
+						this.push('data', {photo: this.photoData});
+					}
+				} else {
+					console.log('-- Action :');
+					console.info('Set registred photo');
+					this.push('data', {photo: this.photoData});
+				}
 			},
 			_dialogOpened: function (e) {
 			},
@@ -137,6 +157,7 @@
 			_photoDataChanged: function (photoData) {
 			},
 			_dataChanged: function (data) {
+				console.log(data);
 			}
 		});
 	</script>
