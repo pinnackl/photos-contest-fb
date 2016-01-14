@@ -36,8 +36,8 @@
 			<paper-dialog-scrollable class="scroll-section">
 				<template is="dom-repeat" items={{photos}} as=photo index-as=index>
 				<photo-card
-					photo="[[photo]]"
-					photo-source="[[_accessArray(photoSource, index)]]"
+					photo="[[photo.image]]"
+					photo-source="[[photo.source]]"
 					index="[[index]]"
 					data="{{photoData}}">
 				</photo-card>
@@ -97,7 +97,6 @@
 									response.data[album].id + '/photos?fields=images',
 									photoList.storage,
 									function (response) {
-										// FIXME : use only once photo object containing {image:"", source: ""}
 										for (photo in response.data) {
 											if (response.data[photo].images[7]) {
 												var image = response.data[photo].images[7].source;
@@ -111,8 +110,7 @@
 												var image = response.data[photo].images[1].source;
 											}
 											var source = response.data[photo].images[0].source;
-											photoList.push('photos', image);
-											photoList.push('photoSource', source);
+											photoList.push('photos', {image: image, source: source});
 										}
 									}
 								);
