@@ -4,7 +4,7 @@
 	<title>FB app</title>
 
 	<!-- All meta tag needed -->
-
+	<link rel="stylesheet" href="styles/main.css">
     <script src="vendor/webcomponentsjs/webcomponents-lite.js"></script>
 	<link rel="import" href="elements/elements.html">
 </head>
@@ -16,26 +16,10 @@
 			Then, the contest-view property "api-loaded" which is binded to the fb-api is changed too.
 		 -->
 		<fb-api loaded="{{isLoaded}}"></fb-api>
-		<contest-view api-loaded="{{isLoaded}}"></contest-view>
+		<contest-view api-loaded="{{isLoaded}}"
+					  base-url="{{baseUrl}}"
+					  route="{{route}}"></contest-view>
 	</template>
-	<script>
-	(function (window, document) {
-		var app = document.querySelector('#app');
-			app.verbose = true;
-		window.addEventListener('WebComponentsReady', function(e) {
-			if (app.verbose) {
-				console.log("  ________________________________________    ");
-				console.log("/ The current running aplication is in     \\ ");
-				console.log("\\ verbose mode.                            / ");
-				console.log("  ----------------------------------------    ");
-				console.log("         \\   ^__^                            ");
-				console.log("          \\  (oo)\\_______                   ");
-				console.log("             (__)\\       )\\/\\              ");
-				console.log("                 ||----w |                    ");
-				console.log("                 ||     ||                    ");
-			}
-		});
-	})(window, document);
-	</script>
+	<script src="js/app.js"></script>
 </body>
 </html>
