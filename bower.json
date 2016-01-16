@@ -44,6 +44,7 @@
     "paper-styles": "PolymerElements/paper-styles#^1.0.0",
     "paper-drawer-panel": "PolymerElements/paper-drawer-panel#~1.0.6",
     "page": "visionmedia/page.js#~1.6.4",
-    "file-upload": "~1.6.3"
+    "file-upload": "~1.6.3",
+    "paper-date-picker": "polymer-paper-date-picker#~1.1.2"
   }
 }
