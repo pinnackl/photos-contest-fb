@@ -1,0 +1,53 @@
+<link rel="import" href="../../vendor/polymer/polymer.html">
+<link rel="import" href="../../vendor/file-upload/file-upload.html">
+
+<dom-module id="fb-upload-photo">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			paper-dialog {
+				width: 500px;
+				height: 250px;
+			}
+
+			paper-dialog .scroll-section {
+				background-color: #F1F1F1;
+			}
+		</style>
+		<paper-button raised on-tap="uploadPhoto" class="upload-button">Upload Photos</paper-button>
+		<paper-dialog id="dialog" class="size-position">
+			<h2>Upload photo</h2>
+			<paper-dialog-scrollable class="scroll-section">
+<!-- 				<file-upload id="fileUpload" data="{{uploadedPhoto}}" method="POST" raised="true" multi="true" accept="image/*" dropText="Drop files here" droppable target="/">CHOOSE FILE</file-upload> -->
+			</paper-dialog-scrollable>
+			<div class="buttons">
+				<paper-button on-tap="_handleCancelImage">Cancel</paper-button>
+				<paper-button dialog-confirm on-tap="_handleUploadImage">Upload</paper-button>
+			</div>
+		</paper-dialog>
+	</template>
+	<script>
+		(function() {
+			'use strict';     
+			Polymer({
+				is: 'fb-upload-photo',
+				properties: {
+					photo: {
+						type: Array,
+						value: [],
+						notify: true
+					}
+				},
+				uploadPhoto: function(e, detail){
+					this.$.dialog.open();
+				},
+				_handleCancelImage: function(e, detail){
+					this.$.dialog.close();
+				}
+			});
+		})();
+		</script>
+</dom-module>
