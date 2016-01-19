@@ -118,6 +118,7 @@
 				var fbLogin = this;
 
 				// Get the connection with the provided scope
+				this.scope = this.scope;
 				this.$.auth.login({scope: this.scope});
 			},
 			_locationChanged: function (location) {
