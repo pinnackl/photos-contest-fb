@@ -50,4 +50,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app.$.paperDrawerPanel.closeDrawer();
   };
 
+  app.loginSuccess = function (e) {
+    console.log(e.detail);
+  }
+
+  app.loginCancel = function (e) {
+  }
+
+  window.addEventListener('fb-ready', function () {
+    app.$.loginbtn1.apiLoaded = true;
+  });
+
+  window.addEventListener('fb-not-connected', function () {
+    app.$.defaultPage.hidden = false;
+    app.route = 'login';
+  });
+
 })(document);

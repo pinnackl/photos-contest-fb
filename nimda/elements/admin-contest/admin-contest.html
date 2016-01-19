@@ -1,0 +1,28 @@
+<dom-module id="admin-contest">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<h1>Admin contest</h1>
+	</template>
+	<script>
+		Polymer({
+			is: 'admin-contest',
+			properties: {
+				apiLoaded: {
+					type: String,
+					value: 'false',
+					notify: true,
+					observer: '_apiLoaded'
+				}
+			},
+			_apiLoaded: function (n) {
+				if (n === 'true') {
+
+				}
+			}
+		});
+	</script>
+</dom-module>

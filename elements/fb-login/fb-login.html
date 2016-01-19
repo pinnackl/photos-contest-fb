@@ -111,6 +111,8 @@
 							console.info('Login success into Firebase');
 							fbLogin._customLoginAction('connected', e.detail);
 						});
+
+						fbLogin.fire('fb-not-connected');
 					}
 				});
 			},
