@@ -1,7 +1,7 @@
 <!--
 @license
 Copyright (c) 2015 Winston Howes. All rights reserved.
-This code may only be used under the MIT license found at https://github.com/winhowes/file-upload/blob/master/LICENSE
+This code may only be used under the MIT license found at https://github.com/winhowes/fb-file/blob/master/LICENSE
 -->
 <link rel="import" href="../../vendor/polymer/polymer.html">
 
@@ -10,7 +10,7 @@ An element providing a solution to no problem in particular.
 
 Example:
 
-    <file-upload target="/path/to/destination"></file-upload>
+    <fb-file target="/path/to/destination"></fb-file>
 
 @demo
 -->
@@ -24,13 +24,13 @@ Example:
   <style type="text/css">
     .enabled {
       border: 1px dashed #555;
-      @apply(--file-upload-upload-border-enabled);
+      @apply(--fb-file-upload-border-enabled);
     }
 
     .hover {
       opacity: .7;
       border: 1px dashed #111;
-      @apply(--file-upload-upload-border-hover);
+      @apply(--fb-file-upload-border-hover);
     }
 
     #UploadBorder{
@@ -40,38 +40,38 @@ Example:
       max-height: 300px;
       overflow-y: auto;
       display: inline-block;
-      @apply(--file-upload-upload-border);
+      @apply(--fb-file-upload-border);
     }
 
     #dropArea {
       text-align: center;
-      @apply(--file-upload-drop-area);
+      @apply(--fb-file-drop-area);
     }
 
     paper-button#button {
       margin-bottom: 20px;
-      @apply(--file-upload-button);
+      @apply(--fb-file-button);
     }
 
     .file {
       padding: 10px 0px;
-      @apply(--file-upload-file);
+      @apply(--fb-file-file);
     }
 
     .commands {
       float: right;
-      @apply(--file-upload-commands);
+      @apply(--fb-file-commands);
     }
 
     .commands iron-icon:not([icon="check-circle"]) {
       cursor: pointer;
       opacity: .9;
-      @apply(--file-upload-commands-faded);
+      @apply(--fb-file-commands-faded);
     }
 
     .commands iron-icon:hover {
       opacity: 1;
-      @apply(--file-upload-commands-hovered);
+      @apply(--fb-file-commands-hovered);
     }
 
     [hidden] {
@@ -82,7 +82,7 @@ Example:
       color: #f40303;
       font-size: 11px;
       margin: 2px 0px -3px;
-      @apply(--file-upload-error);
+      @apply(--fb-file-error);
     }
 
     paper-progress {
@@ -93,10 +93,10 @@ Example:
       --paper-progress-active-color: #f40303;
     }
   </style>
-
   <template>
+    <iron-localstorage id="ls" name="app-storage" value="{{storage}}"></iron-localstorage>
     <div>
-      <paper-button id="button" icon="file-upload" class="blue" on-click="_fileClick">
+      <paper-button id="button" icon="fb-file" class="blue" on-click="_fileClick">
         <content></content>
       </paper-button>
       <div id='UploadBorder'>
@@ -119,7 +119,9 @@ Example:
         </template>
       </div>
     </div>
-    <input type="file" id="fileInput" on-change="_fileChange" hidden multiple="{{multi}}" accept="{{accept}}">
+    <form enctype="multipart/form-data">
+      <input type="file" id="fileInput" formEnctype="multipart/form-data" on-change="_fileChange" hidden multiple="{{multi}}" accept="{{accept}}">
+    </form>
     <!--<paper-toast id="toastSuccess" text="File uploaded successfully!"></paper-toast>
     <paper-toast id="toastFail" text="Error uploading file!"></paper-toast>-->
   </template>
@@ -128,9 +130,18 @@ Example:
 
 <script>
 
+  if ( XMLHttpRequest.prototype.sendAsBinary === undefined ) {
+      XMLHttpRequest.prototype.sendAsBinary = function(string) {
+          var bytes = Array.prototype.map.call(string, function(c) {
+              return c.charCodeAt(0) & 0xff;
+          });
+          this.send(new Uint8Array(bytes).buffer);
+      };
+  }
+
   Polymer({
 
-    is: 'file-upload',
+    is: 'fb-file',
 
      /**
       * Fired when a response is received status code 200.
@@ -282,6 +293,9 @@ Example:
       _shownDropText: {
         type: Boolean,
         value: false
+      },
+      storage: {
+          type: Object
       }
     },
 
@@ -368,6 +382,7 @@ Example:
      * Called whenever the list of selected files changes
     */
     _fileChange: function(e) {
+      console.log(e);
       var length = e.target.files.length;
       for (var i = 0; i < length; i++) {
         var file = e.target.files[i];
@@ -429,6 +444,68 @@ Example:
      * @param {object} a file, an element of the files array
     */
     uploadFile: function(file) {
+
+/****************************/
+      var fbFile = this;
+      fbFile.$.ls.reload();
+      var access_token = fbFile.storage.access_token;
+
+      FB.api(
+          "/me/albums",
+          function(response){
+            var alreadyCreated = false;
+            for(album in response.data){
+              if(response.data[album].name === "Album photo contest Pinnackl"){
+                alreadyCreated = true;
+                var albumId = response.data[album].id;
+              }
+            }
+            if(alreadyCreated === false){
+              FB.api(
+                "/me/albums",
+                'post',
+                {
+                  access_token: access_token,
+                  name: "Album photo contest Pinnackl",
+                  message: "Album used to store contest's photos"
+                },
+                function(response){
+                  FB.api(
+                    "/" + response.id + "/photos",
+                    "POST",
+                    {
+                        "source": file
+                    },
+                    function (response) {
+                      console.log(response);
+                    }
+                  );
+                }
+              );
+            }else{
+              //var formData = new FormData();
+              //formData.append("file", file, file.name);
+              //xhr.open( 'POST', 'https://graph.facebook.com/'+albumId+'/photos?access_token=' + access_token, true );
+              //xhr.onload = xhr.onerror = function() {
+              //    console.log( xhr.responseText );
+              //};
+              //xhr.setRequestHeader( "Content-Type", "multipart/form-data;");
+              //xhr.sendAsBinary( formData );
+              FB.api(
+                "/" + albumId + "/photos",
+                "POST",
+                {
+                    "source": file
+                },
+                function (response) {
+                  console.log(response);
+                }
+              );
+            }
+          }
+        );
+
+/****************************/
       if (!file) {
         return;
       }
@@ -466,7 +543,6 @@ Example:
           self.fire("error", {xhr:xhr});
         }
       };
-      console.log(xhr);console.log(formData);
       xhr.send(formData);
     }
   });

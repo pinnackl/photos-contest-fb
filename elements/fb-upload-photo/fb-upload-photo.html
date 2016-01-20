@@ -1,5 +1,5 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
-<link rel="import" href="../../vendor/file-upload/file-upload.html">
+<link rel="import" href="../fb-file/fb-file.html">
 
 <dom-module id="fb-upload-photo">
 	<template>
@@ -21,7 +21,7 @@
 		<paper-dialog id="dialog" class="size-position">
 			<h2>Upload photo</h2>
 			<paper-dialog-scrollable class="scroll-section">
-<!-- 				<file-upload id="fileUpload" data="{{uploadedPhoto}}" method="POST" raised="true" multi="true" accept="image/*" dropText="Drop files here" droppable target="/">CHOOSE FILE</file-upload> -->
+				<fb-file id="fbFile" data="{{uploadedPhoto}}" method="POST" raised="true" accept="image/*" dropText="Drop files here" droppable target="/">CHOOSE FILE</fb-file>
 			</paper-dialog-scrollable>
 			<div class="buttons">
 				<paper-button on-tap="_handleCancelImage">Cancel</paper-button>
