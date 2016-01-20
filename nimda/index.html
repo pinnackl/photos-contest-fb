@@ -68,8 +68,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-header-panel drawer>
 
                 <!-- Drawer Toolbar -->
-                <paper-toolbar id="drawerToolbar">
-                    <span class="paper-font-title">Menu</span>
+                <paper-toolbar id="drawerToolbar" class="medium-tall">
+                    <div class="top">
+                        <template is="dom-if" if={{resp.picture.data.url}}>
+                            <img class="avatar" src="[[resp.picture.data.url]]" alt="Avatar">
+                        </template>
+                    </div>
+                    <div class="bottom">[[resp.email]]</div>
                 </paper-toolbar>
 
                 <!-- Drawer Content -->
@@ -114,7 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <h1>Login page</h1>
                             <fb-login
                                 id="loginbtn1"
-                                graph-url="me?fields=name"
+                                graph-url="me?fields=name, email"
                                 scope="public_profile, email, user_photos"
                                 response="{{resp}}"
                                 fire-user="{{user}}"
