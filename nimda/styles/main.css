@@ -13,6 +13,13 @@ body {
   color: #333;
 }
 
+.page-name {
+	font-size: 20px;
+	line-height: 1;
+	letter-spacing: .02em;
+	font-weight: 400;
+}
+
 .page-name::first-letter {
 	text-transform: uppercase;
 }

@@ -66,4 +66,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app.route = 'login';
   });
 
+  window.addEventListener('fb-login-success', function () {
+    // console.log(FB);
+    FB.api(
+        "/app/roles",
+        function (response) {
+            console.log(response);
+          if (response && !response.error) {
+            /* handle the result */
+          }
+        }
+    );
+  });
+
 })(document);
