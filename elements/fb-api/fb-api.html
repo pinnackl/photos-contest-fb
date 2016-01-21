@@ -13,7 +13,7 @@
 		 	url="../../config/config.json"
 		 	handle-as="json"
 		 	on-response="handleResponse"></iron-ajax>
-		<iron-localstorage name="app-storage" value="{{config}}"></iron-localstorage>
+		<iron-localstorage id="ls" name="app-storage" value="{{config}}" on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 	</template>
 	<script>
 		Polymer({
@@ -31,6 +31,7 @@
 			},
 			handleResponse: function (e) {
 				var fbApi = this;
+				fbApi.$.ls.reload();
 				var tmp = Object.assign(fbApi.config, e.detail.response);
 				fbApi.set('config', {});
 				fbApi.set('config', tmp);
@@ -55,7 +56,11 @@
 				}(document, 'script', 'facebook-jssdk'));				
 			},
 			ready: function (argument) {
+			},
+			_initLocalStorage: function () {
+				this.storage = {};
 			}
+
 		});
 	</script>
 </dom-module>
