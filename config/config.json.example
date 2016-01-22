@@ -1,4 +1,5 @@
 {
 	"appId": "{YOUR_APP_ID}",
+	"appToken": "{YOUR_GENERATED_APP_TOKEN}",
 	"firebase": "{YOUR_FIREBASE_URL}"
 }
