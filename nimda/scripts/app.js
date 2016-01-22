@@ -57,8 +57,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   app.loginCancel = function (e) {
   }
 
+  app.appLogout = function (e) {
+    FB.logout(function(response) {
+      app.$.loginbtn1.disabled = false;
+    });
+  }
+
   window.addEventListener('fb-ready', function () {
     app.$.loginbtn1.apiLoaded = true;
+  });
+
+  window.addEventListener('fb-role-login-success', function () {
+    app.route = 'home';
   });
 
   window.addEventListener('fb-not-connected', function () {
@@ -66,17 +76,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app.route = 'login';
   });
 
-  window.addEventListener('fb-login-success', function () {
-    // console.log(FB);
-    FB.api(
-        "/app/roles",
-        function (response) {
-            console.log(response);
-          if (response && !response.error) {
-            /* handle the result */
-          }
-        }
-    );
+  window.addEventListener('fb-login-aborded', function () {
+    app.$.defaultPage.hidden = false;
+    app.route = 'no-right';
+    app.$.loginbtn1.disabled = true;
+    app.$.toast.text = 'You must be logged as administrator to see this page.';
+    app.$.toast.show();
   });
 
 })(document);
