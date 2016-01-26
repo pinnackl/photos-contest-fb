@@ -269,6 +269,7 @@
 								response="{{resp}}"
 								fire-user="{{user}}"
 								ref="{{ref}}"
+								storageLabel="[[storageLabel]]"
 								on-fb-login-success="loginSuccess"
 								on-fb-login-canceled="loginCancel">
 							</fb-login>
@@ -308,6 +309,9 @@
 				},
 				data: {
 					type: Array
+				},
+				storageLabel: {
+					type: String
 				}
 			},
 			// Property "apiLoaded" observer

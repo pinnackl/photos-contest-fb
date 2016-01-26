@@ -18,6 +18,7 @@
 	// have resolved and content has been stamped to the page
 	app.addEventListener('dom-change', function() {
 		console.log('Our app is ready to rock!');
+		app.set('storageName', "app-storage2");
 	});
 
 	window.addEventListener('WebComponentsReady', function(e) {

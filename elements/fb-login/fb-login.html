@@ -34,11 +34,10 @@
 			    --iron-icon-width: 32px;
 			}
 		</style>
-		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"
+		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"
 			on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 		<firebase-auth id="auth"
 					   location="[[_location]]"
-					   on-location-changed="plop"
 					   provider="facebook"
 					   user="{{fireUser}}"
 					   ref="{{ref}}">
@@ -59,6 +58,10 @@
 					type: Boolean,
 					value: false,
 					reflectToAttribute: true
+				},
+				storageLabel: {
+					type: String,
+					value: "app-storage"
 				},
 				role: {
 					value: false
@@ -151,7 +154,7 @@
 				if (n) {
 					console.info('Fb API is ready !');
 
-					fbLogin.$.ls.reload()
+					fbLogin.$.ls.reload();
 					fbLogin._location = fbLogin.storage.firebase;
 
 					console.info('Firebase connection established !');
@@ -228,7 +231,7 @@
 				}
 			},
 			_initLocalStorage: function () {
-				this.storage = {};
+				// this.storage = {};
 			},
 			_fireUserchanded: function (fireUser) {
 				if (fireUser) {
