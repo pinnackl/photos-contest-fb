@@ -35,7 +35,7 @@
 			}
 		</style>
 		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"
-			on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
+			auto-save-disabled on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 		<firebase-auth id="auth"
 					   location="[[_location]]"
 					   provider="facebook"
@@ -126,9 +126,9 @@
 					} else {
 						console.info('Facebook account not connected !');
 						// Cleanup localstorage access_token
-						if (fbLogin.storage.access_token) {
-							fbLogin._setAccessToken("");
-						}
+						// if (fbLogin.storage.access_token) {
+						// 	fbLogin._setAccessToken("");
+						// }
 
 						fbLogin.$.auth.addEventListener('login', function (e) {
 							console.info('Login success into Firebase');
@@ -155,6 +155,7 @@
 					console.info('Fb API is ready !');
 
 					fbLogin.$.ls.reload();
+					// console.log(fbLogin.storage);
 					fbLogin._location = fbLogin.storage.firebase;
 
 					console.info('Firebase connection established !');
@@ -177,7 +178,7 @@
 
 					var access_token = param.user.facebook.accessToken;
 
-					fbLogin._setAccessToken(access_token);
+					fbLogin.set("access_token", access_token);
 
 					if (fbLogin.role) {
 						fbLogin._granted = false;
