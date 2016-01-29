@@ -5,7 +5,15 @@
 				display: block;
 			}
 		</style>
-		<h1>Admin contest</h1>
+		<h1>Contest console</h1>
+		<paper-button raised on-tap="_triggerPicker">Create</paper-button>
+		<paper-dialog id="datePicker" class="paper-date-picker-dialog">
+			<paper-date-picker id="picker" date="[[date]]"></paper-date-picker>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button dialog-confirm on-tap="_closePicker">OK</paper-button>
+			</div>
+		</paper-dialog>
 	</template>
 	<script>
 		Polymer({
@@ -16,12 +24,27 @@
 					value: 'false',
 					notify: true,
 					observer: '_apiLoaded'
+				},
+				data: {
+					observer: 'dataChanged'
+				},
+				date: {
+					notify: true
 				}
 			},
 			_apiLoaded: function (n) {
 				if (n === 'true') {
-
+					// console.log(this.data);
 				}
+			},
+			dataChanged: function (data) {
+				console.log(data);
+			},
+			_triggerPicker: function (e) {
+				this.$.datePicker.open();
+			},
+			_closePicker: function (e) {
+				console.log(this.date);
 			}
 		});
 	</script>

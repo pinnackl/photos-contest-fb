@@ -62,7 +62,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved class="fullbleed layout vertical">
     <span id="browser-sync-binding"></span>
     <template is="dom-bind" id="app">
-        <fb-api loaded="{{isLoaded}}"></fb-api>
+        <fb-api loaded="{{isLoaded}}" storage-label="[[storageName]]"></fb-api>
+        <contest-data   id="data"
+                        fire-user="{{user}}"
+                        ref="{{ref}}"
+                        location="https://blinding-inferno-401.firebaseio.com/options"
+                        data="{{data}}"
+                        on-data-changed="plop">
+        </contest-data>
         <paper-drawer-panel id="paperDrawerPanel">
             <!-- Drawer Scroll Header Panel -->
             <paper-header-panel drawer>
@@ -128,6 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 response="{{resp}}"
                                 fire-user="{{user}}"
                                 ref="{{ref}}"
+                                storage-label="[[storageName]]"
                                 role="administrators"
                                 on-fb-login-success="loginSuccess"
                                 on-fb-login-canceled="loginCancel">
@@ -135,7 +143,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </section>
                         <template is="dom-if" if={{resp}}>
                             <section data-route="home">
-                                <!-- <admin-contest api-loaded="{{isLoaded}}"></admin-contest> -->
+                                <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
                             </section>
                             <section data-route="users">
                             Hello world ! users
