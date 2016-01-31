@@ -1,0 +1,137 @@
+<dom-module id="contest-input">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			paper-dialog {
+				--paper-dialog-background-color: white;
+			}
+		</style>
+		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
+			<h2>New contest - Start date :</h2>
+			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+			<div>
+				<span>Start : <strong>[[dateStartTxt]]</strong></span>
+				-
+				<span>End : <strong>[[dateEndTxt]]</strong></span>
+			</div>
+			<paper-date-picker date="{{dateStart}}"></paper-date-picker>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button on-tap="_closePicker">
+					<iron-icon icon="check"></iron-icon>
+				</paper-button>
+				<paper-button on-tap="_switchToEnd">
+					<span>Next</span>
+					<iron-icon icon="arrow-forward"></iron-icon>
+				</paper-button>
+			</div>
+		</paper-dialog>
+		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
+			<h2>New contest - End date :</h2>
+			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+			<div>
+				<span>Start : <strong>[[dateStartTxt]]</strong></span>
+				-
+				<span>End : <strong>[[dateEndTxt]]</strong></span>
+			</div>
+			<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button on-tap="_closePicker">
+					<iron-icon icon="check"></iron-icon>
+				</paper-button>
+				<paper-button on-tap="_switchToStart">
+					<iron-icon icon="arrow-back"></iron-icon>
+					<span>Previous</span>
+				</paper-button>
+			</div>
+		</paper-dialog>
+		<paper-toast id="message" text=""></paper-toast>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-input',
+			properties: {
+				dateStart: {
+					observer: '_upadteStringStart'
+				},
+				dateEnd: {
+					observer: '_upadteStringEnd'
+				}
+			},
+			_upadteStringStart: function (e) {
+				var d = new Date(this.dateStart);
+				this.set('dateStartTxt', d.toLocaleDateString());
+			},
+			_upadteStringEnd: function (e) {
+				var d = new Date(this.dateEnd);
+				this.set('dateEndTxt', d.toLocaleDateString());
+			},
+			open: function () {
+				this.$.datePickerStart.open();
+				this.$.ctstName.value = "";
+				this.dateStart 	= new Date();
+				this.dateEnd 	= new Date();
+			},
+			_add: function () {
+				var datestart 	= this.dateStart.getTime();
+				var dateend 	= this.dateEnd.getTime();
+				// this.push('data', {
+				// 	name: this.$.ctstName.value,
+				// 	start: datestart,
+				// 	end: dateend,
+				// 	isactive: true
+				// });
+			},
+			_switchToEnd: function (e) {
+				this.$.datePickerStart.close();
+				this.$.datePickerEnd.open();
+			},
+			_switchToStart: function (e) {
+				this.$.datePickerEnd.close();
+				this.$.datePickerStart.open();
+			},
+			_closePicker: function (e) {
+				// console.log("Name: " + this.contestName);
+				// console.log("Start: " + this.dateStart);
+				// console.log("End:" + this.dateEnd);
+				// console.log(this.data);
+
+				var ctstName = this.$.ctstName.value;
+				var dStart 	 = new Date(this.dateStart);
+				var dEnd 	 = new Date(this.dateEnd);
+					dStart 	 = dStart.getTime();
+					dEnd 	 = dEnd.getTime();
+
+				if (!ctstName) {
+					this.$.message.text = "Please fill the contest name input";
+					this.$.message.open();
+					return false;
+				}
+				if (dEnd < dStart) {
+					this.$.message.text = "The end date must be supperior to the start date !";
+					this.$.message.open();
+					return false;
+				} else if (dEnd == dStart) {
+					this.$.message.text = "The dates can not be the same !";
+					this.$.message.open();
+					return false;
+				}
+				
+				for (var i = 0; i < this.data.length; i++) {
+					// FIXME : Chack for contest data dates
+					// if (this.data[i].isactive && ())
+				};
+
+				// this._add();
+
+				var dialogs = this.querySelectorAll('paper-dialog');
+				for (var i = 0; i < dialogs.length; i++) {
+					dialogs[i].close();
+				};
+			}
+		});
+	</script>
+</dom-module>
