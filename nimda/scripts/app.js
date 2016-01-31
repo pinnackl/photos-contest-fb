@@ -30,12 +30,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
-    // Listen for template bound event to know when bindings
-    // have resolved and content has been stamped to the page
-    app.addEventListener('dom-change', function() {
-      console.log('Our app is ready to rock!');
-      app.set('storageName', "app-admin-storage");
-    });
+  // Listen for template bound event to know when bindings
+  // have resolved and content has been stamped to the page
+  app.addEventListener('dom-change', function() {
+    console.log('Our app is ready to rock!');
+    app.set('storageName', "app-admin-storage");
+  });
 
   // See https://github.com/Polymer/polymer/issues/1381
   window.addEventListener('WebComponentsReady', function() {
@@ -74,6 +74,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   window.addEventListener('fb-role-login-success', function () {
     app.route = 'home';
+    if (app.route == 'home') {
+      // FIXME : Cet is from the config
+      app.$.data.userLocation = "https://blinding-inferno-401.firebaseio.com/options/contests";
+    }
   });
 
   window.addEventListener('fb-not-connected', function () {
