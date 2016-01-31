@@ -75,8 +75,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   window.addEventListener('fb-role-login-success', function () {
     app.route = 'home';
     if (app.route == 'home') {
-      // FIXME : Cet is from the config
-      app.$.data.userLocation = "https://blinding-inferno-401.firebaseio.com/options/contests";
+      app.$.data.userLocation = [app.$.data.location, 'options', 'contests'].join('/');
     }
   });
 
