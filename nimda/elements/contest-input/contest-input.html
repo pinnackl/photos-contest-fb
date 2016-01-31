@@ -78,12 +78,12 @@
 			_add: function () {
 				var datestart 	= this.dateStart.getTime();
 				var dateend 	= this.dateEnd.getTime();
-				// this.push('data', {
-				// 	name: this.$.ctstName.value,
-				// 	start: datestart,
-				// 	end: dateend,
-				// 	isactive: true
-				// });
+				this.push('data', {
+					name: this.$.ctstName.value,
+					start: datestart,
+					end: dateend,
+					isactive: true
+				});
 			},
 			_switchToEnd: function (e) {
 				this.$.datePickerStart.close();
@@ -94,11 +94,6 @@
 				this.$.datePickerStart.open();
 			},
 			_closePicker: function (e) {
-				// console.log("Name: " + this.contestName);
-				// console.log("Start: " + this.dateStart);
-				// console.log("End:" + this.dateEnd);
-				// console.log(this.data);
-
 				var ctstName = this.$.ctstName.value;
 				var dStart 	 = new Date(this.dateStart);
 				var dEnd 	 = new Date(this.dateEnd);
@@ -121,11 +116,34 @@
 				}
 				
 				for (var i = 0; i < this.data.length; i++) {
-					// FIXME : Chack for contest data dates
-					// if (this.data[i].isactive && ())
+					if (
+							this.data[i].isactive
+							&&
+							(
+								(
+									dStart >= this.data[i].start && dStart <= this.data[i].end
+								)
+								||
+								(
+									dEnd >= this.data[i].start && dEnd <= this.data[i].end
+								)
+								||
+								(
+									this.data[i].start >= dStart && this.data[i].start <= dEnd
+								)
+								||
+								(
+									this.data[i].end >= dStart && this.data[i].end <= dEnd
+								)
+							)
+						) {
+						this.$.message.text = "The dates provided enter in conflict with another contest ! Name: " + this.data[i].name;
+						this.$.message.open();
+						return false;
+					}
 				};
 
-				// this._add();
+				this._add();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {
