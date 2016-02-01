@@ -25,6 +25,17 @@
 				-
 				<span>End : <strong>[[dateEndTxt]]</strong></span>
 			</div>
+			<div class="registration-period">
+				<paper-dropdown-menu id="registration" label="Registration period :">
+					<paper-menu class="dropdown-content">
+						<paper-listbox selected="{{registration}}">
+					    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
+					    		<paper-item>[[day]]</paper-item>
+							</template>
+						</paper-listbox>
+					</paper-menu>
+				</paper-dropdown-menu>
+			</div>
 			<paper-date-picker date="{{dateStart}}"></paper-date-picker>
 			<div class="buttons">
 				<paper-button dialog-dismiss>Cancel</paper-button>
@@ -44,6 +55,17 @@
 				<span>Start : <strong>[[dateStartTxt]]</strong></span>
 				-
 				<span>End : <strong>[[dateEndTxt]]</strong></span>
+			</div>
+			<div class="registration-period">
+				<paper-dropdown-menu label="Registration period :" selected="0">
+					<paper-menu class="dropdown-content">
+						<paper-listbox selected="{{registration}}">
+					    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
+					    		<paper-item>[[day]]</paper-item>
+							</template>
+						</paper-listbox>
+					</paper-menu>
+				</paper-dropdown-menu>
 			</div>
 			<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
 			<div class="buttons">
@@ -82,24 +104,44 @@
 			_upadteStringStart: function (e) {
 				var d = new Date(this.dateStart);
 				this.set('dateStartTxt', d.toLocaleDateString());
+				this._getDuration();
 			},
 			_upadteStringEnd: function (e) {
 				var d = new Date(this.dateEnd);
 				this.set('dateEndTxt', d.toLocaleDateString());
+				this._getDuration();
 			},
 			open: function () {
 				this.$.datePickerStart.open();
 				this.dateStart 	= new Date();
 				this.dateEnd 	= new Date();
+				this._getDuration();
+			},
+			_getDuration: function () {
+				// FIXME : Default behaviour on date init (are the same)
+				var start 	= new Date(this.dateStart);
+				var end 	= new Date(this.dateEnd);
+				var timeDiff = Math.abs(end - start);
+				var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+				this.duration = [];
+				for (var i = 1; i <= diffDays; i++) {
+					this.push('duration', i);
+				};
+				// Init the registration field be default
+				if (this.duration.length === 0) {
+					this.duration = [1];
+				}
 			},
 			_add: function () {
 				var datestart 	= this.dateStart.getTime();
 				var dateend 	= this.dateEnd.getTime();
+				console.log(this.$.registration.value);
 				this.push('data', {
 					name: this.$.ctstName.value,
 					start: datestart,
 					end: dateend,
-					isactive: true
+					isactive: true,
+					registration: this.$.registration.value
 				});
 			},
 			_switchToEnd: function (e) {
@@ -112,6 +154,7 @@
 			},
 			_closePicker: function (e) {
 				var ctstName = this.$.ctstName.value;
+				var ctstReg	 = this.$.registration.value;
 				var dStart 	 = new Date(this.dateStart);
 				var dEnd 	 = new Date(this.dateEnd);
 					dStart 	 = dStart.getTime();
@@ -159,6 +202,12 @@
 						return false;
 					}
 				};
+
+				if (!ctstReg) {
+					this.$.message.text = "Please fill the contest registration period input";
+					this.$.message.open();
+					return false;
+				}
 
 				this._add();
 
