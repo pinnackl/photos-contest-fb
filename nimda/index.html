@@ -62,7 +62,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved class="fullbleed layout vertical">
     <span id="browser-sync-binding"></span>
     <template is="dom-bind" id="app">
-        <fb-api loaded="{{isLoaded}}"></fb-api>
+        <fb-api loaded="{{isLoaded}}" storage-label="[[storageName]]"></fb-api>
+        <contest-data   id="data"
+                        fire-user="{{user}}"
+                        ref="{{ref}}"
+                        data="{{data}}"
+                        on-data-changed="plop">
+        </contest-data>
         <paper-drawer-panel id="paperDrawerPanel">
             <!-- Drawer Scroll Header Panel -->
             <paper-header-panel drawer>
@@ -80,9 +86,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <!-- Drawer Content -->
                 <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
                     <!-- Default home menu to login page if no connected -->
-                    <a id="defaultPage" data-route="home" href="{{baseUrl}}login" hidden>
+                    <a id="defaultPage" data-route="login" href="{{baseUrl}}login" hidden>
                         <iron-icon icon="home"></iron-icon>
-                        <span>Home</span>
+                        <span>Contest</span>
                     </a>
                     <template is="dom-if" if={{resp}}>
                         <a data-route="home" href="{{baseUrl}}">
@@ -109,7 +115,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <!-- Main Toolbar -->
                 <paper-toolbar id="mainToolbar" class="">
                     <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-                    <h1 class="page-name">[[route]]</h1>
+                    <div class="title">
+                        <h1 class="page-name">[[route]]</h1>
+                    </div>
+                    <paper-icon-button id="exit-button" icon="exit-to-app" on-tap="appLogout"></paper-icon-button>
+                    <paper-tooltip for="exit-button" position="left">Logout from this application</paper-tooltip>
                 </paper-toolbar>
 
                 <!-- Main Content -->
@@ -124,13 +134,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 response="{{resp}}"
                                 fire-user="{{user}}"
                                 ref="{{ref}}"
+                                storage-label="[[storageName]]"
+                                role="administrators"
                                 on-fb-login-success="loginSuccess"
                                 on-fb-login-canceled="loginCancel">
                             </fb-login>
                         </section>
                         <template is="dom-if" if={{resp}}>
                             <section data-route="home">
-                                <!-- <admin-contest api-loaded="{{isLoaded}}"></admin-contest> -->
+                                <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
                             </section>
                             <section data-route="users">
                             Hello world ! users
@@ -139,6 +151,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             Hello world ! contact
                             </section>
                         </template>
+                        <section data-route="no-right">
+                            <h1>You have no rights in this section</h1>
+                        </section>
                     </iron-pages>
                 </div>
             </paper-header-panel>

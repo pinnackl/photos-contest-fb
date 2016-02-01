@@ -13,7 +13,7 @@
 		 	url="../../config/config.json"
 		 	handle-as="json"
 		 	on-response="handleResponse"></iron-ajax>
-		<iron-localstorage id="ls" name="app-storage" value="{{config}}" on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
+		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{config}}" auto-save-disabled on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 	</template>
 	<script>
 		Polymer({
@@ -23,6 +23,10 @@
 					type: Object,
 					notify: true
 				},
+				storageLabel: {
+					value: "app-storage",
+					type: String
+				},
 				loaded: {
 					type: String,
 					value: 'false',
@@ -31,10 +35,24 @@
 			},
 			handleResponse: function (e) {
 				var fbApi = this;
+				var appId, firebase, access_token, appToken;
 				fbApi.$.ls.reload();
-				var tmp = Object.assign(fbApi.config, e.detail.response);
+
+				appId 			= e.detail.response.appId;
+				firebase 		= e.detail.response.firebase;
+				access_token 	= e.detail.response.access_token;
+				appToken 		= e.detail.response.appToken;
+
 				fbApi.set('config', {});
-				fbApi.set('config', tmp);
+				fbApi.set('config', {
+					appId: appId,
+					firebase: firebase,
+					access_token: access_token,
+					appToken: appToken
+				});
+
+				fbApi.$.ls.autoSaveDisabled = false;
+				fbApi.$.ls.save();
 
 				window.fbAsyncInit = function() {
 					FB.init({
@@ -58,7 +76,7 @@
 			ready: function (argument) {
 			},
 			_initLocalStorage: function () {
-				this.storage = {};
+				this.set('config', {});
 			}
 
 		});

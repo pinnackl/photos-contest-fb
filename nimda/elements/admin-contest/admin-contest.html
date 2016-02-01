@@ -4,8 +4,22 @@
 			:host {
 				display: block;
 			}
+			
+			paper-material {
+				padding: 16px 35px;
+			}
+
+			.contest-input-container {
+				padding-left: 2em;
+			}
 		</style>
-		<h1>Admin contest</h1>
+		<h1>Contest console</h1>
+		<div class="contest-input-container">
+			<contest-input id="contestInput" data="{{data}}"></contest-input>
+		</div>
+		<template is="dom-repeat" items={{data}} as=contest index-as=index>
+			<contest-item data="{{contest}}"></contest-item>				
+		</template>
 	</template>
 	<script>
 		Polymer({
@@ -16,12 +30,19 @@
 					value: 'false',
 					notify: true,
 					observer: '_apiLoaded'
-				}
+				},
+				data: {
+					observer: 'dataChanged',
+					notify: true
+				},
+				dates:  Object
 			},
 			_apiLoaded: function (n) {
-				if (n === 'true') {
-
-				}
+			},
+			dataChanged: function (data) {
+			},
+			_triggerPicker: function (e) {
+				this.$.contestInput.open();
 			}
 		});
 	</script>

@@ -46,6 +46,9 @@
     "page": "visionmedia/page.js#~1.6.4",
     "file-upload": "~1.6.3",
     "paper-date-picker": "polymer-paper-date-picker#~1.1.2",
-    "neon-animation": "PolymerElements/neon-animation#~1.0.9"
+    "neon-animation": "PolymerElements/neon-animation#~1.0.9",
+    "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.1",
+    "paper-input": "PolymerElements/paper-input#~1.1.5",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.14"
   }
 }

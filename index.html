@@ -15,8 +15,9 @@
 			When the API is ready the property "loaded" is changed to "true".
 			Then, the contest-view property "api-loaded" which is binded to the fb-api is changed too.
 		 -->
-		<fb-api loaded="{{isLoaded}}"></fb-api>
+		<fb-api loaded="{{isLoaded}}" storage-label="{{storageName}}"></fb-api>
 		<contest-view api-loaded="{{isLoaded}}"
+					  storage-label="[[storageName]]"
 					  base-url="{{baseUrl}}"
 					  route="{{route}}"></contest-view>
 	</template>

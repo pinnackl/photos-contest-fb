@@ -19,6 +19,11 @@
 				font-weight:		var(--fb-login-fw, bold);				
 			}
 
+			:host[disabled] paper-button {
+				background-color: 	var(--fb-login-bg-color, #FFFFFF);
+				color: 				var(--fb-login-color, #3B579D);
+			}
+
 			paper-button {
 				/*Mixin to define custom theme*/
 				@apply(--fb-login-theme);
@@ -29,11 +34,10 @@
 			    --iron-icon-width: 32px;
 			}
 		</style>
-		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"
-			on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
+		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"
+			auto-save-disabled on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
 		<firebase-auth id="auth"
 					   location="[[_location]]"
-					   on-location-changed="plop"
 					   provider="facebook"
 					   user="{{fireUser}}"
 					   ref="{{ref}}">
@@ -55,10 +59,24 @@
 					value: false,
 					reflectToAttribute: true
 				},
+				storageLabel: {
+					type: String,
+					value: "app-storage"
+				},
+				role: {
+					value: false
+				},
 				apiLoaded: {
 					type: Boolean,
 					value: false,
 					observer: '_apiObserver'
+				},
+				disabled: {
+					type: Boolean,
+					value: false,
+					notify: true,
+					reflectToAttribute: true,
+					observer: '_disabledChaned'
 				},
 				// Graph API URL to call to get data
 				graphUrl: {
@@ -88,6 +106,11 @@
 					notify: true
 				}
 			},
+			_disabledChaned: function (e) {
+				if (this.disabled) {
+					this.$.loginButton.disabled = true;
+				}
+			},
 			checkLoginStatus: function () {
 				var fbLogin = this;
 				FB.getLoginStatus(function(response) {
@@ -103,9 +126,9 @@
 					} else {
 						console.info('Facebook account not connected !');
 						// Cleanup localstorage access_token
-						if (fbLogin.storage.access_token) {
-							fbLogin._setAccessToken("");
-						}
+						// if (fbLogin.storage.access_token) {
+						// 	fbLogin._setAccessToken("");
+						// }
 
 						fbLogin.$.auth.addEventListener('login', function (e) {
 							console.info('Login success into Firebase');
@@ -131,7 +154,8 @@
 				if (n) {
 					console.info('Fb API is ready !');
 
-					fbLogin.$.ls.reload()
+					fbLogin.$.ls.reload();
+					// console.log(fbLogin.storage);
 					fbLogin._location = fbLogin.storage.firebase;
 
 					console.info('Firebase connection established !');
@@ -154,37 +178,61 @@
 
 					var access_token = param.user.facebook.accessToken;
 
-					fbLogin._setAccessToken(access_token);
+					fbLogin.set("access_token", access_token);
 
-					FB.api(
-						'/' + fbLogin.graphUrl,
-						{access_token: access_token},
-						function(data) {
-							fbLogin.response 	= data;
-							fbLogin.style.display = 'none';
+					if (fbLogin.role) {
+						fbLogin._granted = false;
+						// FIXME : secure app token generated from server side service
+						FB.api(
+						    "/app/roles",
+						    {access_token: fbLogin.storage.appToken},
+						    function (response) {
+						      if (response && !response.error) {
+						        	for (var i = 0; i < response.data.length; i++) {
+						        		if (response.data[i].role === fbLogin.role) {
+						        			fbLogin._granted = true;
+						        		}
+						        	};
+						        	if (fbLogin._granted) {
+						        		fbLogin._getUserData(function (response) {
+											if (response && !response.error) {
+												var data = fbLogin.response;
+													data['picture'] = response;
+												fbLogin.response = {};
+												fbLogin.response = data;
 
-							// Get the user picture and update the data object
-							FB.api(
-								"/me/picture",
-								{access_token: access_token},
-								function (response) {
-									if (response && !response.error) {
-										var data = fbLogin.response;
-											data['picture'] = response;
-										fbLogin.response = {};
-										fbLogin.response = data;
-										console.info('Login success into Facebook');
-										fbLogin.fire('fb-login-success', param);
-									}
-								}
-							);
-					});
+												console.info('Login success into Facebook');
+												fbLogin.fire('fb-role-login-success', param);
+											}
+						        		});
+						        	} else {
+						        		fbLogin.fire('fb-login-aborded', param);
+						        	}
+						      } else {
+						      	console.error(response.error.message);
+						      	console.warn("As app access token is normaly created from app ID and app secret, your should never generate this token in client-side code");
+						      }
+						    }
+						);
+					} else {
+						fbLogin._getUserData(function (response) {
+							if (response && !response.error) {
+								var data = fbLogin.response;
+									data['picture'] = response;
+								fbLogin.response = {};
+								fbLogin.response = data;
+
+								console.info('Login success into Facebook');
+								fbLogin.fire('fb-login-success', param);
+							}
+						});
+					}
 				} else {
 					fbLogin.fire('fb-login-canceled', param);
 				}
 			},
 			_initLocalStorage: function () {
-				this.storage = {};
+				// this.storage = {};
 			},
 			_fireUserchanded: function (fireUser) {
 				if (fireUser) {
@@ -196,6 +244,25 @@
 				var tmp = Object.assign(this.storage, _at);
 				this.set('storage', {});
 				this.set('storage', tmp);
+			},
+			_getUserData: function (callback) {
+				var fbLogin = this;
+				FB.api(
+					'/' + fbLogin.graphUrl,
+					{access_token: fbLogin.storage.access_token},
+					function(data) {
+						fbLogin.response 	= data;
+						fbLogin.style.display = 'none';
+
+						// Get the user picture and update the data object
+						FB.api(
+							"/me/picture",
+							{access_token: fbLogin.storage.access_token},
+							function (response) {
+								callback(response);
+							}
+						);
+				});
 			}
 		});
 	</script>

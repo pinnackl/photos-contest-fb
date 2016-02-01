@@ -1,13 +1,16 @@
 {
-    "rules": {
-      ".read": true,      
-      "users": {
-      	"$uid" : {
-          ".write": "auth.uid === $uid"
-      	}
-      },
-    	"photos": {
-          ".write": true
-    	}
+  "rules": {
+    ".read": true,      
+    "users": {
+      "$uid" : {
+        ".write": "auth.uid === $uid"
+      }
+    },
+    "options": {
+      ".write": true
+    },
+    "photos": {
+      ".write": true
     }
+  }
 }

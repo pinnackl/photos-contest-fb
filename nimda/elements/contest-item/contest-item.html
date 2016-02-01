@@ -1,0 +1,210 @@
+<dom-module id="contest-item">
+	<template>
+		<style>
+			:host {
+				display: block;
+				margin-bottom: 1em;
+			}
+			paper-dialog {
+				--paper-dialog-background-color: white;
+			}
+			paper-card {
+				width: 100%;
+			}
+			.shift-left {
+				float: left;
+				text-align: left;
+			}
+			.shift-right {
+				float: right;
+				text-align: right;
+			}
+			.on-going {
+				font-weight: bold;
+				color: green;
+			}
+		</style>
+		<paper-card elevation="1">
+			<div class="card-content">
+				<div class="input-edit">
+					<paper-input label="Contest Name :" value="[[data.name]]" readonly></paper-input>
+				</div>
+				<div>
+					<span>						
+						<iron-icon icon="today"></iron-icon>
+						[[dateStartTxt]]
+					</span>
+					-
+					<span>
+						<iron-icon icon="today"></iron-icon>
+						[[dateEndTxt]]
+					</span>
+					<template is="dom-if" if={{onGoing}}>
+						<span class="on-going">
+							<iron-icon icon="alarm-on"></iron-icon>
+							On Going.
+						</span>
+					</template>
+				</div>
+		  	</div>
+			<div class="card-actions">
+				<paper-button on-tap="open">Edit</paper-button>
+		  	</div>
+		</paper-card>
+		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
+			<h2>Edit contest - Start date :</h2>
+			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+			<div>
+				<span class="shift-left">
+					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+				</span>
+				<span class="shift-right">
+					<paper-toggle-button id="enableToggle" checked="{{isActive}}">Enable</paper-toggle-button>
+				</span>
+			</div>
+			<paper-date-picker date="{{start}}"></paper-date-picker>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button on-tap="_closePicker">
+					<iron-icon icon="check"></iron-icon>
+				</paper-button>
+				<paper-button on-tap="_switchToEnd">
+					<span>Next</span>
+					<iron-icon icon="arrow-forward"></iron-icon>
+				</paper-button>
+			</div>
+		</paper-dialog>
+		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
+			<h2>Edit contest - End date :</h2>
+			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+			<div>
+				<span class="shift-left">
+					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+				</span>
+				<span class="shift-right">
+					<paper-toggle-button checked="{{isActive}}">Enable</paper-toggle-button>
+				</span>
+			</div>
+			<paper-date-picker date="{{end}}"></paper-date-picker>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button on-tap="_closePicker">
+					<iron-icon icon="check"></iron-icon>
+				</paper-button>
+				<paper-button on-tap="_switchToStart">
+					<iron-icon icon="arrow-back"></iron-icon>
+					<span>Previous</span>
+				</paper-button>
+			</div>
+		</paper-dialog>
+		<paper-toast id="message" text=""></paper-toast>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-item',
+			properties: {
+				data: {
+					observer: '_dataChanged'
+				}
+			},
+			_dataChanged: function (data) {
+				if (data.name) {
+					this.start 	= new Date(data.start);
+					this.end 	= new Date(data.end);
+					this.set('dateStartTxt', this.start.toLocaleDateString());
+					this.set('dateEndTxt', this.end.toLocaleDateString());
+					this.set('contestName', data.name);
+					this.set('isActive', data.isactive);
+					this._isOnGoing();
+				}
+			},
+			_isOnGoing: function (e) {
+				var currentDate = new Date();
+					currentDate.setHours(0,0,0,0);
+					currentDate = currentDate.getTime();
+				if (this.data.isactive && (currentDate >= this.data.start && currentDate <= this.data.end)) {
+					this.onGoing = true;
+				}
+			},
+			open: function () {
+				this.$.datePickerStart.open();
+				this.dateStart 	= new Date();
+				this.dateEnd 	= new Date();
+			},
+			_switchToEnd: function (e) {
+				this.$.datePickerStart.close();
+				this.$.datePickerEnd.open();
+			},
+			_switchToStart: function (e) {
+				this.$.datePickerEnd.close();
+				this.$.datePickerStart.open();
+			},
+			_save: function () {
+				var datestart 	= this.start.getTime();
+				var dateend 	= this.end.getTime();
+
+				this.set('data.name', this.$.ctstName.value);
+				this.set('data.start', datestart);
+				this.set('data.end', dateend);
+				this.set('data.isactive', this.isActive);
+			},
+			_closePicker: function (e) {
+				var ctstName = this.$.ctstName.value;
+				var dStart 	 = new Date(this.start);
+				var dEnd 	 = new Date(this.end);
+					dStart 	 = dStart.getTime();
+					dEnd 	 = dEnd.getTime();
+
+				if (!ctstName) {
+					this.$.message.text = "Please fill the contest name input";
+					this.$.message.open();
+					return false;
+				}
+				if (dEnd < dStart) {
+					this.$.message.text = "The end date must be supperior to the start date !";
+					this.$.message.open();
+					return false;
+				} else if (dEnd == dStart) {
+					this.$.message.text = "The dates can not be the same !";
+					this.$.message.open();
+					return false;
+				}
+				
+				for (var i = 0; i < this.data.length; i++) {
+					if (
+							this.data[i].isactive
+							&&
+							(
+								(
+									dStart >= this.data[i].start && dStart <= this.data[i].end
+								)
+								||
+								(
+									dEnd >= this.data[i].start && dEnd <= this.data[i].end
+								)
+								||
+								(
+									this.data[i].start >= dStart && this.data[i].start <= dEnd
+								)
+								||
+								(
+									this.data[i].end >= dStart && this.data[i].end <= dEnd
+								)
+							)
+						) {
+						this.$.message.text = "The dates provided enter in conflict with another contest ! Name: " + this.data[i].name;
+						this.$.message.open();
+						return false;
+					}
+				};
+
+				this._save();
+
+				var dialogs = this.querySelectorAll('paper-dialog');
+				for (var i = 0; i < dialogs.length; i++) {
+					dialogs[i].close();
+				};
+			}
+		});
+	</script>
+</dom-module>
