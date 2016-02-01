@@ -1,4 +1,4 @@
-<dom-module id="contest-input">
+<dom-module id="contest-item">
 	<template>
 		<style>
 			:host {
@@ -8,25 +8,51 @@
 			paper-dialog {
 				--paper-dialog-background-color: white;
 			}
-			.input-create paper-input {
-				display: inline-block;
-				width: 80%;
+			paper-card {
+				width: 100%;
+			}
+			.shift-left {
+				float: left;
+				text-align: left;
+			}
+			.shift-right {
+				float: right;
+				text-align: right;
 			}
 		</style>
-		<div class="input-create">
-			<paper-input label="Create a new contest :" value="{{contestName}}"></paper-input>
-			<paper-button id="btnCreate" on-tap="open" raised>Create</paper-button>
-			<paper-tooltip for="exit-button" position="left">Fill the input to create a new contest !</paper-tooltip>
-		</div>
+		<paper-card elevation="1">
+			<div class="card-content">
+				<div class="input-edit">
+					<paper-input label="Contest Name :" value="[[data.name]]" readonly></paper-input>
+				</div>
+				<div>
+					<span>						
+						<iron-icon icon="today"></iron-icon>
+						[[dateStartTxt]]
+					</span>
+					-
+					<span>
+						<iron-icon icon="today"></iron-icon>
+						[[dateEndTxt]]
+					</span>
+				</div>
+		  	</div>
+			<div class="card-actions">
+				<paper-button on-tap="open">Edit</paper-button>
+		  	</div>
+		</paper-card>
 		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
-			<h2>New contest - Start date :</h2>
+			<h2>Edit contest - Start date :</h2>
 			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span>Start : <strong>[[dateStartTxt]]</strong></span>
-				-
-				<span>End : <strong>[[dateEndTxt]]</strong></span>
+				<span class="shift-left">
+					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+				</span>
+				<span class="shift-right">
+					<paper-toggle-button id="enableToggle" checked="{{isActive}}">Enable</paper-toggle-button>
+				</span>
 			</div>
-			<paper-date-picker date="{{dateStart}}"></paper-date-picker>
+			<paper-date-picker date="{{start}}"></paper-date-picker>
 			<div class="buttons">
 				<paper-button dialog-dismiss>Cancel</paper-button>
 				<paper-button on-tap="_closePicker">
@@ -39,14 +65,17 @@
 			</div>
 		</paper-dialog>
 		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
-			<h2>New contest - End date :</h2>
+			<h2>Edit contest - End date :</h2>
 			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span>Start : <strong>[[dateStartTxt]]</strong></span>
-				-
-				<span>End : <strong>[[dateEndTxt]]</strong></span>
+				<span class="shift-left">
+					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+				</span>
+				<span class="shift-right">
+					<paper-toggle-button checked="{{isActive}}">Enable</paper-toggle-button>
+				</span>
 			</div>
-			<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
+			<paper-date-picker date="{{end}}"></paper-date-picker>
 			<div class="buttons">
 				<paper-button dialog-dismiss>Cancel</paper-button>
 				<paper-button on-tap="_closePicker">
@@ -62,46 +91,26 @@
 	</template>
 	<script>
 		Polymer({
-			is: 'contest-input',
+			is: 'contest-item',
 			properties: {
-				contestName: {
-					observer: '_enableCreate'
-				},
-				dateStart: {
-					observer: '_upadteStringStart'
-				},
-				dateEnd: {
-					observer: '_upadteStringEnd'
+				data: {
+					observer: '_dataChanged'
 				}
 			},
-			_enableCreate: function (text) {
-				this.$.btnCreate.disabled = false;
-				if (!text) {
-					this.$.btnCreate.disabled = true;
+			_dataChanged: function (data) {
+				if (data.name) {
+					this.start 	= new Date(data.start);
+					this.end 	= new Date(data.end);
+					this.set('dateStartTxt', this.start.toLocaleDateString());
+					this.set('dateEndTxt', this.end.toLocaleDateString());
+					this.set('contestName', data.name);
+					this.set('isActive', data.isactive);
 				}
-			},
-			_upadteStringStart: function (e) {
-				var d = new Date(this.dateStart);
-				this.set('dateStartTxt', d.toLocaleDateString());
-			},
-			_upadteStringEnd: function (e) {
-				var d = new Date(this.dateEnd);
-				this.set('dateEndTxt', d.toLocaleDateString());
 			},
 			open: function () {
 				this.$.datePickerStart.open();
 				this.dateStart 	= new Date();
 				this.dateEnd 	= new Date();
-			},
-			_add: function () {
-				var datestart 	= this.dateStart.getTime();
-				var dateend 	= this.dateEnd.getTime();
-				this.push('data', {
-					name: this.$.ctstName.value,
-					start: datestart,
-					end: dateend,
-					isactive: true
-				});
 			},
 			_switchToEnd: function (e) {
 				this.$.datePickerStart.close();
@@ -111,10 +120,19 @@
 				this.$.datePickerEnd.close();
 				this.$.datePickerStart.open();
 			},
+			_save: function () {
+				var datestart 	= this.start.getTime();
+				var dateend 	= this.end.getTime();
+
+				this.set('data.name', this.$.ctstName.value);
+				this.set('data.start', datestart);
+				this.set('data.end', dateend);
+				this.set('data.isactive', this.isActive);
+			},
 			_closePicker: function (e) {
 				var ctstName = this.$.ctstName.value;
-				var dStart 	 = new Date(this.dateStart);
-				var dEnd 	 = new Date(this.dateEnd);
+				var dStart 	 = new Date(this.start);
+				var dEnd 	 = new Date(this.end);
 					dStart 	 = dStart.getTime();
 					dEnd 	 = dEnd.getTime();
 
@@ -161,13 +179,12 @@
 					}
 				};
 
-				this._add();
+				this._save();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {
 					dialogs[i].close();
 				};
-				this.$.ctstName.value = "";
 			}
 		});
 	</script>
