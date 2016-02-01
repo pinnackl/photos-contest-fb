@@ -19,6 +19,10 @@
 				float: right;
 				text-align: right;
 			}
+			.on-going {
+				font-weight: bold;
+				color: green;
+			}
 		</style>
 		<paper-card elevation="1">
 			<div class="card-content">
@@ -35,6 +39,12 @@
 						<iron-icon icon="today"></iron-icon>
 						[[dateEndTxt]]
 					</span>
+					<template is="dom-if" if={{onGoing}}>
+						<span class="on-going">
+							<iron-icon icon="alarm-on"></iron-icon>
+							On Going.
+						</span>
+					</template>
 				</div>
 		  	</div>
 			<div class="card-actions">
@@ -105,6 +115,15 @@
 					this.set('dateEndTxt', this.end.toLocaleDateString());
 					this.set('contestName', data.name);
 					this.set('isActive', data.isactive);
+					this._isOnGoing();
+				}
+			},
+			_isOnGoing: function (e) {
+				var currentDate = new Date();
+					currentDate.setHours(0,0,0,0);
+					currentDate = currentDate.getTime();
+				if (this.data.isactive && (currentDate >= this.data.start && currentDate <= this.data.end)) {
+					this.onGoing = true;
 				}
 			},
 			open: function () {
