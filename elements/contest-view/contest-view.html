@@ -222,6 +222,14 @@
 					font-size: 24px!important;
 				}
 			}
+
+			.profile-picture {
+				border-radius: 100%;
+			}
+
+			.fullName{
+
+			}
 		</style>
 
 		<!-- don't put the last slash -->
@@ -245,6 +253,11 @@
 					<a data-route="user" href="{{baseUrl}}user">
 						<iron-icon icon="info"></iron-icon>
 						<span>Users</span>
+					</a>
+
+					<a data-route="participants" href="{{baseUrl}}participants">
+						<iron-icon icon="info"></iron-icon>
+						<span>Participants</span>
 					</a>
 				</paper-menu>
 			</paper-header-panel>
@@ -277,6 +290,22 @@
 						<section data-route="user">
 							Hello user !
 						</section>
+						<section data-route="participants">
+							<firebase-collection
+           					  location="https://pinnackl-contest.firebaseio.com/participants"
+           					  data="{{participants}}"
+           					  on-firebase-value="test"></firebase-collection>
+
+           					<!-- <neon-animated-pages attr-for-selected="data-route" selected="{{route}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation"> -->
+           						<template is="dom-repeat" items="[[participants]]" as="participant">
+           							<div class="participant">
+           								<img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]">
+           								<p class="fullName">[[participant.name]]</p>
+           								{{location}}
+           							<div>
+        						</template>
+        					<!-- </neon-animated-pages> -->
+						</section>
 					</iron-pages>
 				</div>
 			</paper-header-panel>
@@ -308,6 +337,9 @@
 				},
 				data: {
 					type: Array
+				},
+				participants: {
+
 				}
 			},
 			// Property "apiLoaded" observer
@@ -319,21 +351,27 @@
 			},
 			loginSuccess: function (e, detail) {
 				var isRegistered = false;
-				for(var i = 0; i < this.data.length; i++){
-					if(this.data[i].hasOwnProperty("email")){
-						if(this.data[i].email === detail.user.facebook.email){
-							isRegistered = true;
+				if(this.data != undefined){
+					for(var i = 0; i < this.data.length; i++){
+						if(this.data[i].hasOwnProperty("email")){
+							if(this.data[i].email === detail.user.facebook.email){
+								isRegistered = true;
+							}
 						}
 					}
-				}
-				if(!isRegistered){
-					var userSubscription = this;
-					userSubscription.push('data', {email: detail.user.facebook.email, role: "participant"}); // get role dynamically 
+					if(!isRegistered){
+						var userSubscription = this;
+						userSubscription.push('data', {email: detail.user.facebook.email, role: "participant"});
+						userSubscription.push('participants', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id});
+						 // get role dynamically 
+					}
 				}		
 			},
 			loginCancel: function () {
 				this.$.message.open();
 			},
+ 			test : function(){
+ 			}
 		});
 	</script>
 </dom-module>
