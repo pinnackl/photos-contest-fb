@@ -32,7 +32,7 @@
     "paper-radio-button": "PolymerElements/paper-radio-button#~1.0.12",
     "iron-image": "PolymerElements/iron-image#~1.0.4",
     "iron-localstorage": "PolymerElements/iron-localstorage#~1.0.5",
-    "paper-material": "PolymerElements/paper-material#^1.0.0",
+    "paper-material": "PolymerElements/paper-material#~1.0.6",
     "paper-card": "PolymerElements/paper-card#~1.0.8",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
     "iron-icons": "PolymerElements/iron-icons#^1.0.0",
@@ -49,6 +49,7 @@
     "neon-animation": "PolymerElements/neon-animation#~1.0.9",
     "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.1",
     "paper-input": "PolymerElements/paper-input#~1.1.5",
-    "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.14"
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.14",
+    "paper-fab": "PolymerElements/paper-fab#~1.1.2"
   }
 }

@@ -35,6 +35,20 @@
 		}
 	});
 
+	//document.addEventListener('changePage',function(data){
+	//  document.querySelector("neon-animated-pages").selected = (data.detail == "showcase") ? "showcase" : "finished";
+	//})
+	
+	document.addEventListener('updateShowcase',function(data){
+		console.log(data);
+	  document.querySelector('participant-showcase').participant = data.detail;
+	})
+
+	document.addEventListener('changePage',function(data){
+		console.log(data.detail);
+	  document.querySelector("neon-animated-pages").selected = (data.detail == "participantShowcase") ? "participantShowcase" : "participantProfile";
+	})
+
 	// Scroll page to top and expand header
 	// app.scrollPageToTop = function() {
 	// 	// FIXME : Need to scroll top on page change

@@ -292,20 +292,10 @@
 							Hello user !
 						</section>
 						<section data-route="participants">
-							<firebase-collection
-           					  location="https://pinnackl-contest.firebaseio.com/participants"
-           					  data="{{participants}}"
-           					  on-firebase-value="test"></firebase-collection>
-
-           					<!-- <neon-animated-pages attr-for-selected="data-route" selected="{{route}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation"> -->
-           						<template is="dom-repeat" items="[[participants]]" as="participant">
-           							<div class="participant">
-           								<img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]">
-           								<p class="fullName">[[participant.name]]</p>
-           								{{location}}
-           							<div>
-        						</template>
-        					<!-- </neon-animated-pages> -->
+							<neon-animated-pages attr-for-selected="id" selected="participantProfile">
+								<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
+								<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]"></participant-profile>
+							</neon-animated-pages>
 						</section>
 					</iron-pages>
 				</div>
@@ -339,8 +329,6 @@
 				data: {
 					type: Array
 				},
-				participants: {
-				},
 				storageLabel: {
 					type: String
 				}
@@ -353,6 +341,7 @@
 				}
 			},
 			loginSuccess: function (e, detail) {
+				console.log(detail.user.facebook);
 				var isRegistered = false;
 				if(this.data != undefined){
 					for(var i = 0; i < this.data.length; i++){
@@ -363,8 +352,9 @@
 						}
 					}
 					if(!isRegistered){
+						console.log('test');
 						var userSubscription = this;
-						userSubscription.push('data', {email: detail.user.facebook.email, role: "participant"});
+						userSubscription.push('data', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id, role: "participant"});
 						userSubscription.push('participants', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id});
 						 // get role dynamically 
 					}
@@ -372,9 +362,7 @@
 			},
 			loginCancel: function () {
 				this.$.message.open();
-			},
- 			test : function(){
- 			}
+			}
 		});
 	</script>
 </dom-module>
