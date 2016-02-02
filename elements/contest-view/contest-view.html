@@ -341,7 +341,6 @@
 				}
 			},
 			loginSuccess: function (e, detail) {
-				console.log(detail.user.facebook);
 				var isRegistered = false;
 				if(this.data != undefined){
 					for(var i = 0; i < this.data.length; i++){
@@ -352,7 +351,6 @@
 						}
 					}
 					if(!isRegistered){
-						console.log('test');
 						var userSubscription = this;
 						userSubscription.push('data', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id, role: "participant"});
 						userSubscription.push('participants', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id});
