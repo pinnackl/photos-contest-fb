@@ -301,14 +301,13 @@
 								<register-contest storageLabel="{{storageLabel}}"></register-contest>
 							</section>
 							<section data-route="participants">
-							<firebase-collection
-            					location="https://pinnackl-contest.firebaseio.com/participants"
-            					data="{{participants}}"
-            					on-firebase-value="_firebaseLoaded"></firebase-collection>
-							<neon-animated-pages attr-for-selected="id" selected="participantProfile">
-								<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
-								<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]"></participant-profile>
-							</neon-animated-pages>
+								<firebase-collection
+            						location="https://pinnackl-contest.firebaseio.com/participants"
+            						data="{{participants}}"></firebase-collection>
+								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
+									<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
+									<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]"></participant-profile>
+								</neon-animated-pages>
 							</section>
 						</template>
 					</iron-pages>

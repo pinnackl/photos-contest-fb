@@ -66,9 +66,9 @@
   </style>
   <template>
     <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
-    <firebase-collection data="{{participantData}}"
-               location="{{participantLocation}}"
-               on-firebase-value="_firebaseLoaded">
+    <firebase-collection 
+              data="{{participantData}}"
+              location="{{participantLocation}}">
     </firebase-collection>
      <paper-header-panel main style="height: 100vh;" mode="scroll">
       <!-- Main Toolbar -->
@@ -83,7 +83,9 @@
 
           <div class="horizontal layout">
             <paper-fab on-click="_closeCard" icon="close"></paper-fab>
-            <img  width="192px" height="192px" src="{{participantData.photoUrl}}"/>
+            <template is="dom-if" if="{{participantData.photoUrl}}">
+              <img  width="192px" height="192px" src$="{{participantData.photoUrl}}"/>
+            </template>
             <div style="margin-left: 2em; margin-top: 2em;" class="vertical layout">
             <span class="title">{{participantData.name}}</span>
             <span class="author">{{participantData.role}}</span>
@@ -116,9 +118,7 @@
       },
 
       storageLabel: String,
-      storage: {
-        observer: "_storageChanged"
-      },
+      storage: {},
       participantData: {},
       participantPhotoUrl: String,
 
@@ -171,11 +171,7 @@
       this.participantData = this.participantData[0];
       
       //this.$.header.style.backgroundImage = "url('" + data["header"] + "')";
-    },
-
-    _firebaseLoaded: function(){
-    },
-
+    }
     // _storageChanged: function(user){
     //   console.log(user);
     //   if (user) {

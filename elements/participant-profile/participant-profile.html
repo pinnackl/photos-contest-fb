@@ -21,9 +21,8 @@
     <template>
       <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
       <firebase-collection
-            location="{{participantLocation}}"
-            data="{{participants}}"
-            on-firebase-value="_firebaseLoaded"></firebase-collection>
+                location="{{participantLocation}}"
+                data="{{participants}}"></firebase-collection>
       <template is="dom-repeat" items="[[participants]]" as="participant">
         <div class="participant">
           <img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]" on-tap="_openProfile">
@@ -81,27 +80,11 @@
           this.fire("changePage","participantShowcase");
         }  
       },
-      _firebaseLoaded: function(){
-        
-      },
       _storageChanged: function(storage){
         if (storage) {
           this.participantLocation = [storage.firebase, 'participants'].join('/');
         }
       }
-    // ready: function(){
-    //   this.productsList = [{
-    //     "id": 0,
-    //     "name": "Card 1 - Cat 1",
-    //     "header": "http://lorempixel.com/350/200",
-    //     "launcher": "../../images/ic_launcher.png"
-    //   },{
-    //     "id": 1,
-    //     "name": "Card 2 - Cat 1",
-    //     "header": "http://lorempixel.com/350/200",
-    //     "launcher": "../../images/ic_launcher.png"
-    //   }];
-    // },
 
     // _repeatRender: function(){
     //   this.paperCard = Polymer.dom(this.root).querySelectorAll("paper-card");
@@ -112,21 +95,7 @@
     //     nodes: this.paperCard
     //   })
     // },
-
-    // _openCard: function(event){
-    //   if(event.target.classList.contains('paper-fab')) {
-    //     this.fire("updateShowcase",this.productsList[event.model.__data__["item.id"]]);
-
-    //     this.sharedElements = {
-    //       'hero': event.target
-    //     }
-
-    //     this.fire("changePage","showcase");
-    //   }
-    // }
-
   })
 </script>
-    <!-- </neon-animated-pages> -->
 </dom-module>
 
