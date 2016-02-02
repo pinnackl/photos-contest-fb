@@ -222,7 +222,14 @@
 					this.$.message.open();
 					return false;
 				}
-				
+				var today = new Date();
+					today = today.setHours(0,0,0,0);
+				if (dStart < today || dEnd < today) {
+					this.$.message.text = "The contest can not start before after today !";
+					this.$.message.open();
+					return false;
+				}
+
 				for (var i = 0; i < this.data.length; i++) {
 					if (
 							this.data[i].isactive
@@ -251,7 +258,7 @@
 					}
 				};
 
-				this._save();
+				// this._save();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {
