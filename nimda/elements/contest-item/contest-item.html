@@ -7,6 +7,9 @@
 			}
 			paper-dialog {
 				--paper-dialog-background-color: white;
+				--paper-dialog: {
+					width: 80%;
+				};
 			}
 			paper-card {
 				width: 100%;
@@ -22,6 +25,9 @@
 			.on-going {
 				font-weight: bold;
 				color: green;
+			}
+			.registration-period {
+				display: block;
 			}
 		</style>
 		<paper-card elevation="1">
@@ -42,7 +48,7 @@
 					<template is="dom-if" if={{onGoing}}>
 						<span class="on-going">
 							<iron-icon icon="alarm-on"></iron-icon>
-							On Going.
+							On Going!
 						</span>
 					</template>
 				</div>
@@ -52,50 +58,82 @@
 		  	</div>
 		</paper-card>
 		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
-			<h2>Edit contest - Start date :</h2>
-			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span class="shift-left">
-					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
-				</span>
-				<span class="shift-right">
-					<paper-toggle-button id="enableToggle" checked="{{isActive}}">Enable</paper-toggle-button>
-				</span>
+				<h2>Edit contest - Start date :</h2>
+				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<div>
+					<span class="shift-left">
+						<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+					</span>
+					<span class="shift-right">
+						<paper-toggle-button id="enableToggle" checked="{{isActive}}">Enable</paper-toggle-button>
+					</span>
+				</div>
 			</div>
-			<paper-date-picker date="{{start}}"></paper-date-picker>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button on-tap="_closePicker">
-					<iron-icon icon="check"></iron-icon>
-				</paper-button>
-				<paper-button on-tap="_switchToEnd">
-					<span>Next</span>
-					<iron-icon icon="arrow-forward"></iron-icon>
-				</paper-button>
-			</div>
+			<paper-dialog-scrollable class="scroll-section">
+				<span style="clear:both"></span>
+				<div class="registration-period">
+					<paper-dropdown-menu id="registration" label="Registration period :">
+						<paper-menu class="dropdown-content">
+							<paper-listbox selected="{{registration}}">
+						    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
+						    		<paper-item>[[day]]</paper-item>
+								</template>
+							</paper-listbox>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<paper-date-picker date="{{start}}"></paper-date-picker>
+				<div class="buttons">
+					<paper-button dialog-dismiss>Cancel</paper-button>
+					<paper-button on-tap="_closePicker">
+						<iron-icon icon="check"></iron-icon>
+					</paper-button>
+					<paper-button on-tap="_switchToEnd">
+						<span>Next</span>
+						<iron-icon icon="arrow-forward"></iron-icon>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
 		</paper-dialog>
 		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
-			<h2>Edit contest - End date :</h2>
-			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span class="shift-left">
-					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
-				</span>
-				<span class="shift-right">
-					<paper-toggle-button checked="{{isActive}}">Enable</paper-toggle-button>
-				</span>
+				<h2>Edit contest - End date :</h2>
+				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<div>
+					<span class="shift-left">
+						<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+					</span>
+					<span class="shift-right">
+						<paper-toggle-button checked="{{isActive}}">Enable</paper-toggle-button>
+					</span>
+				</div>
 			</div>
-			<paper-date-picker date="{{end}}"></paper-date-picker>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button on-tap="_closePicker">
-					<iron-icon icon="check"></iron-icon>
-				</paper-button>
-				<paper-button on-tap="_switchToStart">
-					<iron-icon icon="arrow-back"></iron-icon>
-					<span>Previous</span>
-				</paper-button>
-			</div>
+			<paper-dialog-scrollable class="scroll-section">
+				<span style="clear:both"></span>
+				<div class="registration-period">
+					<paper-dropdown-menu label="Registration period :" selected="0">
+						<paper-menu class="dropdown-content">
+							<paper-listbox selected="{{registration}}">
+						    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
+						    		<paper-item>[[day]]</paper-item>
+								</template>
+							</paper-listbox>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<paper-date-picker date="{{end}}"></paper-date-picker>
+				<div class="buttons">
+					<paper-button dialog-dismiss>Cancel</paper-button>
+					<paper-button on-tap="_closePicker">
+						<iron-icon icon="check"></iron-icon>
+					</paper-button>
+					<paper-button on-tap="_switchToStart">
+						<iron-icon icon="arrow-back"></iron-icon>
+						<span>Previous</span>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
 		</paper-dialog>
 		<paper-toast id="message" text=""></paper-toast>
 	</template>
@@ -107,6 +145,9 @@
 					observer: '_dataChanged'
 				}
 			},
+			_trigger: function () {
+				this.$.dropdown.open();
+			},
 			_dataChanged: function (data) {
 				if (data.name) {
 					this.start 	= new Date(data.start);
@@ -115,8 +156,20 @@
 					this.set('dateEndTxt', this.end.toLocaleDateString());
 					this.set('contestName', data.name);
 					this.set('isActive', data.isactive);
+					this.set('registration', data.registration);
 					this._isOnGoing();
+					this._getDuration();
 				}
+			},
+			_getDuration: function () {
+				var start = new Date(this.start.getTime());
+				var end = new Date(this.end.getTime());
+				var timeDiff = Math.abs(end.getTime() - start.getTime());
+				var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+				this.duration = [];
+				for (var i = 1; i <= diffDays; i++) {
+					this.push('duration', i);
+				};
 			},
 			_isOnGoing: function (e) {
 				var currentDate = new Date();
@@ -142,11 +195,11 @@
 			_save: function () {
 				var datestart 	= this.start.getTime();
 				var dateend 	= this.end.getTime();
-
 				this.set('data.name', this.$.ctstName.value);
 				this.set('data.start', datestart);
 				this.set('data.end', dateend);
 				this.set('data.isactive', this.isActive);
+				this.set('data.registration', this.$.registration.value);
 			},
 			_closePicker: function (e) {
 				var ctstName = this.$.ctstName.value;
