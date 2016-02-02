@@ -1,0 +1,184 @@
+<dom-module id="participant-showcase">
+  <style type="text/css">
+    paper-toolbar {
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    #productCard {
+      border-radius: 4px 4px 4px 4px;
+      margin: -75% auto auto auto;
+      width: 60%;
+      background-color: white;
+      min-height: 541px;
+      z-index: 2;
+    }
+
+    #productCard paper-fab {
+      position: absolute;
+      right: 12px;
+      margin-top: -28px;
+    }
+
+    #productCard .title {
+      font-size: 2.5em;
+      font-weight: 300;
+      color: #555;
+    }
+
+    #productCard .author {
+      font-size: 1.8em;
+      font-weight: 300;
+      color: #444;
+    }
+
+    #productCard .description {
+      word-wrap: break-word;
+      font-size: 1.3em;
+      font-weight: 300;
+      color: #111;
+      margin: 1em;
+      margin-top: 3em;
+    }
+
+    @media (max-width: 890px) {
+      paper-toolbar {
+        height: 200px;
+        background-size: 100% 316%;
+        background-repeat: no-repeat;
+      }
+
+      #productCard {
+        margin: initial;
+        width: 100%;
+      }
+    }
+
+    paper-header-panel{
+      overflow: hidden;
+    }
+
+  </style>
+  <template>
+    <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
+    <firebase-collection data="{{participantData}}"
+               location="{{participantLocation}}"
+               on-firebase-value="_firebaseLoaded">
+    </firebase-collection>
+     <paper-header-panel main style="height: 100vh;" mode="scroll">
+      <!-- Main Toolbar -->
+      <paper-toolbar id="header">
+        
+      </paper-toolbar>
+
+      <!-- Main Content -->
+      <div id="mainContainer">
+        
+        <paper-material id="productCard">
+
+          <div class="horizontal layout">
+            <paper-fab on-click="_closeCard" icon="close"></paper-fab>
+            <img  width="192px" height="192px" src="{{participantData.photoUrl}}"/>
+            <div style="margin-left: 2em; margin-top: 2em;" class="vertical layout">
+            <span class="title">{{participantData.name}}</span>
+            <span class="author">{{participantData.role}}</span>
+            </div>
+          </div>
+          
+          <div class="description">
+            Photo concours
+            <img width="666px" src="{{participantPhotoUrl}}"/>
+          </div>
+        </paper-material>
+
+      </div>
+    </paper-header-panel>
+  </template>
+</dom-module>
+
+<script type="text/javascript">
+  Polymer({
+    is: "participant-showcase",
+
+    behaviors: [
+      Polymer.NeonAnimationRunnerBehavior,
+      Polymer.NeonSharedElementAnimatableBehavior
+    ],
+
+    properties: {
+      participant: {
+        observer: "_participantChanged"
+      },
+
+      storageLabel: String,
+      storage: {
+        observer: "_storageChanged"
+      },
+      participantData: {},
+      participantPhotoUrl: String,
+
+      sharedElements: {
+        value: function(){
+          return {
+            'hero': this.$.productCard
+          }
+        }
+      },
+
+      // DEBUT : CONFIGURATIONS DES ANIMATIONS
+      animationConfig: {
+        value: function(){
+          return {
+            'entry': [{
+              name: 'hero-animation',
+              id: 'hero',
+              toPage: this
+            },{
+              name: 'fade-in-animation',
+              node: this
+            }],
+
+            'exit': [{
+              name: 'fade-out-animation',
+              node: this
+            },{
+              name: 'scale-down-animation',
+              node: this
+            }]
+          }
+        }
+      }
+      // FIN : CONFIGURATIONS DES ANIMATIONS
+    },
+    // FIN : PROPRIETES
+
+    _closeCard: function(){
+      this.fire("changePage","participantProfile");
+    },
+
+    _participantChanged: function(data){
+      if (data) {
+        var uid = 'facebook:' + data;
+        uid = uid.replace(":", "%3A");
+        this.participantLocation = [this.storage.firebase, 'users', uid].join('/');
+      }
+      this.participantPhotoUrl = this.participantData[1].photo.photoSourceUrl;
+      this.participantData = this.participantData[0];
+      
+      //this.$.header.style.backgroundImage = "url('" + data["header"] + "')";
+    },
+
+    _firebaseLoaded: function(){
+    },
+
+    // _storageChanged: function(user){
+    //   console.log(user);
+    //   if (user) {
+    //     var uid = this.participant;
+    //     uid = uid.replace(":", "%3A");
+    //     this.participantLocation = [user.firebase, 'users', uid].join('/');
+    //   }
+    // }
+  })
+</script>
