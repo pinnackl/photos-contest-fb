@@ -55,6 +55,10 @@
       }
     }
 
+    paper-header-panel{
+      overflow: hidden;
+    }
+
   </style>
   <template>
     <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
@@ -154,7 +158,6 @@
     },
 
     _participantChanged: function(data){
-      console.log(this.storage);
       if (data) {
         var uid = 'facebook:' + data;
         uid = uid.replace(":", "%3A");
@@ -167,7 +170,6 @@
     },
 
     _firebaseLoaded: function(){
-      console.log(this.participantData);
     },
 
     // _storageChanged: function(user){
