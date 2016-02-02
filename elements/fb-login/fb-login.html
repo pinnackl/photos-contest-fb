@@ -175,8 +175,9 @@
 
 				var fbLogin = this;
 				if (response == 'connected') {
-
-					var access_token = param.user.facebook.accessToken;
+					var access_token = null;
+					if(param.user)
+						access_token = param.user.facebook.accessToken;
 
 					fbLogin.set("access_token", access_token);
 
