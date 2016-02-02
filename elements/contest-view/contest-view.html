@@ -241,10 +241,13 @@
 						<iron-icon icon="home"></iron-icon>
 						<span>Home</span>
 					</a>
-
 					<a data-route="user" href="{{baseUrl}}user">
 						<iron-icon icon="info"></iron-icon>
 						<span>Users</span>
+					</a>
+					<a data-route="register" href="{{baseUrl}}register">
+						<iron-icon icon="event"></iron-icon>
+						<span>Register</span>
 					</a>
 				</paper-menu>
 			</paper-header-panel>
@@ -277,6 +280,9 @@
 						</section>
 						<section data-route="user">
 							Hello user !
+						</section>
+						<section data-route="register">
+							<register-contest storageLabel="{{storageLabel}}"></register-contest>
 						</section>
 					</iron-pages>
 				</div>

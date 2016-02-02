@@ -1,0 +1,22 @@
+<dom-module id="register-contest">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<iron-localstorage auto-save-disabled name="{{storageLabel}}" value="{{storage}}"></iron-localstorage>
+		<firebase-collection
+		      location=""
+		      data="{{data}}"></firebase-collection>
+		<div>
+			<h1>Register to a contest</h1>
+
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'register-contest'
+		});
+	</script>
+</dom-module>
