@@ -8,7 +8,7 @@
 
     #productCard {
       border-radius: 4px 4px 4px 4px;
-      margin: -75% auto auto auto;
+      margin: -50% auto auto auto;
       width: 60%;
       background-color: white;
       min-height: 541px;
@@ -59,6 +59,10 @@
       overflow: hidden;
     }
 
+    .contestPhoto{
+      width: 100%;
+    }
+
   </style>
   <template>
     <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
@@ -88,7 +92,7 @@
           
           <div class="description">
             Photo concours
-            <img width="666px" src="{{participantPhotoUrl}}"/>
+            <iron-image class="contestPhoto" src="{{participantPhotoUrl}}"></iron-image>
           </div>
         </paper-material>
 

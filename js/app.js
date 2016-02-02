@@ -40,14 +40,16 @@
 	//})
 	
 	document.addEventListener('updateShowcase',function(data){
-		console.log(data);
 	  document.querySelector('participant-showcase').participant = data.detail;
-	})
+	});
 
 	document.addEventListener('changePage',function(data){
-		console.log(data.detail);
 	  document.querySelector("neon-animated-pages").selected = (data.detail == "participantShowcase") ? "participantShowcase" : "participantProfile";
-	})
+	});
+
+	document.addEventListener('registrationSucceed',function(data){
+
+	});
 
 	// Scroll page to top and expand header
 	// app.scrollPageToTop = function() {
