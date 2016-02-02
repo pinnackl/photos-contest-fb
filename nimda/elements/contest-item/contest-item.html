@@ -7,6 +7,9 @@
 			}
 			paper-dialog {
 				--paper-dialog-background-color: white;
+				--paper-dialog: {
+					width: 80%;
+				};
 			}
 			paper-card {
 				width: 100%;
@@ -55,15 +58,20 @@
 		  	</div>
 		</paper-card>
 		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
-			<h2>Edit contest - Start date :</h2>
-			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span class="shift-left">
-					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
-				</span>
-				<span class="shift-right">
-					<paper-toggle-button id="enableToggle" checked="{{isActive}}">Enable</paper-toggle-button>
-				</span>
+				<h2>Edit contest - Start date :</h2>
+				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<div>
+					<span class="shift-left">
+						<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+					</span>
+					<span class="shift-right">
+						<paper-toggle-button id="enableToggle" checked="{{isActive}}">Enable</paper-toggle-button>
+					</span>
+				</div>
+			</div>
+			<paper-dialog-scrollable class="scroll-section">
+				<span style="clear:both"></span>
 				<div class="registration-period">
 					<paper-dropdown-menu id="registration" label="Registration period :">
 						<paper-menu class="dropdown-content">
@@ -75,29 +83,34 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-			</div>
-			<paper-date-picker date="{{start}}"></paper-date-picker>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button on-tap="_closePicker">
-					<iron-icon icon="check"></iron-icon>
-				</paper-button>
-				<paper-button on-tap="_switchToEnd">
-					<span>Next</span>
-					<iron-icon icon="arrow-forward"></iron-icon>
-				</paper-button>
-			</div>
+				<paper-date-picker date="{{start}}"></paper-date-picker>
+				<div class="buttons">
+					<paper-button dialog-dismiss>Cancel</paper-button>
+					<paper-button on-tap="_closePicker">
+						<iron-icon icon="check"></iron-icon>
+					</paper-button>
+					<paper-button on-tap="_switchToEnd">
+						<span>Next</span>
+						<iron-icon icon="arrow-forward"></iron-icon>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
 		</paper-dialog>
 		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
-			<h2>Edit contest - End date :</h2>
-			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span class="shift-left">
-					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
-				</span>
-				<span class="shift-right">
-					<paper-toggle-button checked="{{isActive}}">Enable</paper-toggle-button>
-				</span>
+				<h2>Edit contest - End date :</h2>
+				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<div>
+					<span class="shift-left">
+						<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+					</span>
+					<span class="shift-right">
+						<paper-toggle-button checked="{{isActive}}">Enable</paper-toggle-button>
+					</span>
+				</div>
+			</div>
+			<paper-dialog-scrollable class="scroll-section">
+				<span style="clear:both"></span>
 				<div class="registration-period">
 					<paper-dropdown-menu label="Registration period :" selected="0">
 						<paper-menu class="dropdown-content">
@@ -109,18 +122,18 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-			</div>
-			<paper-date-picker date="{{end}}"></paper-date-picker>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button on-tap="_closePicker">
-					<iron-icon icon="check"></iron-icon>
-				</paper-button>
-				<paper-button on-tap="_switchToStart">
-					<iron-icon icon="arrow-back"></iron-icon>
-					<span>Previous</span>
-				</paper-button>
-			</div>
+				<paper-date-picker date="{{end}}"></paper-date-picker>
+				<div class="buttons">
+					<paper-button dialog-dismiss>Cancel</paper-button>
+					<paper-button on-tap="_closePicker">
+						<iron-icon icon="check"></iron-icon>
+					</paper-button>
+					<paper-button on-tap="_switchToStart">
+						<iron-icon icon="arrow-back"></iron-icon>
+						<span>Previous</span>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
 		</paper-dialog>
 		<paper-toast id="message" text=""></paper-toast>
 	</template>

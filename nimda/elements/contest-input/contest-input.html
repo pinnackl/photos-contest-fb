@@ -7,6 +7,9 @@
 			}
 			paper-dialog {
 				--paper-dialog-background-color: white;
+				--paper-dialog: {
+					width: 80%;
+				};
 			}
 			.input-create paper-input {
 				display: inline-block;
@@ -18,66 +21,72 @@
 			<paper-button id="btnCreate" on-tap="open" raised>Create</paper-button>
 		</div>
 		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
-			<h2>New contest - Start date :</h2>
-			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span>Start : <strong>[[dateStartTxt]]</strong></span>
-				-
-				<span>End : <strong>[[dateEndTxt]]</strong></span>
+				<h2>New contest - Start date :</h2>
+				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<div>
+					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
+				</div>
 			</div>
-			<div class="registration-period">
-				<paper-dropdown-menu id="registration" label="Registration period :">
-					<paper-menu class="dropdown-content">
-						<paper-listbox selected="{{registration}}">
-					    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
-					    		<paper-item>[[day]]</paper-item>
-							</template>
-						</paper-listbox>
-					</paper-menu>
-				</paper-dropdown-menu>
-			</div>
-			<paper-date-picker date="{{dateStart}}"></paper-date-picker>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button on-tap="_closePicker">
-					<iron-icon icon="check"></iron-icon>
-				</paper-button>
-				<paper-button on-tap="_switchToEnd">
-					<span>Next</span>
-					<iron-icon icon="arrow-forward"></iron-icon>
-				</paper-button>
-			</div>
+			<paper-dialog-scrollable class="scroll-section">
+				<div class="registration-period">
+					<paper-dropdown-menu id="registration" label="Registration period :">
+						<paper-menu class="dropdown-content">
+							<paper-listbox selected="{{registration}}">
+						    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
+						    		<paper-item>[[day]]</paper-item>
+								</template>
+							</paper-listbox>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<paper-date-picker date="{{dateStart}}"></paper-date-picker>
+				<div class="buttons">
+					<paper-button dialog-dismiss>Cancel</paper-button>
+					<paper-button on-tap="_closePicker">
+						<iron-icon icon="check"></iron-icon>
+					</paper-button>
+					<paper-button on-tap="_switchToEnd">
+						<span>Next</span>
+						<iron-icon icon="arrow-forward"></iron-icon>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
 		</paper-dialog>
 		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
-			<h2>New contest - End date :</h2>
-			<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 			<div>
-				<span>Start : <strong>[[dateStartTxt]]</strong></span>
-				-
-				<span>End : <strong>[[dateEndTxt]]</strong></span>
+				<h2>New contest - End date :</h2>
+				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<div>
+					<span>Start : <strong>[[dateStartTxt]]</strong></span>
+					-
+					<span>End : <strong>[[dateEndTxt]]</strong></span>
+				</div>
 			</div>
-			<div class="registration-period">
-				<paper-dropdown-menu label="Registration period :" selected="0">
-					<paper-menu class="dropdown-content">
-						<paper-listbox selected="{{registration}}">
-					    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
-					    		<paper-item>[[day]]</paper-item>
-							</template>
-						</paper-listbox>
-					</paper-menu>
-				</paper-dropdown-menu>
-			</div>
-			<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Cancel</paper-button>
-				<paper-button on-tap="_closePicker">
-					<iron-icon icon="check"></iron-icon>
-				</paper-button>
-				<paper-button on-tap="_switchToStart">
-					<iron-icon icon="arrow-back"></iron-icon>
-					<span>Previous</span>
-				</paper-button>
-			</div>
+			<paper-dialog-scrollable class="scroll-section">
+				<div class="registration-period">
+					<paper-dropdown-menu label="Registration period :" selected="0">
+						<paper-menu class="dropdown-content">
+							<paper-listbox selected="{{registration}}">
+						    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
+						    		<paper-item>[[day]]</paper-item>
+								</template>
+							</paper-listbox>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
+				<div class="buttons">
+					<paper-button dialog-dismiss>Cancel</paper-button>
+					<paper-button on-tap="_closePicker">
+						<iron-icon icon="check"></iron-icon>
+					</paper-button>
+					<paper-button on-tap="_switchToStart">
+						<iron-icon icon="arrow-back"></iron-icon>
+						<span>Previous</span>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
 		</paper-dialog>
 		<paper-toast id="message" text=""></paper-toast>
 	</template>
