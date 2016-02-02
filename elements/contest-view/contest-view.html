@@ -297,6 +297,10 @@
 							<register-contest storageLabel="{{storageLabel}}"></register-contest>
 						</section>
 						<section data-route="participants">
+							<firebase-collection
+            					location="https://pinnackl-contest.firebaseio.com/participants"
+            					data="{{participants}}"
+            					on-firebase-value="_firebaseLoaded"></firebase-collection>
 							<neon-animated-pages attr-for-selected="id" selected="participantProfile">
 								<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
 								<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]"></participant-profile>
@@ -336,7 +340,8 @@
 				},
 				storageLabel: {
 					type: String
-				}
+				},
+				participants:{}
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (n, o) {
@@ -347,6 +352,7 @@
 			},
 			loginSuccess: function (e, detail) {
 				var isRegistered = false;
+				console.log(this.data);
 				if(this.data != undefined){
 					for(var i = 0; i < this.data.length; i++){
 						if(this.data[i].hasOwnProperty("email")){
