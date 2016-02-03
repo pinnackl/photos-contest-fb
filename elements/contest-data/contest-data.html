@@ -50,8 +50,8 @@
 				this.$.ls.reload();
 			},
 			_userChanged: function (user) {
-				console.log('variable');
 				if (user) {
+					console.log('Change url to the user space');
 					var uid = this.fireUser.uid;
 						uid = uid.replace("%3A", ":");
 					this.location = [this.location, 'users', uid].join('/');
@@ -60,12 +60,11 @@
 			_refChanged: function (ref) {
 			},
 			_dataChanged: function (data) {
-				console.log(data);
 			},
 			_firebaseLoaded: function() {
 				console.info("Data from : " + this.location);
-				// console.log(typeof this.data);
-				console.log(this.data);
+				console.info(this.data);
+				this.fire('data-updated', {name: 'user'})
 			},
 			_storageChanged: function (_storage) {
 				if (_storage != null && _storage.hasOwnProperty('firebase')) {

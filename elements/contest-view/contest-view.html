@@ -335,9 +335,6 @@
 					notify: true,
 					observer: '_dataChanged'
 				},
-				location: {
-					notify: true
-				},
 				storageLabel: {
 					type: String,
 					observer: '_storageLabelChanged'
@@ -349,8 +346,14 @@
 				},
 				participants:{},
 				location: {
-					notify: true
+					notify: true,
+					observer: '_locationChanged'
 				}
+			},
+			ready:function(){
+				window.addEventListener("test", function(e){
+					console.log('plop');
+				});
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (n, o) {
@@ -359,38 +362,20 @@
 				}
 			},
 			loginSuccess: function (e, detail) {
-				var isRegistered = false;
-				if(this.data != undefined) {
-					for(var i = 0; i < this.data.length; i++){
-						if(this.data[i].hasOwnProperty("email")){
-							if(this.data[i].email === detail.user.facebook.email){
-								isRegistered = true;
-							}
+				var contestView = this;
+				var user = detail;
+				window.addEventListener("data-updated", function(e) {
+					if (e.detail.name = 'user') {
+						if (contestView.data.length == 0) {
+							contestView.push('data', {
+								email: detail.user.facebook.email,
+								name: detail.user.facebook.displayName,
+								photoUrl: detail.user.facebook.profileImageURL,
+								id: detail.user.facebook.id,
+								role: "participant"
+							});
 						}
 					}
-					if (!isRegistered) {
-						this.push('data', {
-							email: detail.user.facebook.email,
-							name: detail.user.facebook.displayName,
-							photoUrl: detail.user.facebook.profileImageURL,
-							id: detail.user.facebook.id,
-							role: "participant"
-						});
-
-						 // get role dynamically 
-						 this.fire("registration-succeed");
-					}
-				}		
-			},
-			setGlobalUsers: function () {
-				// Move the cursor
-				this.location = [this.storage.firebase, 'participants'].join('/');
-
-				this.push('data', {
-					email: detail.user.facebook.email,
-					name: detail.user.facebook.displayName,
-					photoUrl: detail.user.facebook.profileImageURL,
-					id: detail.user.facebook.id
 				});
 			},
 			loginCancel: function () {
@@ -404,6 +389,9 @@
 			},
 			_dataChanged: function (data) {
 				// console.log(data);
+			},
+			_locationChanged: function (e) {
+				console.log(this.data);
 			}
 		});
 	</script>
