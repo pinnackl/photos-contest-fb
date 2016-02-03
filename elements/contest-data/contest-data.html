@@ -8,9 +8,9 @@
 			display: block;
 		}
 		</style>
-		<iron-localstorage name="app-storage" value="{{_storage}}"></iron-localstorage>
-		<firebase-collection data="{{firebaseData}}"
-							 location="{{userLocation}}"
+		<iron-localstorage id="ls" name$="[[storageLabel]]" value="{{_storage}}"></iron-localstorage>
+		<firebase-collection data="{{data}}"
+							 location="[[location]]"
 							 on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
 	</template>
@@ -21,6 +21,9 @@
 				location: {
 					type: String,
 					notify: true
+				},
+				storageLabel: {
+					observer: '_storageLabelChanged'
 				},
 				userLocation: {
 					type: String,
@@ -34,29 +37,35 @@
 					observer: '_refChanged'
 				},
 				data: {
-					notify: true,
+					type: Object,
+					notify: true
 				},
 				_storage: {
+					type: Object,
 					notify: true,
 					observer: '_storageChanged'
 				}
 			},
+			_storageLabelChanged: function (label) {
+				this.$.ls.reload();
+			},
 			_userChanged: function (user) {
+				console.log('variable');
 				if (user) {
 					var uid = this.fireUser.uid;
-						uid = uid.replace(":", "%3A");
-					this.userLocation = [this.location, 'users', uid].join('/');
+						uid = uid.replace("%3A", ":");
+					this.location = [this.location, 'users', uid].join('/');
 				}
 			},
 			_refChanged: function (ref) {
-				// console.log(ref);
 			},
 			_dataChanged: function (data) {
-				// console.log(data);
+				console.log(data);
 			},
 			_firebaseLoaded: function() {
-				this.data = this.firebaseData;
-				this.linkPaths('data', 'firebaseData');
+				console.info("Data from : " + this.location);
+				// console.log(typeof this.data);
+				console.log(this.data);
 			},
 			_storageChanged: function (_storage) {
 				if (_storage != null && _storage.hasOwnProperty('firebase')) {

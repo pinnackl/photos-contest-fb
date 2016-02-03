@@ -28,8 +28,6 @@
 					type: String
 				},
 				loaded: {
-					type: String,
-					value: 'false',
 					notify: true
 				}
 			},
@@ -43,7 +41,6 @@
 				access_token 	= e.detail.response.access_token;
 				appToken 		= e.detail.response.appToken;
 
-				fbApi.set('config', {});
 				fbApi.set('config', {
 					appId: appId,
 					firebase: firebase,
@@ -61,8 +58,9 @@
 						version    : 'v2.5'
 					});
 
-					fbApi.loaded = 'true';
+					fbApi.loaded = true;
 					fbApi.fire('fb-ready');
+					console.log('FB API ready !');
 				};
 
 				(function(d, s, id){

@@ -232,15 +232,8 @@
 			}
 		</style>
 
-		<!-- don't put the last slash -->
-		<contest-data 	id="data"
-						fire-user="{{user}}"
-						ref="{{ref}}"
-						data="{{data}}"
-						location="{{location}}">
-		</contest-data>
+		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
 		<paper-drawer-panel id="paperDrawerPanel">
-		<!-- <paper-drawer-panel force-narrow> -->
 			<paper-header-panel drawer>
 				<paper-toolbar id="drawerToolbar">
 					<span class="paper-font-title">Menu [[route]]</span>
@@ -291,23 +284,20 @@
 								on-fb-login-success="loginSuccess"
 								on-fb-login-canceled="loginCancel">
 							</fb-login>
-							<photo-list id="photoList" data="{{data}}"></photo-list>
+							<photo-list id="photoList" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
 						</section>
 						<template is="dom-if" if={{resp}}>
 							<section data-route="user">
 								Hello user !
 							</section>
 							<section data-route="register">
-								<register-contest storageLabel="{{storageLabel}}"></register-contest>
+								<!-- <register-contest storageLabel="{{storageLabel}}"></register-contest> -->
 							</section>
 							<section data-route="participants">
-								<firebase-collection
-            						location="https://pinnackl-contest.firebaseio.com/participants"
-            						data="{{participants}}"></firebase-collection>
 								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
-									<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
+<!-- 									<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
 									<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]"></participant-profile>
-								</neon-animated-pages>
+								</neon-animated-pages> -->
 							</section>
 						</template>
 					</iron-pages>
@@ -326,10 +316,11 @@
 				route: String,
 				baseUrl: String,
 				apiLoaded: {
-					type: String,
-					value: 'false',
 					notify: true,
 					observer: '_apiLoaded'
+				},
+				user: {
+					notify: true
 				},
 				autoLogin: {
 					type: Boolean,
@@ -340,10 +331,21 @@
 					notify: true
 				},
 				data: {
-					type: Array
+					type: Object,
+					notify: true,
+					observer: '_dataChanged'
+				},
+				location: {
+					notify: true
 				},
 				storageLabel: {
-					type: String
+					type: String,
+					observer: '_storageLabelChanged'
+				},
+				_storage: {
+					type: Object,
+					notify: true,
+					observer: '_storageChanged'
 				},
 				participants:{},
 				location: {
@@ -352,14 +354,13 @@
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (n, o) {
-				if (n === 'true') {
+				if (n) {
 					this.$.loginbtn1.apiLoaded = true;
-					// this.$.loginbtn2.apiLoaded = true;
 				}
 			},
 			loginSuccess: function (e, detail) {
 				var isRegistered = false;
-				if(this.data != undefined){
+				if(this.data != undefined) {
 					for(var i = 0; i < this.data.length; i++){
 						if(this.data[i].hasOwnProperty("email")){
 							if(this.data[i].email === detail.user.facebook.email){
@@ -367,17 +368,42 @@
 							}
 						}
 					}
-					if(!isRegistered){
-						var userSubscription = this;
-						userSubscription.push('data', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id, role: "participant"});
-						userSubscription.push('participants', {email: detail.user.facebook.email, name: detail.user.facebook.displayName, photoUrl: detail.user.facebook.profileImageURL, id: detail.user.facebook.id});
+					if (!isRegistered) {
+						this.push('data', {
+							email: detail.user.facebook.email,
+							name: detail.user.facebook.displayName,
+							photoUrl: detail.user.facebook.profileImageURL,
+							id: detail.user.facebook.id,
+							role: "participant"
+						});
+
 						 // get role dynamically 
 						 this.fire("registration-succeed");
 					}
 				}		
 			},
+			setGlobalUsers: function () {
+				// Move the cursor
+				this.location = [this.storage.firebase, 'participants'].join('/');
+
+				this.push('data', {
+					email: detail.user.facebook.email,
+					name: detail.user.facebook.displayName,
+					photoUrl: detail.user.facebook.profileImageURL,
+					id: detail.user.facebook.id
+				});
+			},
 			loginCancel: function () {
 				this.$.message.open();
+			},
+			_storageLabelChanged: function (label) {
+				this.$.ls.reload();
+			},
+			_storageChanged: function (storage) {
+				// console.log(storage);
+			},
+			_dataChanged: function (data) {
+				// console.log(data);
 			}
 		});
 	</script>

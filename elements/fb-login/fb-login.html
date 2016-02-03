@@ -34,8 +34,8 @@
 			    --iron-icon-width: 32px;
 			}
 		</style>
-		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"
-			auto-save-disabled on-iron-localstorage-load-empty="_initLocalStorage"></iron-localstorage>
+		<iron-localstorage id="ls" name$="[[storageLabel]]" value="{{storage}}"
+			auto-save-disabled></iron-localstorage>
 		<firebase-auth id="auth"
 					   location="[[_location]]"
 					   provider="facebook"
@@ -61,7 +61,8 @@
 				},
 				storageLabel: {
 					type: String,
-					value: "app-storage"
+					value: "app-storage",
+					observer: '_storageLabelChange'
 				},
 				role: {
 					value: false
@@ -105,6 +106,9 @@
 					type: Object,
 					notify: true
 				}
+			},
+			_storageLabelChange: function (label) {
+				// console.log(label);
 			},
 			_disabledChaned: function (e) {
 				if (this.disabled) {
@@ -171,8 +175,8 @@
 				}
 			},
 			_customLoginAction: function (response, param) {
-				param = (typeof param !== 'undefined')? param : {};
-
+				var param = (typeof param !== 'undefined')? param : {};
+				// console.log(param);
 				var fbLogin = this;
 				if (response == 'connected') {
 					var access_token = null;

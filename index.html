@@ -16,11 +16,22 @@
 			Then, the contest-view property "api-loaded" which is binded to the fb-api is changed too.
 		 -->
 		<fb-api loaded="{{isLoaded}}" storage-label="{{storageName}}"></fb-api>
-		<contest-view api-loaded="{{isLoaded}}"
-					  storage-label="[[storageName]]"
-					  base-url="{{baseUrl}}"
-					  route="{{route}}"
-					  location="{{location}}"></contest-view>
+		<template is="dom-if" if={{isLoaded}}>
+			<contest-data 	id="data"
+							fire-user="{{user}}"
+							ref="{{ref}}"
+							data="{{data}}"
+							location="{{location}}"
+							storage-label="{{storageName}}">
+			</contest-data>
+			<contest-view api-loaded="{{isLoaded}}"
+						  storage-label="[[storageName]]"
+						  data="{{data}}"
+						  base-url="{{baseUrl}}"
+						  route="{{route}}"
+						  location="{{location}}"
+						  user="{{user}}"></contest-view>
+		</template>
 	</template>
 	<script src="js/app.js"></script>
 </body>

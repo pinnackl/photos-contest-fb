@@ -29,7 +29,7 @@
 		        border-top-right-radius: 2px;
 			}
 		</style>
-		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"></iron-localstorage>
+		<!-- <iron-localstorage id="ls" name="app-storage" value="{{storage}}"></iron-localstorage> -->
 		<paper-button raised on-tap="browsePhoto">Browse Photos</paper-button>
 		<paper-dialog id="dialog" class="size-position">
 			<div class="layout horizontal">
@@ -78,9 +78,11 @@
 					observer: '_photoDataChanged'
 				},
 				data: {
-					type: Array,
 					notify: true,
 					observer: '_dataChanged'
+				},
+				location: {
+					notify: true
 				}
 			},
 			listeners: {
@@ -89,8 +91,10 @@
 			},
 			browsePhoto: function (e) {
 				var photoList = this;
-					// reload the localstorage to get the data stored on login without reloading the page
-					photoList.$.ls.reload();
+				var firebaseKey = this.data[0].__firebaseKey__;
+				
+				this.location = [this.location, this.data[0].__firebaseKey__, 'photo'].join('/');
+
 				FB.api(
 					"/me/albums",
 					photoList.storage,
@@ -99,7 +103,6 @@
 							for (album in response.data) {
 								FB.api(
 									response.data[album].id + '/photos?fields=images',
-									photoList.storage,
 									function (response) {
 										for (photo in response.data) {
 											if (response.data[photo].images[7]) {
@@ -129,24 +132,15 @@
 			},
 			_handleSelectImage: function (e, detail) {
 				if (this.data.length > 0) {
-					var photoUpdated = false;
-					for (var i = 0; i < this.data.length; i++) {
-						if (this.data[i].hasOwnProperty('photo')) {
-							console.log('-- Action :');
-							console.info('Update registred photo');
-							this.set('data.'+i+'.photo', this.photoData);
-							photoUpdated = true;
-						}
-					};
-					if (i == this.data.length && !photoUpdated) {
-						console.log('-- Action :');
-						console.info('Set registred photo');
-						this.push('data', {photo: this.photoData});
-					}
+					console.log('-- Action :');
+					console.info('Update registred photo');
+					this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
+					this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
+					this.set('data.'+0+'.status', this.photoData.status);
 				} else {
 					console.log('-- Action :');
 					console.info('Set registred photo');
-					this.push('data', {photo: this.photoData});
+					this.push('data', this.photoData);
 				}
 			},
 			_dialogOpened: function (e) {
