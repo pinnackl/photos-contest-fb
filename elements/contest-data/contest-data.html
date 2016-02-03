@@ -51,10 +51,11 @@
 			},
 			_userChanged: function (user) {
 				if (user) {
-					console.log('Change url to the user space');
+					console.info('Move firebase to the user node !');
 					var uid = this.fireUser.uid;
 						uid = uid.replace("%3A", ":");
 					this.location = [this.location, 'users', uid].join('/');
+					this.eventName = 'user';
 				}
 			},
 			_refChanged: function (ref) {
@@ -62,9 +63,10 @@
 			_dataChanged: function (data) {
 			},
 			_firebaseLoaded: function() {
-				console.info("Data from : " + this.location);
-				console.info(this.data);
-				this.fire('data-updated', {name: 'user'})
+				console.info("Data Changed !");
+				console.log("Data from : " + this.location);
+				console.log(this.data);
+				this.fire('data-updated', {name: this.eventName});
 			},
 			_storageChanged: function (_storage) {
 				if (_storage != null && _storage.hasOwnProperty('firebase')) {
