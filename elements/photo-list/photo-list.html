@@ -52,7 +52,7 @@
 				<paper-button dialog-confirm on-tap="_handleSelectImage">Accept</paper-button>
 			</div>
 		</paper-dialog>
-</template>
+	</template>
 	<script>
 		Polymer({
 			is: 'photo-list',
@@ -92,8 +92,12 @@
 			browsePhoto: function (e) {
 				var photoList = this;
 				var firebaseKey = this.data[0].__firebaseKey__;
-				
-				this.location = [this.location, this.data[0].__firebaseKey__, 'photo'].join('/');
+
+				// Check of the url is already on the user photo node
+				var re = /(photo)$/;
+				if (!((m = re.exec(this.location)) !== null)) {
+					this.location = [this.location, this.data[0].__firebaseKey__, 'photo'].join('/');
+				}
 
 				FB.api(
 					"/me/albums",
@@ -131,6 +135,7 @@
 				);
 			},
 			_handleSelectImage: function (e, detail) {
+				console.log(this.data.length);
 				if (this.data.length > 0) {
 					console.log('-----');
 					console.info('Update registred photo');

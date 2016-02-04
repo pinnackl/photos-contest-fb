@@ -54,8 +54,7 @@
 					console.info('Move firebase to the user node !');
 					var uid = this.fireUser.uid;
 						uid = uid.replace("%3A", ":");
-					this.location = [this.location, 'users', uid].join('/');
-					this.eventName = 'user';
+					this.location = [this._storage.firebase, 'users', uid].join('/');
 				}
 			},
 			_refChanged: function (ref) {
@@ -66,7 +65,7 @@
 				console.info("Data Changed !");
 				console.log("Data from : " + this.location);
 				console.log(this.data);
-				this.fire('data-updated', {name: this.eventName});
+				this.fire('data-updated');
 			},
 			_storageChanged: function (_storage) {
 				if (_storage != null && _storage.hasOwnProperty('firebase')) {

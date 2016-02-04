@@ -282,6 +282,7 @@
 								ref="{{ref}}"
 								storage-label="[[storageLabel]]"
 								on-fb-login-success="loginSuccess"
+								on-fb-not-connected="fbNotConnected"
 								on-fb-login-canceled="loginCancel">
 							</fb-login>
 							<photo-list id="photoList" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
@@ -351,29 +352,35 @@
 				}
 			},
 			// Property "apiLoaded" observer
-			_apiLoaded: function (n, o) {
-				if (n) {
+			_apiLoaded: function (loaded) {
+				if (loaded) {
 					this.$.loginbtn1.apiLoaded = true;
-				}
-			},
-			loginSuccess: function (e, detail) {
-				var contestView = this;
-				var user = detail;
-				window.addEventListener("data-updated", function(e) {
-					if (e.detail.name = 'user') {
-						if (contestView.data.length == 0) {
+
+					var contestView = this;
+					var recordUser = function(e) {
+						if (contestView.data.length == 0 && contestView.user != null) {
+							var user = contestView.user;
 							contestView.push('data', {
-								email: detail.user.facebook.email,
-								name: detail.user.facebook.displayName,
-								photoUrl: detail.user.facebook.profileImageURL,
-								id: detail.user.facebook.id,
+								email: user.facebook.email,
+								name: user.facebook.displayName,
+								photoUrl: user.facebook.profileImageURL,
+								id: user.facebook.id,
 								role: "participant"
 							});
 						}
-					}
-				});
+					};
+					window.addEventListener("data-updated", recordUser);
+					window.removeEventListener('data-updated', recordUser);
+				}
+			},
+			loginSuccess: function (e, detail) {
+				// Action to perform on user logged in
 			},
 			loginCancel: function () {
+				this.$.message.open();
+			},
+			fbNotConnected: function (e, detail) {
+				this.$.message.text = "Login to use this app !";
 				this.$.message.open();
 			},
 			_storageLabelChanged: function (label) {
@@ -386,7 +393,7 @@
 				// console.log(data);
 			},
 			_locationChanged: function (e) {
-				console.log(this.data);
+				// console.log(this.data);
 			}
 		});
 	</script>
