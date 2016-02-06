@@ -48,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   app.closeDrawer = function() {
-    app.$.paperDrawerPanel.closeDrawer();
+    // app.$.paperDrawerPanel.closeDrawer();
   };
 
   app.loginSuccess = function (e) {
@@ -64,19 +64,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
   }
 
-  app.plop = function (e) {
-    // console.log(this);
-  }
-
   window.addEventListener('fb-ready', function () {
-    app.$.loginbtn1.apiLoaded = true;
+    // console.log(app.$.loginbtn1);
+    // app.$.loginbtn1.apiLoaded = true;
   });
 
   window.addEventListener('fb-role-login-success', function () {
     app.route = 'home';
-    if (app.route == 'home') {
-      app.$.data.userLocation = [app.$.data.location, 'options', 'contests'].join('/');
-    }
+    // if (app.route == 'home') {
+    //   app.$.data.userLocation = [app.$.data.location, 'options', 'contests'].join('/');
+    // }
   });
 
   window.addEventListener('fb-not-connected', function () {
