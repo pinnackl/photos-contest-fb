@@ -110,7 +110,7 @@
                 height: 900px;
               }
 
-              #toast .toast-hide-button {
+              #message .toast-hide-button {
                 color: #eeff41;
                 margin: 10px;
               }
@@ -219,8 +219,8 @@
                 <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
                     <!-- Default home menu to login page if no connected -->
                     <a id="defaultPage" data-route="login" href="{{baseUrl}}login" hidden>
-                        <iron-icon icon="home"></iron-icon>
-                        <span>Contest</span>
+                        <iron-icon icon="perm-identity"></iron-icon>
+                        <span>Login</span>
                     </a>
                     <template is="dom-if" if={{resp}}>
                         <a data-route="home" href="{{baseUrl}}">
@@ -256,7 +256,7 @@
 
                 <!-- Main Content -->
                 <div class="content">
-                    <iron-pages attr-for-selected="data-route" selected="login">
+                    <iron-pages attr-for-selected="data-route" selected="{{route}}">
                         <section data-route="login">
                             <h1>Login page</h1>
                             <fb-login
@@ -269,11 +269,14 @@
                                 storage-label="[[storageName]]"
                                 role="administrators"
                                 on-fb-login-success="loginSuccess"
-                                on-fb-login-canceled="loginCancel">
+                                on-fb-role-login-success="loginSuccess"
+                                on-fb-login-canceled="loginCancel"
+                                on-fb-login-aborded="loginAborded"
+                                on-fb-not-connected="accountNotConnected">
                             </fb-login>
                         </section>
                         <template is="dom-if" if={{resp}}>
-                            <section data-route="home">
+                            <section data-route="contests">
                                 <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
                             </section>
                             <section data-route="users">
@@ -291,14 +294,17 @@
             </paper-header-panel>
         </paper-drawer-panel>
         <paper-toast id="message">
-            <span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.message.hide()">Ok</span>
+            <span class="toast-hide-button" role="button" tabindex="0" on-click="_closeMsg">Ok</span>
         </paper-toast>        
     </template>
     <script>
         Polymer({
             is: 'admin-view',
             properties: {
-                route: String,
+                route: {
+                    type: String,
+                    notify: true
+                },
                 baseUrl: String,
                 apiLoaded: {
                     notify: true,
@@ -330,11 +336,28 @@
                     // window.removeEventListener('data-updated', recordUser);
                 }
             },
+            // Handle login actions
             loginSuccess: function (e, detail) {
                 // Action to perform on user logged in
+                this.$.defaultPage.hidden = true;
+                this.route = 'contests';
             },
             loginCancel: function () {
                 this.$.message.open();
+            },
+            loginAborded: function (e) {
+                console.log('Login aborded');
+                this.$.defaultPage.hidden = false;
+                this.route = 'no-right';
+                this.$.loginbtn1.disabled = true;
+                this.$.message.text = 'You must be logged as administrator to see this page.';
+                this.$.message.show();
+            },
+            accountNotConnected: function (e) {
+                this.$.message.text = "Login to use this app !";
+                this.$.message.open();                
+                this.$.defaultPage.hidden = false;
+                this.route = 'login';
             },
             // Observers
             _storageLabelChanged: function (label) {
@@ -348,6 +371,9 @@
             },
             _locationChanged: function (e) {
                 // console.log(this.data);
+            },
+            _closeMsg: function () {
+                this.$.message.hide();
             }
         });
     </script>
