@@ -29,6 +29,7 @@
 					type: String,
 					notify: true
 				},
+				noChange: Boolean,
 				fireUser: {
 					observer: '_userChanged'
 				},
@@ -54,7 +55,9 @@
 					console.info('Move firebase to the user node !');
 					var uid = this.fireUser.uid;
 						uid = uid.replace("%3A", ":");
-					this.location = [this._storage.firebase, 'users', uid].join('/');
+					if (!this.noChange) {
+						this.location = [this._storage.firebase, 'users', uid].join('/');
+					}
 				}
 			},
 			_refChanged: function (ref) {

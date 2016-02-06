@@ -45,12 +45,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
     page('/', function() {
-      app.route = 'contests';
+      app.route = 'dashboard';
     });
 
-    page(app.baseUrl, function() {
-      app.route = 'contests';
-    });
+    // page(app.baseUrl, function() {
+    //   app.route = 'dashboard';
+    // });
 
     page('/contests', function() {
       app.route = 'contests';
@@ -71,9 +71,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     // 404
     page('*', function() {
-      console.log('variable');
-      app.$.toast.text = 'Can\'t find: ' + window.location.href  + '. Redirected you to Home Page';
-      app.$.toast.show();
+      console.error('Can\'t find: ' + window.location.href  + '. Redirected you to Home Page');
+      // app.$.message.text = 'Can\'t find: ' + window.location.href  + '. Redirected you to Home Page';
+      // app.$.message.show();
       page.redirect(app.baseUrl);
     });
 

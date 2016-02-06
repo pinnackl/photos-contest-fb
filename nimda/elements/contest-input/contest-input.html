@@ -144,7 +144,7 @@
 			_add: function () {
 				var datestart 	= this.dateStart.getTime();
 				var dateend 	= this.dateEnd.getTime();
-				console.log(this.$.registration.value);
+
 				this.push('data', {
 					name: this.$.ctstName.value,
 					start: datestart,
@@ -225,7 +225,7 @@
 					return false;
 				}
 
-				// this._add();
+				this._add();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {

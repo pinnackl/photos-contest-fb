@@ -177,6 +177,8 @@
 					currentDate = currentDate.getTime();
 				if (this.data.isactive && (currentDate >= this.data.start && currentDate <= this.data.end)) {
 					this.onGoing = true;
+				} else {
+					this.onGoing = false;
 				}
 			},
 			open: function () {
@@ -258,7 +260,7 @@
 					}
 				};
 
-				// this._save();
+				this._save();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {

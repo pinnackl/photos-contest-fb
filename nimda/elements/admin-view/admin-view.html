@@ -223,9 +223,13 @@
                         <span>Login</span>
                     </a>
                     <template is="dom-if" if={{resp}}>
-                        <a data-route="home" href="{{baseUrl}}">
+                        <a data-route="dashboard" href="{{baseUrl}}">
                             <iron-icon icon="home"></iron-icon>
-                            <span>Home</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a data-route="contests" href="{{baseUrl}}contests">
+                            <iron-icon icon="event"></iron-icon>
+                            <span>Contests</span>
                         </a>
 
                         <a data-route="users" href="{{baseUrl}}users">
@@ -276,6 +280,9 @@
                             </fb-login>
                         </section>
                         <template is="dom-if" if={{resp}}>
+                            <section data-route="dashboard">
+                                <h1>Dashboard</h1>
+                            </section>
                             <section data-route="contests">
                                 <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
                             </section>
@@ -303,7 +310,8 @@
             properties: {
                 route: {
                     type: String,
-                    notify: true
+                    notify: true,
+                    observer: '_routeChanged'
                 },
                 baseUrl: String,
                 apiLoaded: {
@@ -331,9 +339,21 @@
             _apiLoaded: function (loaded) {
                 if (loaded) {
                     this.$.loginbtn1.apiLoaded = true;
-
-                    // window.addEventListener("data-updated", recordUser);
-                    // window.removeEventListener('data-updated', recordUser);
+                }
+            },
+            // Routing observer
+            _routeChanged: function (e) {
+                switch(this.route) {
+                    case "dashboard":
+                        // code block
+                        break;
+                    case "contests":
+                        if (!this.location) {
+                            this.adminLocation = [this.storage.firebase, 'options', 'contests'].join('/');
+                        }
+                        break;
+                    default:
+                        // 
                 }
             },
             // Handle login actions
@@ -341,6 +361,8 @@
                 // Action to perform on user logged in
                 this.$.defaultPage.hidden = true;
                 this.route = 'contests';
+
+                this.location = this.adminLocation;
             },
             loginCancel: function () {
                 this.$.message.open();
