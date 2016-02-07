@@ -15,6 +15,10 @@
 				display: inline-block;
 				width: 80%;
 			}
+			.scroll-section {
+				display: block;
+				overflow: auto;
+			}
 		</style>
 		<div class="input-create">
 			<paper-input label="Create a new contest :" value="{{contestName}}"></paper-input>
@@ -28,7 +32,7 @@
 					<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
 				</div>
 			</div>
-			<paper-dialog-scrollable class="scroll-section">
+			<div class="scroll-section">
 				<div class="registration-period">
 					<paper-dropdown-menu id="registration" label="Registration period :">
 						<paper-menu class="dropdown-content">
@@ -51,7 +55,7 @@
 						<iron-icon icon="arrow-forward"></iron-icon>
 					</paper-button>
 				</div>
-			</paper-dialog-scrollable>
+			</div>
 		</paper-dialog>
 		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
 			<div>
@@ -63,7 +67,7 @@
 					<span>End : <strong>[[dateEndTxt]]</strong></span>
 				</div>
 			</div>
-			<paper-dialog-scrollable class="scroll-section">
+			<div class="scroll-section">
 				<div class="registration-period">
 					<paper-dropdown-menu label="Registration period :" selected="0">
 						<paper-menu class="dropdown-content">
@@ -86,9 +90,9 @@
 						<span>Previous</span>
 					</paper-button>
 				</div>
-			</paper-dialog-scrollable>
+			</div>
 		</paper-dialog>
-		<paper-toast id="message" text=""></paper-toast>
+		<paper-toast id="message" text="" duration="5000"></paper-toast>
 	</template>
 	<script>
 		Polymer({
@@ -213,7 +217,9 @@
 								)
 							)
 						) {
-						this.$.message.text = "The dates provided enter in conflict with another contest ! Name: " + this.data[i].name;
+						var s = new Date(this.data[i].start).toLocaleDateString();
+						var e = new Date(this.data[i].end).toLocaleDateString();
+						this.$.message.text = "The dates provided enter in conflict with another contest ! Name: " + this.data[i].name + " - Start: " + s + " - End: " + e;
 						this.$.message.open();
 						return false;
 					}

@@ -26,10 +26,19 @@
 				font-weight: bold;
 				color: green;
 			}
+			.disabled {
+				font-weight: bold;
+				color: red;
+			}
 			.registration-period {
 				display: block;
 			}
+			.scroll-section{
+				display: block;
+				overflow: auto;
+			}
 		</style>
+		<!-- Display contest information -->
 		<paper-card elevation="1">
 			<div class="card-content">
 				<div class="input-edit">
@@ -51,12 +60,19 @@
 							On Going!
 						</span>
 					</template>
+					<template is="dom-if" if={{isDisabled}}>
+						<span class="disabled">
+							<iron-icon icon="alarm-off"></iron-icon>
+							Disabled!
+						</span>
+					</template>
 				</div>
 		  	</div>
 			<div class="card-actions">
 				<paper-button on-tap="open">Edit</paper-button>
 		  	</div>
 		</paper-card>
+		<!-- Contest wysiwyg -->
 		<paper-dialog id="datePickerStart" class="paper-date-picker-dialog">
 			<div>
 				<h2>Edit contest - Start date :</h2>
@@ -70,12 +86,12 @@
 					</span>
 				</div>
 			</div>
-			<paper-dialog-scrollable class="scroll-section">
+			<div class="scroll-section">
 				<span style="clear:both"></span>
 				<div class="registration-period">
 					<paper-dropdown-menu id="registration" label="Registration period :">
 						<paper-menu class="dropdown-content">
-							<paper-listbox selected="{{registration}}">
+							<paper-listbox selected="{{_conputeRegistration(registration)}}">
 						    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
 						    		<paper-item>[[day]]</paper-item>
 								</template>
@@ -94,12 +110,12 @@
 						<iron-icon icon="arrow-forward"></iron-icon>
 					</paper-button>
 				</div>
-			</paper-dialog-scrollable>
+			</div>
 		</paper-dialog>
 		<paper-dialog id="datePickerEnd" class="paper-date-picker-dialog">
 			<div>
 				<h2>Edit contest - End date :</h2>
-				<paper-input id="ctstName" label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
+				<paper-input label="Contest Name :" value="{{contestName}}" autoFocus></paper-input>
 				<div>
 					<span class="shift-left">
 						<span>Start : <strong>[[dateStartTxt]]</strong></span> - <span>End : <strong>[[dateEndTxt]]</strong></span>
@@ -109,12 +125,12 @@
 					</span>
 				</div>
 			</div>
-			<paper-dialog-scrollable class="scroll-section">
+			<div class="scroll-section">
 				<span style="clear:both"></span>
 				<div class="registration-period">
 					<paper-dropdown-menu label="Registration period :" selected="0">
 						<paper-menu class="dropdown-content">
-							<paper-listbox selected="{{registration}}">
+							<paper-listbox selected="{{_conputeRegistration(registration)}}">
 						    	<template is="dom-repeat" items=[[duration]] as=day index-as=index>
 						    		<paper-item>[[day]]</paper-item>
 								</template>
@@ -133,9 +149,9 @@
 						<span>Previous</span>
 					</paper-button>
 				</div>
-			</paper-dialog-scrollable>
+			</div>
 		</paper-dialog>
-		<paper-toast id="message" text=""></paper-toast>
+		<paper-toast id="message" text="" duration="5000"></paper-toast>
 	</template>
 	<script>
 		Polymer({
@@ -143,13 +159,17 @@
 			properties: {
 				data: {
 					observer: '_dataChanged'
+				},
+				start: {
+					observer: '_dateStartChange'
+				},
+				end: {
+					observer: '_dateEndChange'
 				}
-			},
-			_trigger: function () {
-				this.$.dropdown.open();
 			},
 			_dataChanged: function (data) {
 				if (data.name) {
+					console.log("Init pickers");
 					this.start 	= new Date(data.start);
 					this.end 	= new Date(data.end);
 					this.set('dateStartTxt', this.start.toLocaleDateString());
@@ -159,6 +179,24 @@
 					this.set('registration', data.registration);
 					this._isOnGoing();
 					this._getDuration();
+
+					if (!this.init) {
+						this.init = true;
+					}
+				}
+			},
+			_dateStartChange: function (date) {
+				var d = new Date(this.start);
+				this.set('dateStartTxt', d.toLocaleDateString());			
+				if (this.init) {
+					this._computeDuration();
+				}
+			},
+			_dateEndChange: function (date) {
+				var d = new Date(this.end);
+				this.set('dateEndTxt', d.toLocaleDateString());				
+				if (this.init) {
+					this._computeDuration();
 				}
 			},
 			_getDuration: function () {
@@ -171,14 +209,35 @@
 					this.push('duration', i);
 				};
 			},
+			_computeDuration: function () {
+				if (this.start && this.end) {
+					var start = new Date(this.start.getTime());
+					var end = new Date(this.end.getTime());
+					var timeDiff = Math.abs(end.getTime() - start.getTime());
+					var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+					this.duration = [];
+					for (var i = 1; i <= diffDays; i++) {
+						this.push('duration', i);
+					};
+				}
+			},
+			_conputeRegistration: function (registration) {
+				return Number(registration - 1);
+			},
 			_isOnGoing: function (e) {
 				var currentDate = new Date();
 					currentDate.setHours(0,0,0,0);
 					currentDate = currentDate.getTime();
-				if (this.data.isactive && (currentDate >= this.data.start && currentDate <= this.data.end)) {
+				if (this.isActive && (currentDate >= this.start && currentDate <= this.end)) {
 					this.onGoing = true;
 				} else {
 					this.onGoing = false;
+				}
+
+				if (!this.isActive) {
+					this.isDisabled = true;
+				} else {
+					this.isDisabled = false;
 				}
 			},
 			open: function () {
@@ -197,6 +256,7 @@
 			_save: function () {
 				var datestart 	= this.start.getTime();
 				var dateend 	= this.end.getTime();
+				
 				this.set('data.name', this.$.ctstName.value);
 				this.set('data.start', datestart);
 				this.set('data.end', dateend);
@@ -204,7 +264,9 @@
 				this.set('data.registration', this.$.registration.value);
 			},
 			_closePicker: function (e) {
+				var _key = this.data.__firebaseKey__;
 				var ctstName = this.$.ctstName.value;
+				var ctstReg	 = this.$.registration.value;
 				var dStart 	 = new Date(this.start);
 				var dEnd 	 = new Date(this.end);
 					dStart 	 = dStart.getTime();
@@ -232,34 +294,46 @@
 					return false;
 				}
 
-				for (var i = 0; i < this.data.length; i++) {
+				var data = this.allData;
+				for (var i = 0; i < data.length; i++) {
+					if (_key == data[i].__firebaseKey__) {
+						continue;
+					}
 					if (
-							this.data[i].isactive
+							data[i].isactive
 							&&
 							(
 								(
-									dStart >= this.data[i].start && dStart <= this.data[i].end
+									dStart >= data[i].start && dStart <= data[i].end
 								)
 								||
 								(
-									dEnd >= this.data[i].start && dEnd <= this.data[i].end
+									dEnd >= data[i].start && dEnd <= data[i].end
 								)
 								||
 								(
-									this.data[i].start >= dStart && this.data[i].start <= dEnd
+									data[i].start >= dStart && data[i].start <= dEnd
 								)
 								||
 								(
-									this.data[i].end >= dStart && this.data[i].end <= dEnd
+									data[i].end >= dStart && data[i].end <= dEnd
 								)
 							)
 						) {
-						this.$.message.text = "The dates provided enter in conflict with another contest ! Name: " + this.data[i].name;
+						var s = new Date(data[i].start).toLocaleDateString();
+						var e = new Date(data[i].end).toLocaleDateString();
+						console.log(data);
+						this.$.message.text = "The dates provided enter in conflict with another contest ! Name: " + data[i].name + " - Start: " + s + " - End: " + e;
 						this.$.message.open();
 						return false;
 					}
 				};
 
+				if (!ctstReg) {
+					this.$.message.text = "Please fill the contest registration period input";
+					this.$.message.open();
+					return false;
+				}
 				this._save();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
