@@ -18,8 +18,9 @@
 			<contest-input id="contestInput" data="{{data}}"></contest-input>
 		</div>
 		<template is="dom-repeat" items={{data}} as=contest index-as=index>
-			<contest-item data="{{contest}}" all-data="[[data]]"></contest-item>
+			<contest-item data="{{contest}}" all-data="[[data]]" on-delete-contest="deleteContest"></contest-item>
 		</template>
+		<paper-toast id="message" text="" duration="5000"></paper-toast>
 	</template>
 	<script>
 		Polymer({
@@ -43,6 +44,11 @@
 			},
 			_triggerPicker: function (e) {
 				this.$.contestInput.open();
+			},
+			deleteContest: function (e) {
+				this.arrayDelete('data', e.detail.contest);
+				this.$.message.text = "The contest has been successfully removed!";
+				this.$.message.open();
 			}
 		});
 	</script>

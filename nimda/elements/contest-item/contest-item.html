@@ -45,7 +45,7 @@
 					<paper-input label="Contest Name :" value="[[data.name]]" readonly></paper-input>
 				</div>
 				<div>
-					<span>						
+					<span>
 						<iron-icon icon="today"></iron-icon>
 						[[dateStartTxt]]
 					</span>
@@ -69,7 +69,14 @@
 				</div>
 		  	</div>
 			<div class="card-actions">
-				<paper-button on-tap="open">Edit</paper-button>
+				<paper-button on-tap="open">
+					<iron-icon icon="create"></iron-icon>
+					Edit
+				</paper-button>
+				<paper-button on-tap="delete">
+					<iron-icon icon="delete"></iron-icon>
+					Delete
+				</paper-button>
 		  	</div>
 		</paper-card>
 		<!-- Contest wysiwyg -->
@@ -149,6 +156,37 @@
 						<span>Previous</span>
 					</paper-button>
 				</div>
+			</div>
+		</paper-dialog>
+		<paper-dialog id="confirmAction">
+			<h2>Are you sure, you want to delete this contest ?</h2>
+			<div>
+				Name : {{contestName}}
+				<span>
+					<iron-icon icon="today"></iron-icon>
+					[[dateStartTxt]]
+				</span>
+				-
+				<span>
+					<iron-icon icon="today"></iron-icon>
+					[[dateEndTxt]]
+				</span>
+				<template is="dom-if" if={{onGoing}}>
+					<span class="on-going">
+						<iron-icon icon="alarm-on"></iron-icon>
+						On Going!
+					</span>
+				</template>
+				<template is="dom-if" if={{isDisabled}}>
+					<span class="disabled">
+						<iron-icon icon="alarm-off"></iron-icon>
+						Disabled!
+					</span>
+				</template>
+			</div>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button dialog-confirm on-tap="_delete">Accept</paper-button>
 			</div>
 		</paper-dialog>
 		<paper-toast id="message" text="" duration="5000"></paper-toast>
@@ -245,6 +283,9 @@
 				this.dateStart 	= new Date();
 				this.dateEnd 	= new Date();
 			},
+			delete: function () {
+				this.$.confirmAction.open();
+			},
 			_switchToEnd: function (e) {
 				this.$.datePickerStart.close();
 				this.$.datePickerEnd.open();
@@ -262,6 +303,9 @@
 				this.set('data.end', dateend);
 				this.set('data.isactive', this.isActive);
 				this.set('data.registration', this.$.registration.value);
+			},
+			_delete: function () {
+				this.fire('delete-contest', {contest: this.data});
 			},
 			_closePicker: function (e) {
 				var _key = this.data.__firebaseKey__;
