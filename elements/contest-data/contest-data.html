@@ -9,7 +9,7 @@
 		}
 		</style>
 		<iron-localstorage id="ls" name$="[[storageLabel]]" value="{{_storage}}"></iron-localstorage>
-		<firebase-collection data="{{data}}"
+		<firebase-collection data="{{fireData}}"
 							 location="[[location]]"
 							 on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
@@ -29,7 +29,6 @@
 					type: String,
 					notify: true
 				},
-				noChange: Boolean,
 				fireUser: {
 					observer: '_userChanged'
 				},
@@ -55,9 +54,7 @@
 					console.info('Move firebase to the user node !');
 					var uid = this.fireUser.uid;
 						uid = uid.replace("%3A", ":");
-					if (!this.noChange) {
-						this.location = [this._storage.firebase, 'users', uid].join('/');
-					}
+					this.location = [this._storage.firebase, 'users', uid].join('/');
 				}
 			},
 			_refChanged: function (ref) {
@@ -66,8 +63,11 @@
 			},
 			_firebaseLoaded: function() {
 				console.info("Data Changed !");
-				console.log("Data from : " + this.location);
-				console.log(this.data);
+				// Need to rebind the data value to notify other elements of the change
+				// console.log("Data from : " + this.location);
+				this.data = this.fireData;
+				this.linkPaths('fireData', 'data');
+				// console.log(this.data);
 				this.fire('data-updated');
 			},
 			_storageChanged: function (_storage) {
