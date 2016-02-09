@@ -1,0 +1,154 @@
+<dom-module id="contest-card">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			paper-card {
+				--paper-card: {
+					width: 70%;
+					margin-left: 15%;
+				};
+				--paper-card-header-text: {
+					color: #FFFFFF;
+					font-weight: bold;
+				};
+				--paper-card-background-color: white;
+				--paper-card-actions: {
+
+				};
+			}
+
+			.contest-info {
+				margin-top: 1em;
+			}
+		</style>
+		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
+		<template is="dom-if" if={{appReady}}>
+			<template is="dom-repeat" items="{{_getActiveContest(data)}}" as=contest index-as=index>
+				<paper-card heading="[[contest.name]]" image="/img/md-landscape.jpg">
+					<div class="card-content">
+						<div class="contest-date">
+							<span class="contest-start">
+								<iron-icon icon="today"></iron-icon>
+								[[_toLocalDate(contest.start)]]
+							</span>
+							<span> - </span>
+							<span class="contest-end">
+								<iron-icon icon="today"></iron-icon>
+								[[_toLocalDate(contest.end)]]
+							</span>
+						</div>
+					</div>
+					<div class="card-actions">
+						<fb-login
+							id="loginbtn1"
+							api-loaded="[[appReady]]"
+							graph-url="me?fields=name"
+							scope="public_profile, email, user_photos, publish_actions"
+							response="{{resp}}"
+							fire-user="{{user}}"
+							ref="{{ref}}"
+							storage-label="[[storageLabel]]"
+							on-fb-login-success="loginSuccess"
+							on-fb-not-connected="fbNotConnected"
+							on-fb-login-canceled="loginCancel">
+						</fb-login>
+						<paper-icon-button icon="expand-more" title="more info" onclick="_toggle()" style="float:right;">
+						</paper-icon-button>
+						<iron-collapse id="more-info" class="contest-info">
+							[[contest.description]]
+						</iron-collapse>
+						<script>
+							function _toggle() {
+								var moreInfo = document.getElementById('more-info');
+								var iconButton = Polymer.dom(event).localTarget;
+								iconButton.icon = moreInfo.opened ? 'expand-more'
+								                                  : 'expand-less';
+								moreInfo.toggle();
+							}
+						</script>
+					</div>
+				</paper-card>
+			</template>	
+		</template>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-card',
+			properties: {
+				appReady: {
+					observer: '_appReady'
+				},
+				location: {
+					notify: true,
+					value: "",
+					observer: '_locationChanged'
+				},
+				data: {
+					notify: true,
+					observer: '_dataChanged'
+				},
+				response: {},
+				fireUser: {},
+				ref: {},
+				storageLabel: {},
+				storage: {
+					observer: '_storageReady'
+				}
+			},
+			ready: function () {
+				var contestCard = this;
+				var updateCallback = function (e) {
+					// Event to perform ...
+					contestCard.location = [contestCard.storage.firebase, 'options', 'contests'].join('/');
+					// Remove the listner
+					window.removeEventListener('data-updated', updateCallback);
+				};
+				window.addEventListener('data-updated', updateCallback);
+			},
+			_appReady: function (loaded) {
+				// this.$.ls.reload();
+			},
+			_dataChanged: function (data) {
+				// console.log(data);
+			},
+			_locationChanged: function (location) {
+				
+			},
+			_storageReady: function (storage) {
+				// console.log(storage);
+			},
+			_getActiveContest: function (data) {
+				console.log(data);
+				var re = /contests$/;
+				var str = this.location;
+				var m;
+				if ((m = re.exec(str)) !== null) {
+				    if (m[0] == "contests"){
+						var today = new Date().getTime();
+						for (var i = 0; i < data.length; i++) {
+							if (data[i].isactive
+								&& (today >= data[i].start && today <= data[i].end)) {
+								return data;
+							}
+						};
+				    }
+				}
+			},
+			_toLocalDate: function (date) {
+				return new Date(date).toLocaleDateString();
+			},
+			loginSuccess: function (e, detail) {
+				// body...
+			},
+			fbNotConnected: function (e, detail) {
+				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+			},
+			loginCancel: function (e, detail) {
+				// body...
+			}
+		});
+	</script>
+</dom-module>
