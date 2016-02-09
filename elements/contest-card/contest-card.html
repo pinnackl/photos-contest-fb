@@ -26,7 +26,9 @@
 		</style>
 		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
 		<template is="dom-if" if={{appReady}}>
-			<template is="dom-repeat" items="{{_getActiveContest(data)}}" as=contest index-as=index>
+			<template is="dom-repeat" items="{{data}}" as=contest index-as=index
+				filter="_getActiveContest"
+				observe="name start end description isactive registration">
 				<paper-card heading="[[contest.name]]" image="/img/md-landscape.jpg">
 					<div class="card-content">
 						<div class="contest-date">
@@ -51,6 +53,7 @@
 							fire-user="{{user}}"
 							ref="{{ref}}"
 							storage-label="[[storageLabel]]"
+							text="Login as [[userStatus]]"
 							on-fb-login-success="loginSuccess"
 							on-fb-not-connected="fbNotConnected"
 							on-fb-login-canceled="loginCancel">
@@ -120,22 +123,34 @@
 			_storageReady: function (storage) {
 				// console.log(storage);
 			},
-			_getActiveContest: function (data) {
-				console.log(data);
+			_getActiveContest: function (contest) {
 				var re = /contests$/;
 				var str = this.location;
 				var m;
 				if ((m = re.exec(str)) !== null) {
 				    if (m[0] == "contests"){
 						var today = new Date().getTime();
-						for (var i = 0; i < data.length; i++) {
-							if (data[i].isactive
-								&& (today >= data[i].start && today <= data[i].end)) {
-								return data;
-							}
-						};
+						if (contest.isactive
+							&& (today >= contest.start && today <= contest.end)) {
+							this.currentContest = contest;
+							this.userStatus = this.getContestRegistration();
+							return true;
+						}
+						return false;
 				    }
 				}
+			},
+			getContestRegistration: function () {
+				var day = 86400000;
+				var today = new Date().getTime();
+				var registationPeriod = this.currentContest.start + this.currentContest.registration*day;
+				
+				if (today <= registationPeriod) {
+					return "participant";
+				} else {
+					return "judge";
+				}
+
 			},
 			_toLocalDate: function (date) {
 				return new Date(date).toLocaleDateString();

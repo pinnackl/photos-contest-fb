@@ -45,7 +45,12 @@
 		<paper-button id="loginButton" raised
 					  on-tap="login">
 			<iron-icon class="icon" src="../../img/FB-f-Logo__blue_50.png"></iron-icon>
-			Login
+			<span class="button-text">
+				<template is="dom-if" if={{text}}>
+					[[text]]
+				</template>
+				<content></content>
+			</span>
 		</paper-button>
 		<paper-toast id="message"
 			text="Login to use this app !";
@@ -56,6 +61,7 @@
 		Polymer({
 			is: 'fb-login',
 			properties: {
+				text: String,
 				// Determine if the login action is automatically call
 				// NOTE : If declared the test is true
 				autoLogin: {
