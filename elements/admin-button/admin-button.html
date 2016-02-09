@@ -1,0 +1,51 @@
+<dom-module id="admin-button">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-icon-button id="adminBtn" icon="settings" hidden on-tap="redirectToAdmin"></paper-icon-button>
+		<paper-tooltip
+		  for="adminBtn"
+		  position="left"
+		  offset="14">
+		  Administration panel
+		</paper-tooltip>
+	</template>
+	<script>
+		Polymer({
+			is: 'admin-button',
+			properties: {
+				role: String,
+				storage: {
+					observer: 'storageChanged'
+				},
+				baseLocation: {
+				}
+			},
+			storageChanged: function (storage) {
+				this._checkRight();
+			},
+			_checkRight: function () {
+				var adminButton = this;
+				FB.api(
+				"/app/roles",
+				{access_token: adminButton.storage.appToken},
+				function (response) {
+					if (response && !response.error) {
+						for (var i = 0; i < response.data.length; i++) {
+							if (response.data[i].role === adminButton.role) {
+								adminButton.$.adminBtn.hidden = false;
+							}
+						};
+					}
+				});
+			},
+			redirectToAdmin: function () {
+				console.log([this.baseLocation, 'nimda'].join('/'));
+				window.location.href = "/nimda";
+			}
+		});
+	</script>
+</dom-module>
