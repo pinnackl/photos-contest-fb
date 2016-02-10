@@ -49,11 +49,11 @@
 							api-loaded="[[appReady]]"
 							graph-url="me?fields=name"
 							scope="public_profile, email, user_photos, publish_actions"
-							response="{{resp}}"
-							fire-user="{{user}}"
+							response="{{response}}"
+							fire-user="{{fireUser}}"
 							ref="{{ref}}"
 							storage-label="[[storageLabel]]"
-							text="Login as [[userStatus]]"
+							text="Register as [[userStatus]]"
 							on-fb-login-success="loginSuccess"
 							on-fb-not-connected="fbNotConnected"
 							on-fb-login-canceled="loginCancel">
@@ -93,8 +93,13 @@
 					notify: true,
 					observer: '_dataChanged'
 				},
-				response: {},
-				fireUser: {},
+				response: {
+					notify: true
+				},
+				fireUser: {
+					notify: true,
+					observer: '_userChanged'
+				},
 				ref: {},
 				storageLabel: {},
 				storage: {
@@ -138,6 +143,12 @@
 						}
 						return false;
 				    }
+				}
+			},
+			_userChanged: function (user) {
+				if (user) {
+					this.fireUser.contestId = this.currentContest.__firebaseKey__;
+					this.fireUser.contestRole = this.getContestRegistration();
 				}
 			},
 			getContestRegistration: function () {

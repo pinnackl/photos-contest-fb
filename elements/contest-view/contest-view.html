@@ -351,7 +351,7 @@
 					type: String,
 					observer: '_storageLabelChanged'
 				},
-				_storage: {
+				storage: {
 					type: Object,
 					notify: true,
 					observer: '_storageChanged'
@@ -367,19 +367,36 @@
 				if (loaded) {
 					var contestView = this;
 					var recordUser = function(e) {
-						if (contestView.data.length == 0 && contestView.user != null) {
+						// To be tested ...
+						if (contestView.user != null) {
 							var user = contestView.user;
-							contestView.push('data', {
-								email: user.facebook.email,
-								name: user.facebook.displayName,
-								photoUrl: user.facebook.profileImageURL,
-								id: user.facebook.id,
-								role: "participant"
-							});
+							if (contestView.data.length == 0) {
+								// If the user is not in the database
+								contestView.push('data', {
+									email: user.facebook.email,
+									name: user.facebook.displayName,
+									photoUrl: user.facebook.profileImageURL,
+									id: user.facebook.id,
+									contest: {
+										id: user.contestId,
+										role: user.contestRole
+									}
+								});
+								console.log('remove data-updated : "recordUser" event');
+								window.removeEventListener('data-updated', recordUser);
+							} else if (contestView.data.length > 0) {
+								// If the use have already been registered
+								contestView.set('data.0.contest.id', user.contestId);
+								contestView.set('data.0.contest.role', user.contestRole);
+
+								console.log('remove data-updated : "recordUser" event');
+								window.removeEventListener('data-updated', recordUser);
+							}
+							contestView.location = [contestView.storage.firebase, 'options', 'contests'].join('/');
 						}
 					};
+					console.log('register data-updated : "recordUser" events');
 					window.addEventListener("data-updated", recordUser);
-					window.removeEventListener('data-updated', recordUser);
 				}
 			},
 			loginSuccess: function (e, detail) {
