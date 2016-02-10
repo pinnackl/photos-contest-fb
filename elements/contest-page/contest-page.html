@@ -1,0 +1,27 @@
+<dom-module id="contest-page">
+	<template>
+		<style>
+
+		</style>
+		<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-page',
+			properties: {
+				fireUser: {
+					notify: true
+				},
+				storage: {
+					notify: true
+				},
+				location: {
+					notify: true
+				},
+				data: {
+					notify: true
+				}
+			}
+		});
+	</script>
+</dom-module>
