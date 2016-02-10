@@ -248,6 +248,10 @@
 							<iron-icon icon="info"></iron-icon>
 							<span>Users</span>
 						</a>
+						<a data-route="contest" href="{{baseLocation}}contest">
+							<iron-icon icon="info"></iron-icon>
+							<span>Contest</span>
+						</a>
 						<a data-route="register" href="{{baseLocation}}register">
 							<iron-icon icon="event"></iron-icon>
 							<span>Register</span>
@@ -301,6 +305,10 @@
 						<template is="dom-if" if={{resp}}>
 							<section data-route="user">
 								Hello user !
+							</section>
+							<section data-route="contest">
+								Contest
+								<photo-list id="photoList" fire-user="{{user}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
 							</section>
 							<section data-route="register">
 								<!-- <register-contest storageLabel="{{storageLabel}}"></register-contest> -->

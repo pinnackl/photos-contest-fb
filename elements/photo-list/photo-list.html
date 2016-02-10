@@ -83,6 +83,9 @@
 				},
 				location: {
 					notify: true
+				},
+				fireUser: {
+					notify: true
 				}
 			},
 			listeners: {
@@ -96,7 +99,7 @@
 				// Check of the url is already on the user photo node
 				var re = /(photo)$/;
 				if (!((m = re.exec(this.location)) !== null)) {
-					this.location = [this.location, this.data[0].__firebaseKey__, 'photo'].join('/');
+					this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
 				}
 
 				var getPhotoRegistered = function(e) {
