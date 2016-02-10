@@ -1,0 +1,35 @@
+<dom-module id="contest-register-button">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-button raised on-tap="registerUser">
+			<span class="button-text">
+				<template is="dom-if" if={{text}}>
+					[[text]]
+				</template>
+				<content></content>
+			</span>
+		</paper-button>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-register-button',
+			preperties: {
+				text: String,
+				fireUser: {
+					notify: true,
+					observer: '_fireUserChanged'
+				}
+			},
+			registerUser: function (e) {
+				this.fire('register-user');
+			},
+			_fireUserChanged: function (user) {
+				// listen to events
+			}
+		});
+	</script>
+</dom-module>

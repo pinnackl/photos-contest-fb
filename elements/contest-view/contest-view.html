@@ -325,17 +325,12 @@
 		Polymer({
 			is: 'contest-view',
 			properties: {
-<<<<<<< HEAD
 				route: {
 					type: String,
 					notify: true,
 					observer: "_routeChanged"
 				},
-				baseUrl: String,
-=======
-				route: String,
 				baseLocation: String,
->>>>>>> dfa270ffce4d499003087847b3ff406b0afb314a
 				apiLoaded: {
 					notify: true,
 					observer: '_apiLoaded'
@@ -375,7 +370,12 @@
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (loaded) {
-				this.$.loginbtn1.apiLoaded = true;
+				// As we want to both log in the user and register it to an actual contest
+				// the signin action is bound to the contest register action
+				// But in case the user is already logged in the contest register action
+				// fired by the <contest-register-button> is handled by the contest card
+				// 
+				// FIXME: consider mergi the both behaviour and here only register user to the database
 				if (loaded) {
 					var contestView = this;
 					var recordUser = function(e) {
@@ -406,8 +406,6 @@
 							}
 							contestView.location = [contestView.storage.firebase, 'options', 'contests'].join('/');
 						}
-						window.removeEventListener('data-updated', recordUser);
-						contestView._routeChanged(contestView.route);
 					};
 					console.log('register data-updated : "recordUser" events');
 					window.addEventListener("data-updated", recordUser);

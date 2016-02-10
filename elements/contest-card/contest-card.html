@@ -58,6 +58,14 @@
 							on-fb-not-connected="fbNotConnected"
 							on-fb-login-canceled="loginCancel">
 						</fb-login>
+						<template is="dom-if" if={{fireUser}}>
+							<contest-register-button
+								text="Register as [[userStatus]]"
+								fire-user="{{fireUser}}"
+								on-register-user="registerUser"
+							>
+							</contest-register-button>
+						</template>
 						<paper-icon-button icon="expand-more" title="more info" onclick="_toggle()" style="float:right;">
 						</paper-icon-button>
 						<iron-collapse id="more-info" class="contest-info">
@@ -120,7 +128,13 @@
 				// this.$.ls.reload();
 			},
 			_dataChanged: function (data) {
-				// console.log(data);
+				console.log(data);
+				if (this.fireUser) {
+					var re = new RegExp("/("+this.fireUser.uid+")$/");
+					if (!((m = re.exec(this.location)) !== null)) {
+						this._contestRegister();
+					}
+				}
 			},
 			_locationChanged: function (location) {
 				
@@ -168,6 +182,17 @@
 			},
 			loginSuccess: function (e, detail) {
 				// body...
+			},
+			registerUser: function (e, detail) {
+				// Move the firebase location to the use node
+				// update the user contest node (as the user is already registered in firebase)
+				// Need to trigger the change event or
+				// directly update the user here
+				this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
+			},
+			_contestRegister: function () {
+				this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
+				this.set('data.0.contest.role', this.getContestRegistration());
 			},
 			fbNotConnected: function (e, detail) {
 				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
