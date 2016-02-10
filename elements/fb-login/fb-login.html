@@ -129,7 +129,7 @@
 				var fbLogin = this;
 				FB.getLoginStatus(function(response) {
 					// Check login status on load, and if the user is already logged in
-					if (response.status == 'connected') {
+					if (response.status == 'connected' && fbLogin.fireUser) {
 						console.info('Facebook account connected !');
 						fbLogin.connected = true;
 						fbLogin._customLoginAction('connected', {user: fbLogin.fireUser});
