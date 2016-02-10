@@ -59,17 +59,8 @@
       overflow: hidden;
     }
 
-    .contestPhoto{
-      width: 100%;
-    }
-
   </style>
   <template>
-    <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
-    <firebase-collection 
-              data="{{participantData}}"
-              location="{{participantLocation}}">
-    </firebase-collection>
      <paper-header-panel main style="height: 100vh;" mode="scroll">
       <!-- Main Toolbar -->
       <paper-toolbar id="header">
@@ -94,7 +85,7 @@
           
           <div class="description">
             Photo concours
-            <iron-image class="contestPhoto" src="{{participantPhotoUrl}}"></iron-image>
+            <img class="contestPhoto" style="width: 100%; height: 100%" src="{{_getPhotoUrl(participantData)}}">
           </div>
         </paper-material>
 
@@ -114,14 +105,21 @@
 
     properties: {
       participant: {
+        notify: true,
         observer: "_participantChanged"
       },
-
       storageLabel: String,
       storage: {},
       participantData: {},
       participantPhotoUrl: String,
-
+      location: {
+        notify: true
+      },
+      data: {
+        type: Object,
+        notify: true,
+        observer: "_dataChanged"
+      },
       sharedElements: {
         value: function(){
           return {
@@ -162,16 +160,31 @@
     },
 
     _participantChanged: function(data){
+      var participantShowcase = this;
       if (data) {
         var uid = 'facebook:' + data;
         uid = uid.replace(":", "%3A");
-        this.participantLocation = [this.storage.firebase, 'users', uid].join('/');
+        this.location = [this.location, uid].join('/');
       }
-      this.participantPhotoUrl = this.participantData[1].photo.photoSourceUrl;
-      this.participantData = this.participantData[0];
-      
-      //this.$.header.style.backgroundImage = "url('" + data["header"] + "')";
+      var dataUser = function(e) {
+        participantShowcase.participantData = participantShowcase.data[0];
+        participantShowcase.participantPhotoUrl = participantShowcase.data[0].photo;
+        window.removeEventListener("data-updated", dataUser);
+      };
+      window.addEventListener("data-updated", dataUser);
+    },
+    _dataChanged: function(data){
+    },
+    _getPhotoUrl: function(photo){
+        var participantShowcase = this;
+        this.location = [this.location, photo.__firebaseKey__, 'photo'].join('/');
+        var dataPhoto = function(e) {
+            window.removeEventListener("data-updated", dataPhoto);
+            participantShowcase.querySelector('.contestPhoto').src = participantShowcase.data[0].photoSourceUrl;
+        };
+        window.addEventListener("data-updated", dataPhoto);
     }
+
     // _storageChanged: function(user){
     //   console.log(user);
     //   if (user) {

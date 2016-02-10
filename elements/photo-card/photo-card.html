@@ -67,7 +67,7 @@
 			</div>
 			<div class="card-actions">
 				<paper-icon-button id="radioBtn" class="img-selector"
-					icon="radio-button-unchecked"
+					icon="radio-button-unchecked" active="[[selected]]"
 					toggles>
 				</paper-icon-button>
 				<paper-icon-button class="img-view"
@@ -97,6 +97,9 @@
 					notify: true,
 					reflectToAttributes: true
 				},
+				selected: {
+					notify: true
+				},
 				index: {
 					notify: true
 				},
@@ -104,6 +107,13 @@
 					notify: true
 				}
 			},
+			 ready: function(){
+			 	if(this.selected === true){
+				 	var img = this.$.radioBtn;
+						img.icon = 'check-circle';
+						img.active = true;
+			 	}
+			 },
 			_handleSelectImage: function (e) {
 				this.data = {
 					photoUrl: this.photo,

@@ -19,15 +19,11 @@
     }
   </style>
     <template>
-      <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}" auto-save-disabled></iron-localstorage>
-      <firebase-collection
-                location="{{participantLocation}}"
-                data="{{participants}}"></firebase-collection>
-      <template is="dom-repeat" items="[[participants]]" as="participant">
-        <div class="participant">
-          <img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]" on-tap="_openProfile">
-          <p class="fullName">[[participant.name]]</p>
-        </div>
+      <template is="dom-repeat" items="{{_readParticipants(participants)}}" as="participant">
+          <div class="participant">
+            <img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]" on-tap="_openProfile">
+            <p class="fullName">[[participant.name]]</p>
+          </div>
       </template>
     </template>
     <script type="text/javascript">
@@ -64,10 +60,21 @@
         }
       },
       // END ANIMATIONS
-      participants: {},
+      participants: {
+        notify: true,
+        observer: "_participantChanged"
+      },
       storageLabel: String,
       storage: {
+        type: Object,
         observer: "_storageChanged"
+      },
+      location: {
+        notify: true
+      },
+      data: {
+        type: Object,
+        notify: true
       }
     },
       _openProfile: function(event){
@@ -81,8 +88,24 @@
         }  
       },
       _storageChanged: function(storage){
-        if (storage) {
-          this.participantLocation = [storage.firebase, 'participants'].join('/');
+      },
+      _participantChanged: function(participant) {
+      },
+      _readParticipants: function(participants){
+        var re = /users$/;
+        var str = this.location;
+        var m;
+        if ((m = re.exec(str)) !== null) {
+            if (m[0] == "users"){
+                var tmp = [];
+                for (var key in participants[0]) {
+                    if(key != "__firebaseKey__"){
+                        var participant = participants[0][key];
+                        tmp.push(participant);
+                    }
+                }
+                return tmp;
+            }
         }
       }
 

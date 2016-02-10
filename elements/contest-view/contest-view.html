@@ -296,9 +296,9 @@
 							</section>
 							<section data-route="participants">
 								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
-<!-- 									<participant-profile id="participantProfile" storage-label="[[storageLabel]]"></participant-profile>
-									<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]"></participant-profile>
-								</neon-animated-pages> -->
+ 									<participant-profile id="participantProfile" storage-label="[[storageLabel]]" storage="{{storage}}" location="{{location}}" participants="{{data}}"></participant-profile>
+									<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]" location="{{location}}" data="{{data}}"></participant-profile>
+								</neon-animated-pages> 
 							</section>
 						</template>
 					</iron-pages>
@@ -314,7 +314,11 @@
 		Polymer({
 			is: 'contest-view',
 			properties: {
-				route: String,
+				route: {
+					type: String,
+					notify: true,
+					observer: "_routeChanged"
+				},
 				baseUrl: String,
 				apiLoaded: {
 					notify: true,
@@ -345,7 +349,9 @@
 					notify: true,
 					observer: '_storageChanged'
 				},
-				participants:{},
+				participants:{
+					notify: true
+				},
 				location: {
 					notify: true,
 					observer: '_locationChanged'
@@ -353,9 +359,8 @@
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (loaded) {
+				this.$.loginbtn1.apiLoaded = true;
 				if (loaded) {
-					this.$.loginbtn1.apiLoaded = true;
-
 					var contestView = this;
 					var recordUser = function(e) {
 						if (contestView.data.length == 0 && contestView.user != null) {
@@ -368,9 +373,10 @@
 								role: "participant"
 							});
 						}
+						window.removeEventListener('data-updated', recordUser);
+						contestView._routeChanged(contestView.route);
 					};
 					window.addEventListener("data-updated", recordUser);
-					window.removeEventListener('data-updated', recordUser);
 				}
 			},
 			loginSuccess: function (e, detail) {
@@ -394,6 +400,13 @@
 			},
 			_locationChanged: function (e) {
 				// console.log(this.data);
+			},
+			_routeChanged: function(route){
+				switch(route){
+					case "participants":
+						this.location = [this.storage.firebase, 'users'].join('/');
+						break;
+				}
 			}
 		});
 	</script>

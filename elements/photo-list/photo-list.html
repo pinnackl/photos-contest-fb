@@ -42,6 +42,7 @@
 				<photo-card
 					photo="[[photo.image]]"
 					photo-source="[[photo.source]]"
+					selected="[[photo.selected]]"
 					index="[[index]]"
 					data="{{photoData}}">
 				</photo-card>
@@ -78,8 +79,7 @@
 					observer: '_photoDataChanged'
 				},
 				data: {
-					notify: true,
-					observer: '_dataChanged'
+					notify: true
 				},
 				location: {
 					notify: true
@@ -99,40 +99,52 @@
 					this.location = [this.location, this.data[0].__firebaseKey__, 'photo'].join('/');
 				}
 
-				FB.api(
-					"/me/albums",
-					photoList.storage,
-					function (response) {
-						if (response && !response.error) {
-							for (album in response.data) {
-								FB.api(
-									response.data[album].id + '/photos?fields=images',
-									function (response) {
-										for (photo in response.data) {
-											if (response.data[photo].images[7]) {
-												var image = response.data[photo].images[7].source;
-											} else if (response.data[photo].images[6]) {
-												var image = response.data[photo].images[6].source;
-											} else if (response.data[photo].images[5]) {
-												var image = response.data[photo].images[5].source;
-											} else if (response.data[photo].images[4]) {
-												var image = response.data[photo].images[4].source;
-											} else {
-												var image = response.data[photo].images[1].source;
-											}
-											var source = response.data[photo].images[0].source;
-											photoList.push('photos', {image: image, source: source});
-										}
-									}
-								);
-							}
-							photoList.$.dialog.open();
-						} else {
-							// If the user is not loged in we dispaly message
-							document.querySelector('#message').open();
-						}
+				var getPhotoRegistered = function(e) {
+					if(typeof photoList.data[0] != 'undefined'){
+						var photoRegistered = photoList.data[0].photoSourceUrl;
 					}
-				);
+
+					FB.api(
+						"/me/albums",
+						photoList.storage,
+						function (response) {
+							if (response && !response.error) {
+								for (album in response.data) {
+									FB.api(
+										response.data[album].id + '/photos?fields=images',
+										function (response) {
+											for (photo in response.data) {
+												if (response.data[photo].images[7]) {
+													var image = response.data[photo].images[7].source;
+												} else if (response.data[photo].images[6]) {
+													var image = response.data[photo].images[6].source;
+												} else if (response.data[photo].images[5]) {
+													var image = response.data[photo].images[5].source;
+												} else if (response.data[photo].images[4]) {
+													var image = response.data[photo].images[4].source;
+												} else {
+													var image = response.data[photo].images[1].source;
+												}
+												var source = response.data[photo].images[0].source;
+												var selected = false;
+												if(source == photoRegistered){
+													selected = true;
+												}
+												photoList.push('photos', {image: image, source: source, selected: selected});
+											}
+										}
+									);
+								}
+								photoList.$.dialog.open();
+							} else {
+								// If the user is not loged in we dispaly message
+								document.querySelector('#message').open();
+							}
+						}
+					);
+					window.removeEventListener("data-updated", getPhotoRegistered);
+				};
+				window.addEventListener("data-updated", getPhotoRegistered);
 			},
 			_handleSelectImage: function (e, detail) {
 				console.log(this.data.length);
@@ -156,8 +168,6 @@
 				return arr[idx];
 			},
 			_photoDataChanged: function (photoData) {
-			},
-			_dataChanged: function (data) {
 			}
 		});
 	</script>
