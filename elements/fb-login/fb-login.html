@@ -45,7 +45,12 @@
 		<paper-button id="loginButton" raised
 					  on-tap="login">
 			<iron-icon class="icon" src="../../img/FB-f-Logo__blue_50.png"></iron-icon>
-			Login
+			<span class="button-text">
+				<template is="dom-if" if={{text}}>
+					[[text]]
+				</template>
+				<content></content>
+			</span>
 		</paper-button>
 		<paper-toast id="message"
 			text="Login to use this app !";
@@ -56,6 +61,7 @@
 		Polymer({
 			is: 'fb-login',
 			properties: {
+				text: String,
 				// Determine if the login action is automatically call
 				// NOTE : If declared the test is true
 				autoLogin: {
@@ -123,7 +129,7 @@
 				var fbLogin = this;
 				FB.getLoginStatus(function(response) {
 					// Check login status on load, and if the user is already logged in
-					if (response.status == 'connected') {
+					if (response.status == 'connected' && fbLogin.fireUser) {
 						console.info('Facebook account connected !');
 						fbLogin.connected = true;
 						fbLogin._customLoginAction('connected', {user: fbLogin.fireUser});

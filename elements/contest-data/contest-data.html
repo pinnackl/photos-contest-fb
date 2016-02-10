@@ -64,10 +64,10 @@
 			_firebaseLoaded: function() {
 				console.info("Data Changed !");
 				// Need to rebind the data value to notify other elements of the change
-				// console.log("Data from : " + this.location);
+				console.log("Data from : " + this.location);
 				this.data = this.fireData;
 				this.linkPaths('fireData', 'data');
-				// console.log(this.data);
+				console.log(this.data);
 				this.fire('data-updated');
 			},
 			_storageChanged: function (_storage) {

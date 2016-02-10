@@ -239,20 +239,20 @@
 					<span class="paper-font-title">Menu [[route]]</span>
 				</paper-toolbar>
 				<paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
-					<a data-route="home" href="{{baseUrl}}">
+					<a data-route="home" href="{{baseLocation}}">
 						<iron-icon icon="home"></iron-icon>
 						<span>Home</span>
 					</a>
 					<template is="dom-if" if={{resp}}>
-						<a data-route="user" href="{{baseUrl}}user">
+						<a data-route="user" href="{{baseLocation}}user">
 							<iron-icon icon="info"></iron-icon>
 							<span>Users</span>
 						</a>
-						<a data-route="register" href="{{baseUrl}}register">
+						<a data-route="register" href="{{baseLocation}}register">
 							<iron-icon icon="event"></iron-icon>
 							<span>Register</span>
 						</a>
-						<a data-route="participants" href="{{baseUrl}}participants">
+						<a data-route="participants" href="{{baseLocation}}participants">
 							<iron-icon icon="info"></iron-icon>
 							<span>Participants</span>
 						</a>
@@ -269,11 +269,21 @@
 					</div>
 					<div class="title">[[resp.name]]</div>
 					<paper-icon-button icon="more-vert"></paper-icon-button>
+					<admin-button role="administrators" storage="[[storage]]" base-location="[[baseLocation]]"></admin-button>
 			    </paper-toolbar>
 				<div class="content">
 					<iron-pages attr-for-selected="data-route" selected="{{route}}">
 						<section data-route="home">
-							<fb-login
+							<contest-card
+								app-ready="[[apiLoaded]]"
+								location="{{location}}"
+								data="{{data}}"
+								response="{{resp}}"
+								fire-user="{{user}}"
+								ref="{{ref}}"
+								storage-label="[[storageLabel]]"
+							></contest-card>
+							<!-- <fb-login
 								id="loginbtn1"
 								graph-url="me?fields=name"
 								scope="public_profile, email, user_photos, publish_actions"
@@ -284,8 +294,9 @@
 								on-fb-login-success="loginSuccess"
 								on-fb-not-connected="fbNotConnected"
 								on-fb-login-canceled="loginCancel">
-							</fb-login>
-							<photo-list id="photoList" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
+							</fb-login> -->
+							<!-- <photo-list id="photoList" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list> -->
+							
 						</section>
 						<template is="dom-if" if={{resp}}>
 							<section data-route="user">
@@ -314,12 +325,17 @@
 		Polymer({
 			is: 'contest-view',
 			properties: {
+<<<<<<< HEAD
 				route: {
 					type: String,
 					notify: true,
 					observer: "_routeChanged"
 				},
 				baseUrl: String,
+=======
+				route: String,
+				baseLocation: String,
+>>>>>>> dfa270ffce4d499003087847b3ff406b0afb314a
 				apiLoaded: {
 					notify: true,
 					observer: '_apiLoaded'
@@ -344,7 +360,7 @@
 					type: String,
 					observer: '_storageLabelChanged'
 				},
-				_storage: {
+				storage: {
 					type: Object,
 					notify: true,
 					observer: '_storageChanged'
@@ -363,19 +379,37 @@
 				if (loaded) {
 					var contestView = this;
 					var recordUser = function(e) {
-						if (contestView.data.length == 0 && contestView.user != null) {
+						// To be tested ...
+						if (contestView.user != null) {
 							var user = contestView.user;
-							contestView.push('data', {
-								email: user.facebook.email,
-								name: user.facebook.displayName,
-								photoUrl: user.facebook.profileImageURL,
-								id: user.facebook.id,
-								role: "participant"
-							});
+							if (contestView.data.length == 0) {
+								// If the user is not in the database
+								contestView.push('data', {
+									email: user.facebook.email,
+									name: user.facebook.displayName,
+									photoUrl: user.facebook.profileImageURL,
+									id: user.facebook.id,
+									contest: {
+										id: user.contestId,
+										role: user.contestRole
+									}
+								});
+								console.log('remove data-updated : "recordUser" event');
+								window.removeEventListener('data-updated', recordUser);
+							} else if (contestView.data.length > 0) {
+								// If the use have already been registered
+								contestView.set('data.0.contest.id', user.contestId);
+								contestView.set('data.0.contest.role', user.contestRole);
+
+								console.log('remove data-updated : "recordUser" event');
+								window.removeEventListener('data-updated', recordUser);
+							}
+							contestView.location = [contestView.storage.firebase, 'options', 'contests'].join('/');
 						}
 						window.removeEventListener('data-updated', recordUser);
 						contestView._routeChanged(contestView.route);
 					};
+					console.log('register data-updated : "recordUser" events');
 					window.addEventListener("data-updated", recordUser);
 				}
 			},
