@@ -383,14 +383,18 @@
 				// But in case the user is already logged in the contest register action
 				// fired by the <contest-register-button> is handled by the contest card
 				// 
-				// FIXME: consider mergi the both behaviour and here only register user to the database
+				// FIXME: consider merging the both behaviour and here only register user to the database
 				if (loaded) {
+					// Test if the location is on the user node
 					var contestView = this;
 					var recordUser = function(e) {
 						// To be tested ...
 						if (contestView.user != null) {
 							var user = contestView.user;
 							if (contestView.data.length == 0) {
+								console.warn(contestView.location);
+								console.warn(contestView.user);
+								console.warn(contestView.data);
 								// If the user is not in the database
 								contestView.push('data', {
 									email: user.facebook.email,
@@ -404,18 +408,21 @@
 								});
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
+								console.log('add event listener data-updated : "recordUser" events');
 							} else if (contestView.data.length > 0) {
 								// If the use have already been registered
 								contestView.set('data.0.contest.id', user.contestId);
 								contestView.set('data.0.contest.role', user.contestRole);
-
+								console.warn(contestView.location);
+								console.warn(contestView.user);
+								console.warn(contestView.data);
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
 							}
-							contestView.location = [contestView.storage.firebase, 'options', 'contests'].join('/');
+							// contestView.location = [contestView.storage.firebase, 'options', 'contests'].join('/');
 						}
 					};
-					console.log('register data-updated : "recordUser" events');
+					console.log('add event listener data-updated : "recordUser" events');
 					window.addEventListener("data-updated", recordUser);
 				}
 			},
@@ -445,6 +452,9 @@
 				switch(route){
 					case "participants":
 						this.location = [this.storage.firebase, 'users'].join('/');
+						break;
+					case "contest":
+						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
 						break;
 				}
 			}

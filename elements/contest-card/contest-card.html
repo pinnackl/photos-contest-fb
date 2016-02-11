@@ -54,18 +54,18 @@
 							ref="{{ref}}"
 							storage-label="[[storageLabel]]"
 							text="Register as [[userStatus]]"
-							on-fb-login-success="loginSuccess"
+							on-fb-login-success="loginSuccessd"
 							on-fb-not-connected="fbNotConnected"
 							on-fb-login-canceled="loginCancel">
 						</fb-login>
-						<template is="dom-if" if={{fireUser}}>
+						<!-- <template is="dom-if" if={{fireUser}}>
 							<contest-register-button
 								text="Register as [[userStatus]]"
 								fire-user="{{fireUser}}"
 								on-register-user="registerUser"
 							>
 							</contest-register-button>
-						</template>
+						</template> -->
 						<paper-icon-button icon="expand-more" title="more info" onclick="_toggle()" style="float:right;">
 						</paper-icon-button>
 						<iron-collapse id="more-info" class="contest-info">
@@ -82,7 +82,11 @@
 						</script>
 					</div>
 				</paper-card>
-			</template>	
+			</template>
+			<paper-card heading="No contest available" image="" elevation="1" animated-shadow="false" hidden>
+				<div class="card-content">Plop</div>
+				<div class="card-actions"></div>
+			</paper-card>
 		</template>
 	</template>
 	<script>
@@ -128,7 +132,7 @@
 				// this.$.ls.reload();
 			},
 			_dataChanged: function (data) {
-				console.log(data);
+				// console.log(data);
 				if (this.fireUser) {
 					var re = new RegExp("/("+this.fireUser.uid+")$/");
 					if (!((m = re.exec(this.location)) !== null)) {
