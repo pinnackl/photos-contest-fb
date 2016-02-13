@@ -1,11 +1,36 @@
 <dom-module id="contest-register-button">
 	<template>
 		<style>
+			/* FIXME : use custom variable to change properties */
 			:host {
-				display: block;
+				display: inline-block;
+				@apply(--fb-login-container-theme);
+			}
+
+			:host paper-button {
+				/*Shadow properties*/
+				color: 				var(--fb-login-color, #FFFFFF);
+				background-color: 	var(--fb-login-bg-color, #3B579D);
+				font-weight:		var(--fb-login-fw, bold);				
+			}
+
+			:host[disabled] paper-button {
+				background-color: 	var(--fb-login-bg-color, #FFFFFF);
+				color: 				var(--fb-login-color, #3B579D);
+			}
+
+			paper-button {
+				/*Mixin to define custom theme*/
+				@apply(--fb-login-theme);
+			}
+
+			.icon {
+			    --iron-icon-height: 32px;
+			    --iron-icon-width: 32px;
 			}
 		</style>
 		<paper-button raised on-tap="registerUser">
+			<iron-icon class="icon" src="../../img/FB-f-Logo__blue_50.png"></iron-icon>
 			<span class="button-text">
 				<template is="dom-if" if={{text}}>
 					[[text]]

@@ -44,20 +44,13 @@
 						</div>
 					</div>
 					<div class="card-actions">
-						<fb-login
-							id="loginbtn1"
-							api-loaded="[[appReady]]"
-							graph-url="me?fields=name"
-							scope="public_profile, email, user_photos, publish_actions"
-							response="{{response}}"
-							fire-user="{{fireUser}}"
-							ref="{{ref}}"
-							storage-label="[[storageLabel]]"
-							text="Register as [[userStatus]]"
-							on-fb-login-success="loginSuccessd"
-							on-fb-not-connected="fbNotConnected"
-							on-fb-login-canceled="loginCancel">
-						</fb-login>
+						<template is="dom-if" if=!{{fireUser}}>
+							<contest-register-button
+								text="Register as [[userStatus]]"
+								fire-user="{{fireUser}}"
+								on-tap="login"
+							></contest-register-button>
+						</template>
 						<!-- <template is="dom-if" if={{fireUser}}>
 							<contest-register-button
 								text="Register as [[userStatus]]"
@@ -121,22 +114,29 @@
 			ready: function () {
 				var contestCard = this;
 				var updateCallback = function (e) {
-					// Event to perform ...
 					contestCard.location = [contestCard.storage.firebase, 'options', 'contests'].join('/');
 					// Remove the listner
 					window.removeEventListener('data-updated', updateCallback);
 				};
 				window.addEventListener('data-updated', updateCallback);
 			},
+			login: function (e) {
+				this.fire('login-action');
+			},
 			_appReady: function (loaded) {
 				// this.$.ls.reload();
 			},
 			_dataChanged: function (data) {
-				// console.log(data);
 				if (this.fireUser) {
 					var re = new RegExp("/("+this.fireUser.uid+")$/");
 					if (!((m = re.exec(this.location)) !== null)) {
-						this._contestRegister();
+						// console.log(this.data);
+						// this._contestRegister();
+					}
+
+					if (this.currentContest) {
+						this.fireUser.contestId = this.currentContest.__firebaseKey__;
+						this.fireUser.contestRole = this.getContestRegistration();
 					}
 				}
 			},
@@ -164,7 +164,8 @@
 				}
 			},
 			_userChanged: function (user) {
-				if (user) {
+				if (user && this.currentContest) {
+					console.log("User connected");
 					this.fireUser.contestId = this.currentContest.__firebaseKey__;
 					this.fireUser.contestRole = this.getContestRegistration();
 				}
@@ -195,8 +196,8 @@
 				this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
 			},
 			_contestRegister: function () {
-				this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
-				this.set('data.0.contest.role', this.getContestRegistration());
+				// this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
+				// this.set('data.0.contest.role', this.getContestRegistration());
 			},
 			fbNotConnected: function (e, detail) {
 				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');

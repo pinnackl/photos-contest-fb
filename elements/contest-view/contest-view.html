@@ -233,6 +233,20 @@
 		</style>
 
 		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
+		<fb-login
+			id="loginbtn"
+			api-loaded="[[apiLoaded]]"
+			graph-url="me?fields=name"
+			scope="public_profile, email, user_photos, publish_actions"
+			response="{{resp}}"
+			fire-user="{{user}}"
+			ref="{{ref}}"
+			storage-label="[[storageLabel]]"
+			text="Register as [[userStatus]]"
+			on-fb-login-success="loginSuccess"
+			on-fb-not-connected="fbNotConnected"
+			on-fb-login-canceled="loginCancel">
+		</fb-login>
 		<paper-drawer-panel id="paperDrawerPanel">
 			<paper-header-panel drawer>
 				<paper-toolbar id="drawerToolbar">
@@ -286,19 +300,8 @@
 								fire-user="{{user}}"
 								ref="{{ref}}"
 								storage-label="[[storageLabel]]"
+								on-login-action="_handleLoginAction"
 							></contest-card>
-							<!-- <fb-login
-								id="loginbtn1"
-								graph-url="me?fields=name"
-								scope="public_profile, email, user_photos, publish_actions"
-								response="{{resp}}"
-								fire-user="{{user}}"
-								ref="{{ref}}"
-								storage-label="[[storageLabel]]"
-								on-fb-login-success="loginSuccess"
-								on-fb-not-connected="fbNotConnected"
-								on-fb-login-canceled="loginCancel">
-							</fb-login> -->
 							<!-- <photo-list id="photoList" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list> -->
 							
 						</section>
@@ -343,7 +346,8 @@
 					observer: '_apiLoaded'
 				},
 				user: {
-					notify: true
+					notify: true,
+					observer: 'userChanged'
 				},
 				autoLogin: {
 					type: Boolean,
@@ -387,14 +391,10 @@
 					// Test if the location is on the user node
 					var contestView = this;
 					var recordUser = function(e) {
-						// To be tested ...
 						if (contestView.user != null) {
 							var user = contestView.user;
+							// If the user is not in the database
 							if (contestView.data.length == 0) {
-								console.warn(contestView.location);
-								console.warn(contestView.user);
-								console.warn(contestView.data);
-								// If the user is not in the database
 								contestView.push('data', {
 									email: user.facebook.email,
 									name: user.facebook.displayName,
@@ -407,23 +407,23 @@
 								});
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
-								console.log('add event listener data-updated : "recordUser" events');
 							} else if (contestView.data.length > 0) {
-								// If the use have already been registered
 								contestView.set('data.0.contest.id', user.contestId);
 								contestView.set('data.0.contest.role', user.contestRole);
-								console.warn(contestView.location);
-								console.warn(contestView.user);
-								console.warn(contestView.data);
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
 							}
-							// contestView.location = [contestView.storage.firebase, 'options', 'contests'].join('/');
 						}
 					};
 					console.log('add event listener data-updated : "recordUser" events');
 					window.addEventListener("data-updated", recordUser);
 				}
+			},
+			_handleLoginAction: function (e) {
+				this.$.loginbtn.login();
+			},
+			userChanged: function (user) {
+				// console.log(this.user);
 			},
 			loginSuccess: function (e, detail) {
 				// Action to perform on user logged in
