@@ -1,9 +1,29 @@
 <dom-module id="contest-page">
 	<template>
 		<style>
+			:host {
+				display: block;
+				margin: 48px 62px;
+			}
 
+			.contest-container {
+				margin: 1em 2em;	
+			}
 		</style>
-		<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
+		<paper-material elevation="1">
+			<h1>Choose your champion</h1>
+			<div class="contest-container">
+				<template is="dom-repeat" items={{data}} 
+					as=item index-as=index
+					filter="_userHandle"
+					observe="reload">
+					<template is="dom-if" if="{{_getRegisteredStatus(item)}}">
+						<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>			
+					</template>
+					<contest-game storage="[[storage]]" contest-users="[[item]]"></contest-game>
+				</template>
+			</div>
+		</paper-material>
 	</template>
 	<script>
 		Polymer({
@@ -21,6 +41,49 @@
 				data: {
 					notify: true
 				}
+			},
+			_userHandle: function (item) {
+				// after getting the user check for the contest to be running
+				// FIXME : the reload hack to rerender the page
+				if (this.fireUser) {
+					var re = new RegExp("("+this.fireUser.uid+")$");
+					if (((m = re.exec(this.location)) !== null)) {
+						this.contestUser = item;
+						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						item.reload = 'userid';
+						return false;
+					}
+					
+					var re = new RegExp("(contests)$");
+					if (((m = re.exec(this.location)) !== null)) {
+						var contest = item;
+						var today = new Date().getTime();
+						if (contest.isactive && (today >= contest.start && today <= contest.end)) {
+							if (this.contestUser && contest) {
+								if (this.contestUser.currentContest.id == contest.__firebaseKey__) {
+									this.currentContest = item;
+									this.location = [this.storage.firebase, 'users'].join('/');
+									item.reload = 'contests';
+									return true;
+								}
+							}
+						}
+					}
+
+					var re = new RegExp("(users)$");
+					if (((m = re.exec(this.location)) !== null)) {
+						item.reload = 'users';
+						// console.log(item);
+						return true;
+					}
+				}
+				return false;
+			},
+			_getRegisteredStatus: function (item) {
+				if (this.contestUser.currentContest.role != 'judge') {
+					return true;
+				}
+				return false;
 			}
 		});
 	</script>

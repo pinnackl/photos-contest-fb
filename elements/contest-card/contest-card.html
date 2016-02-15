@@ -130,13 +130,7 @@
 				if (this.fireUser) {
 					var re = new RegExp("/("+this.fireUser.uid+")$/");
 					if (!((m = re.exec(this.location)) !== null)) {
-						// console.log(this.data);
 						// this._contestRegister();
-					}
-
-					if (this.currentContest) {
-						this.fireUser.contestId = this.currentContest.__firebaseKey__;
-						this.fireUser.contestRole = this.getContestRegistration();
 					}
 				}
 			},
@@ -151,7 +145,7 @@
 				var str = this.location;
 				var m;
 				if ((m = re.exec(str)) !== null) {
-				    if (m[0] == "contests"){
+				    if (m[0] == "contests") {
 						var today = new Date().getTime();
 						if (contest.isactive
 							&& (today >= contest.start && today <= contest.end)) {
@@ -165,7 +159,6 @@
 			},
 			_userChanged: function (user) {
 				if (user && this.currentContest) {
-					console.log("User connected");
 					this.fireUser.contestId = this.currentContest.__firebaseKey__;
 					this.fireUser.contestRole = this.getContestRegistration();
 				}
@@ -196,8 +189,8 @@
 				this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
 			},
 			_contestRegister: function () {
-				// this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
-				// this.set('data.0.contest.role', this.getContestRegistration());
+				this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
+				this.set('data.0.contest.role', this.getContestRegistration());
 			},
 			fbNotConnected: function (e, detail) {
 				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');

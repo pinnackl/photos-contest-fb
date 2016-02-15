@@ -149,20 +149,20 @@
 			/* Tablet+ */
 			@media (min-width: 601px) {
 
-			paper-material {
-			  width: calc(98% - 46px);
-			  margin-bottom: 32px;
-			  padding-left: 30px;
-			  padding-right: 30px;
-			}
+				paper-material {
+				  width: calc(98% - 46px);
+				  margin-bottom: 32px;
+				  padding-left: 30px;
+				  padding-right: 30px;
+				}
 
-			#drawer.paper-drawer-panel > [drawer] {
-			  border-right: 1px solid rgba(0, 0, 0, 0.14);
-			}
+				#drawer.paper-drawer-panel > [drawer] {
+				  border-right: 1px solid rgba(0, 0, 0, 0.14);
+				}
 
-			iron-pages {
-			  padding: 48px 62px;
-			}
+				iron-pages {
+				  /*padding: 48px 62px;*/
+				}
 
 			}
 
@@ -253,22 +253,18 @@
 					<span class="paper-font-title">Menu [[route]]</span>
 				</paper-toolbar>
 				<paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
-					<a data-route="home" href="{{baseLocation}}">
-						<iron-icon icon="home"></iron-icon>
-						<span>Home</span>
+					<a id="defaultPage" data-route="register" href="{{baseLocation}}">
+						<iron-icon icon="input"></iron-icon>
+						<span>Register</span>
 					</a>
 					<template is="dom-if" if={{resp}}>
+						<a data-route="contest" href="{{baseLocation}}contest">
+							<iron-icon class="trophy-icon" src="/img/trophy.svg"></iron-icon>
+							<span>Contest</span>
+						</a>
 						<a data-route="user" href="{{baseLocation}}user">
 							<iron-icon icon="info"></iron-icon>
 							<span>Users</span>
-						</a>
-						<a data-route="contest" href="{{baseLocation}}contest">
-							<iron-icon icon="info"></iron-icon>
-							<span>Contest</span>
-						</a>
-						<a data-route="register" href="{{baseLocation}}register">
-							<iron-icon icon="event"></iron-icon>
-							<span>Register</span>
 						</a>
 						<a data-route="participants" href="{{baseLocation}}participants">
 							<iron-icon icon="info"></iron-icon>
@@ -291,7 +287,7 @@
 			    </paper-toolbar>
 				<div class="content">
 					<iron-pages attr-for-selected="data-route" selected="{{route}}">
-						<section data-route="home">
+						<section data-route="register">
 							<contest-card
 								app-ready="[[apiLoaded]]"
 								location="{{location}}"
@@ -306,14 +302,15 @@
 							
 						</section>
 						<template is="dom-if" if={{resp}}>
+							<section data-route="contest">
+								<contest-page id="contestPage"
+									fire-user="{{user}}"
+									storage="{{storage}}"
+									data="{{data}}"
+									location="{{location}}"></contest-page>
+							</section>
 							<section data-route="user">
 								Hello user !
-							</section>
-							<section data-route="contest">
-								<contest-page id="contestPage" fire-user="{{user}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></contest-page>
-							</section>
-							<section data-route="register">
-								<!-- <register-contest storageLabel="{{storageLabel}}"></register-contest> -->
 							</section>
 							<section data-route="participants">
 								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
@@ -400,7 +397,7 @@
 									name: user.facebook.displayName,
 									photoUrl: user.facebook.profileImageURL,
 									id: user.facebook.id,
-									contest: {
+									currentContest: {
 										id: user.contestId,
 										role: user.contestRole
 									}
@@ -408,8 +405,10 @@
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
 							} else if (contestView.data.length > 0) {
-								contestView.set('data.0.contest.id', user.contestId);
-								contestView.set('data.0.contest.role', user.contestRole);
+								// console.log(contestView.data[0].contest);
+								// contestView.set('data.0.contest.id', user.contestId);
+								// contestView.set('data.0.contest.id', "plop");
+								// contestView.set('data.0.contest.role', user.contestRole);
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
 							}
@@ -427,11 +426,16 @@
 			},
 			loginSuccess: function (e, detail) {
 				// Action to perform on user logged in
+				this.$.defaultPage.hidden = true;
+				window.page.redirect(this.baseLocation + 'contest');
+				this._routeChanged(this.route);
 			},
 			loginCancel: function () {
 				this.$.message.open();
 			},
 			fbNotConnected: function (e, detail) {
+				// Redirect to the register page if the user is not connected
+				window.page.redirect(this.baseLocation + 'register');
 				this.$.message.text = "Login to use this app !";
 				this.$.message.open();
 			},
@@ -453,7 +457,10 @@
 						this.location = [this.storage.firebase, 'users'].join('/');
 						break;
 					case "contest":
-						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						if (this.user) {
+							this.location = [this.storage.firebase, 'users', this.user.uid].join('/');
+							// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						}
 						break;
 				}
 			}
