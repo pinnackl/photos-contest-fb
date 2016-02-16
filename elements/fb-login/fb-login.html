@@ -9,6 +9,7 @@
 			/* FIXME : use custom variable to change properties */
 			:host {
 				display: inline-block;
+				visibility: none;
 				@apply(--fb-login-container-theme);
 			}
 
@@ -142,8 +143,14 @@
 						fbLogin.login();
 					} else {
 						fbLogin.connected = false;
-						fbLogin.ref.unauth();
+
+						if (fbLogin.ref) {
+							fbLogin.ref.unauth();
+						}
+
 						console.info('Facebook account not connected !');
+						
+						// Listen to the login action fire by the firebase-auth
 						fbLogin.$.auth.addEventListener('login', function (e) {
 							console.info('Login success into Firebase');
 							fbLogin._customLoginAction('connected', e.detail);
@@ -156,11 +163,11 @@
 			login: function () {
 				var fbLogin = this;
 				// Get the connection with the provided scope
-				this.scope = this.scope;
+				this.scope = this.scope; // FIXME : Why reset the scope value ?
 				this.$.auth.login({scope: this.scope});
 			},
 			_locationChanged: function (location) {
-				console.log(location);
+				// console.log(location);
 			},
 			_apiObserver: function  (n, o) {
 				var fbLogin = this;
@@ -193,8 +200,11 @@
 						access_token = param.user.facebook.accessToken;
 
 					console.info("Get access token");
+					if (fbLogin.storage.access_token)
+						throw "plop";
 					fbLogin.storage.access_token = access_token;
 
+					// Admin connection, provided with a role checkin
 					if (fbLogin.role) {
 						fbLogin._granted = false;
 						var app_token = null;
@@ -234,6 +244,7 @@
 						);
 					} else {
 						fbLogin._getUserData(function (response) {
+
 							if (response && !response.error) {
 								var data = fbLogin.response;
 									data['picture'] = response;

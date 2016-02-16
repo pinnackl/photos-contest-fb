@@ -44,28 +44,21 @@
 						</div>
 					</div>
 					<div class="card-actions">
-						<fb-login
-							id="loginbtn1"
-							api-loaded="[[appReady]]"
-							graph-url="me?fields=name"
-							scope="public_profile, email, user_photos, publish_actions"
-							response="{{response}}"
-							fire-user="{{fireUser}}"
-							ref="{{ref}}"
-							storage-label="[[storageLabel]]"
-							text="Register as [[userStatus]]"
-							on-fb-login-success="loginSuccess"
-							on-fb-not-connected="fbNotConnected"
-							on-fb-login-canceled="loginCancel">
-						</fb-login>
-						<template is="dom-if" if={{fireUser}}>
+						<template is="dom-if" if=!{{fireUser}}>
+							<contest-register-button
+								text="Register as [[userStatus]]"
+								fire-user="{{fireUser}}"
+								on-tap="login"
+							></contest-register-button>
+						</template>
+						<!-- <template is="dom-if" if={{fireUser}}>
 							<contest-register-button
 								text="Register as [[userStatus]]"
 								fire-user="{{fireUser}}"
 								on-register-user="registerUser"
 							>
 							</contest-register-button>
-						</template>
+						</template> -->
 						<paper-icon-button icon="expand-more" title="more info" onclick="_toggle()" style="float:right;">
 						</paper-icon-button>
 						<iron-collapse id="more-info" class="contest-info">
@@ -82,7 +75,11 @@
 						</script>
 					</div>
 				</paper-card>
-			</template>	
+			</template>
+			<paper-card heading="No contest available" image="" elevation="1" animated-shadow="false" hidden>
+				<div class="card-content">Plop</div>
+				<div class="card-actions"></div>
+			</paper-card>
 		</template>
 	</template>
 	<script>
@@ -117,12 +114,14 @@
 			ready: function () {
 				var contestCard = this;
 				var updateCallback = function (e) {
-					// Event to perform ...
 					contestCard.location = [contestCard.storage.firebase, 'options', 'contests'].join('/');
 					// Remove the listner
 					window.removeEventListener('data-updated', updateCallback);
 				};
 				window.addEventListener('data-updated', updateCallback);
+			},
+			login: function (e) {
+				this.fire('login-action');
 			},
 			_appReady: function (loaded) {
 				// this.$.ls.reload();
@@ -132,7 +131,7 @@
 				if (this.fireUser) {
 					var re = new RegExp("/("+this.fireUser.uid+")$/");
 					if (!((m = re.exec(this.location)) !== null)) {
-						this._contestRegister();
+						// this._contestRegister();
 					}
 				}
 			},
@@ -147,7 +146,7 @@
 				var str = this.location;
 				var m;
 				if ((m = re.exec(str)) !== null) {
-				    if (m[0] == "contests"){
+				    if (m[0] == "contests") {
 						var today = new Date().getTime();
 						if (contest.isactive
 							&& (today >= contest.start && today <= contest.end)) {
@@ -160,7 +159,8 @@
 				}
 			},
 			_userChanged: function (user) {
-				if (user) {
+				if (user && this.currentContest) {
+					console.warn(user);
 					this.fireUser.contestId = this.currentContest.__firebaseKey__;
 					this.fireUser.contestRole = this.getContestRegistration();
 				}
@@ -191,8 +191,8 @@
 				this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
 			},
 			_contestRegister: function () {
-				this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
-				this.set('data.0.contest.role', this.getContestRegistration());
+				// this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
+				// this.set('data.0.contest.role', this.getContestRegistration());
 			},
 			fbNotConnected: function (e, detail) {
 				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');

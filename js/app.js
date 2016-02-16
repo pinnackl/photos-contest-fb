@@ -1,7 +1,16 @@
 (function (window, document) {
 	'use strict';
 	var app = document.querySelector('#app');
-		app.verbose = false;
+		app.verbose = true;
+		// app.verbose = false;
+
+	if (!app.verbose) {
+		window.console = function () {};
+		window.console.log = function (argument) {};
+		window.console.info = function (argument) {};
+		window.console.warn = function (argument) {};
+		window.console.error = function (argument) {};
+	}
 
 	if (app.verbose)
 		console.info("Loading App");
