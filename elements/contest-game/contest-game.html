@@ -4,6 +4,7 @@
 			:host {
 				display: inline-block;
 				width: 35%;
+				margin: 12px 8px;
 			}
 			:host {
 			--dark-primary-color: #303F9F;
@@ -169,25 +170,34 @@
 			}
 
 			.avatar-container {
-/*				position: absolute;
-				top: -170%;*/
+				/*position: absolute;*/
+				/*top: -170%;*/
 			}
 		</style>
+		<!-- FIXME: Open firebase connection to the specified contest -->
+		<!-- 		Retrieve data on the tournament from the chalonge API -->
+
 		<!-- <firebase-collection data="{{contestData}}"
 							 location="_getCurrentContest"
 							 on-firebase-value="_firebaseLoaded">
 		</firebase-collection> -->
-		<template is="dom-if" if="{{_getUserData(contestUsers)}}">
-			<paper-card heading="[[user.name]]" image="http://placehold.it/400/400/3B579D" elevation="1" animated-shadow="false">
-				<div class="card-content">
-					<div class="avatar-container">
-						<img class="profile-picture" src="[[user.photoUrl]]">
-					</div>
-				</div>
-				<div class="card-actions">
-				</div>
-			</paper-card>
-		</template>
+		<iron-pages attr-for-selected="data-route" selected="{{gameRoute}}">
+			<section data-route="select-champion">
+				<template is="dom-if" if="{{_getUserData(contestUsers)}}">
+					<paper-card heading="[[user.name]]" image="https://placehold.it/400/400/FF7B00/0084FF" elevation="1" animated-shadow="false">
+						<div class="card-content">
+							<div class="avatar-container">
+								<img class="profile-picture" src="[[user.photoUrl]]">
+							</div>
+						</div>
+						<div class="card-actions">
+						</div>
+					</paper-card>
+				</template>
+			</section>
+			<section></section>
+			<section></section>
+		</iron-pages>
 	</template>
 	<script>
 		Polymer({
@@ -203,6 +213,7 @@
 					notify: true
 				},
 				storage:{},
+				gameRoute: String
 			},
 			ready: function () {
 				this._getUserData(this.contestUsers);
@@ -213,7 +224,9 @@
 			_getUserData: function (contestUsr) {
 				for (key in contestUsr) {
 					if (typeof contestUsr[key] == 'object') {
-						return this.user = contestUsr[key];
+						this.user = contestUsr[key];
+						if (this.user.currentContest.role!= "judge")
+							return this.user;
 					}
 				}
 			}

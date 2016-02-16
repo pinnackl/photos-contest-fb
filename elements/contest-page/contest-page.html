@@ -13,14 +13,18 @@
 		<paper-material elevation="1">
 			<h1>Choose your champion</h1>
 			<div class="contest-container">
+				<template is="dom-if" if="{{_registeredStatus}}">
+					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>			
+				</template>
 				<template is="dom-repeat" items={{data}} 
 					as=item index-as=index
 					filter="_userHandle"
 					observe="reload">
-					<template is="dom-if" if="{{_getRegisteredStatus(item)}}">
-						<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>			
-					</template>
-					<contest-game storage="[[storage]]" contest-users="[[item]]"></contest-game>
+					<contest-game
+						storage="[[storage]]"
+						contest-users="[[item]]"
+						game-route="select-champion">
+					</contest-game>
 				</template>
 			</div>
 		</paper-material>
@@ -49,7 +53,9 @@
 					var re = new RegExp("("+this.fireUser.uid+")$");
 					if (((m = re.exec(this.location)) !== null)) {
 						this.contestUser = item;
+						this._registeredStatus = this._getRegisteredStatus();
 						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						// FIXME: Hack to the dom-repreat element to redraw its content
 						item.reload = 'userid';
 						return false;
 					}
@@ -73,13 +79,13 @@
 					var re = new RegExp("(users)$");
 					if (((m = re.exec(this.location)) !== null)) {
 						item.reload = 'users';
-						// console.log(item);
 						return true;
 					}
 				}
 				return false;
 			},
-			_getRegisteredStatus: function (item) {
+			// Define the ability of the user
+			_getRegisteredStatus: function () {
 				if (this.contestUser.currentContest.role != 'judge') {
 					return true;
 				}

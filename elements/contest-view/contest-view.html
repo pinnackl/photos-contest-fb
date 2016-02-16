@@ -297,9 +297,7 @@
 								ref="{{ref}}"
 								storage-label="[[storageLabel]]"
 								on-login-action="_handleLoginAction"
-							></contest-card>
-							<!-- <photo-list id="photoList" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list> -->
-							
+							></contest-card>							
 						</section>
 						<template is="dom-if" if={{resp}}>
 							<section data-route="contest">
@@ -427,6 +425,9 @@
 			loginSuccess: function (e, detail) {
 				// Action to perform on user logged in
 				this.$.defaultPage.hidden = true;
+				// FIXME: Redirect the contest page with the contest ID => for facebook link
+				// window.page.redirect(this.baseLocation + 'contest' + this.user.contestId);
+				console.warn(this.user);
 				window.page.redirect(this.baseLocation + 'contest');
 				this._routeChanged(this.route);
 			},

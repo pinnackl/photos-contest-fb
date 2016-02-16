@@ -150,17 +150,18 @@
 				window.addEventListener("data-updated", getPhotoRegistered);
 			},
 			_handleSelectImage: function (e, detail) {
-				console.log(this.data.length);
+				console.log(this.data);
 				if (this.data.length > 0) {
 					console.log('-----');
 					console.info('Update registred photo');
-					this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
-					this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
-					this.set('data.'+0+'.status', this.photoData.status);
+					// this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
+					// this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
+					// this.set('data.'+0+'.status', this.photoData.status);
 				} else {
-					console.log('-- Action :');
+					console.log('-----');
 					console.info('Set registred photo');
-					this.push('data', this.photoData);
+					// console.log(this.data);
+					// this.push('data', this.photoData);
 				}
 			},
 			_dialogOpened: function (e) {
