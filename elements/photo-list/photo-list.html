@@ -86,7 +86,8 @@
 				},
 				fireUser: {
 					notify: true
-				}
+				},
+				selectedPhoto:{}
 			},
 			listeners: {
 				'iron-overlay-opened': '_dialogOpened',
@@ -94,7 +95,7 @@
 			},
 			browsePhoto: function (e) {
 				var photoList = this;
-				var firebaseKey = this.data[0].__firebaseKey__;
+				//var firebaseKey = this.data[0].__firebaseKey__;
 
 				// Check of the url is already on the user photo node
 				var re = /(photo)$/;
@@ -105,6 +106,7 @@
 				var getPhotoRegistered = function(e) {
 					if(typeof photoList.data[0] != 'undefined'){
 						var photoRegistered = photoList.data[0].photoSourceUrl;
+						this.selectedPhoto = photoList.data[0].photoSourceUrl;
 					}
 
 					FB.api(
@@ -132,8 +134,10 @@
 												var selected = false;
 												if(source == photoRegistered){
 													selected = true;
+													photoList.unshift('photos', {image: image, source: source, selected: selected});
+												}else{
+													photoList.push('photos', {image: image, source: source, selected: selected});
 												}
-												photoList.push('photos', {image: image, source: source, selected: selected});
 											}
 										}
 									);
@@ -154,20 +158,20 @@
 				if (this.data.length > 0) {
 					console.log('-----');
 					console.info('Update registred photo');
-					// this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
-					// this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
-					// this.set('data.'+0+'.status', this.photoData.status);
+					this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
+					this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
+					this.set('data.'+0+'.status', this.photoData.status);
 				} else {
 					console.log('-----');
 					console.info('Set registred photo');
 					// console.log(this.data);
-					// this.push('data', this.photoData);
+					this.push('data', this.photoData);
 				}
 			},
 			_dialogOpened: function (e) {
 			},
 			_dialogClosed: function (e) {
-				this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
 			},
 			_accessArray: function (arr, idx) {
 				return arr[idx];
