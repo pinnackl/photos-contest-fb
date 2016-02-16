@@ -61,13 +61,12 @@
       },
       // END ANIMATIONS
       participants: {
-        notify: true,
-        observer: "_participantChanged"
+        notify: true
       },
       storageLabel: String,
       storage: {
-        type: Object,
-        observer: "_storageChanged"
+        notify: true,
+        type: Object
       },
       location: {
         notify: true
@@ -86,10 +85,6 @@
 
           this.fire("changePage","participantShowcase");
         }  
-      },
-      _storageChanged: function(storage){
-      },
-      _participantChanged: function(participant) {
       },
       _readParticipants: function(participants){
         var re = /users$/;

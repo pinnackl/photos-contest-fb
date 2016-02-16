@@ -117,8 +117,7 @@
       },
       data: {
         type: Object,
-        notify: true,
-        observer: "_dataChanged"
+        notify: true
       },
       sharedElements: {
         value: function(){
@@ -158,7 +157,6 @@
     _closeCard: function(){
       this.fire("changePage","participantProfile");
     },
-
     _participantChanged: function(data){
       var participantShowcase = this;
       if (data) {
@@ -173,8 +171,6 @@
       };
       window.addEventListener("data-updated", dataUser);
     },
-    _dataChanged: function(data){
-    },
     _getPhotoUrl: function(photo){
         var participantShowcase = this;
         this.location = [this.location, photo.__firebaseKey__, 'photo'].join('/');
@@ -184,14 +180,5 @@
         };
         window.addEventListener("data-updated", dataPhoto);
     }
-
-    // _storageChanged: function(user){
-    //   console.log(user);
-    //   if (user) {
-    //     var uid = this.participant;
-    //     uid = uid.replace(":", "%3A");
-    //     this.participantLocation = [user.firebase, 'users', uid].join('/');
-    //   }
-    // }
   })
 </script>

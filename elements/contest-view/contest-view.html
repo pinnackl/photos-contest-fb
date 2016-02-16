@@ -445,6 +445,12 @@
 					case "participants":
 						this.location = [this.storage.firebase, 'users'].join('/');
 						break;
+					case "contest":
+						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						break;
+					default:
+						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						break;
 				}
 			}
 		});

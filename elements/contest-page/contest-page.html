@@ -1,9 +1,19 @@
 <dom-module id="contest-page">
 	<template>
 		<style>
-
+			paper-material{
+				padding: 20px;
+			}
 		</style>
+		<paper-material elevation="1">
+			<template is="dom-repeat" items="{{data}}" as=contest index-as=index
+					filter="_getActiveContest"
+					observe="name start end description isactive registration">
+					<h2>{{contest.name}}</h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			</template>
 		<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
+		</paper-material>
 	</template>
 	<script>
 		Polymer({
@@ -20,6 +30,22 @@
 				},
 				data: {
 					notify: true
+				}
+			},
+			_getActiveContest: function (contest) {
+				var re = /contests$/;
+				var str = this.location;
+				var m;
+				if ((m = re.exec(str)) !== null) {
+				    if (m[0] == "contests"){
+						var today = new Date().getTime();
+						if (contest.isactive
+							&& (today >= contest.start && today <= contest.end)) {
+							this.currentContest = contest;
+							return true;
+						}
+						return false;
+				    }
 				}
 			}
 		});
