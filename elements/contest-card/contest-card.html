@@ -51,14 +51,6 @@
 								on-tap="login"
 							></contest-register-button>
 						</template>
-						<!-- <template is="dom-if" if={{fireUser}}>
-							<contest-register-button
-								text="Register as [[userStatus]]"
-								fire-user="{{fireUser}}"
-								on-register-user="registerUser"
-							>
-							</contest-register-button>
-						</template> -->
 						<paper-icon-button icon="expand-more" title="more info" onclick="_toggle()" style="float:right;">
 						</paper-icon-button>
 						<iron-collapse id="more-info" class="contest-info">
@@ -127,7 +119,6 @@
 				// this.$.ls.reload();
 			},
 			_dataChanged: function (data) {
-				console.log(data);
 				if (this.fireUser) {
 					var re = new RegExp("/("+this.fireUser.uid+")$/");
 					if (!((m = re.exec(this.location)) !== null)) {
@@ -159,11 +150,10 @@
 				}
 			},
 			_userChanged: function (user) {
-				if (user && this.currentContest) {
-					console.warn(user);
-					this.fireUser.contestId = this.currentContest.__firebaseKey__;
-					this.fireUser.contestRole = this.getContestRegistration();
-				}
+				// if (user && this.currentContest) {
+				// 	this.fireUser.contestId = this.currentContest.__firebaseKey__;
+				// 	this.fireUser.contestRole = this.getContestRegistration();
+				// }
 			},
 			getContestRegistration: function () {
 				var day = 86400000;
@@ -171,8 +161,12 @@
 				var registationPeriod = this.currentContest.start + this.currentContest.registration*day;
 				
 				if (today <= registationPeriod) {
+					if (this.fireUser)
+						this.contestRole = "participant";
 					return "participant";
 				} else {
+					if (this.fireUser)
+						this.contestRole = "judge";
 					return "judge";
 				}
 

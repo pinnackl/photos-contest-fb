@@ -6,8 +6,12 @@
 				margin: 48px 62px;
 			}
 
+			paper-material {
+				padding: 1em;
+			}
+
 			.contest-container {
-				margin: 1em 2em;	
+				margin: 1em 1em;
 			}
 		</style>
 		<paper-material elevation="1">
@@ -15,16 +19,6 @@
 			<div class="contest-container">
 				<template is="dom-if" if="{{_registeredStatus}}">
 					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>			
-				</template>
-				<template is="dom-repeat" items={{data}} 
-					as=item index-as=index
-					filter="_userHandle"
-					observe="reload">
-					<contest-game
-						storage="[[storage]]"
-						contest-users="[[item]]"
-						game-route="select-champion">
-					</contest-game>
 				</template>
 			</div>
 		</paper-material>

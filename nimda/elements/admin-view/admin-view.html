@@ -348,9 +348,10 @@
                         // code block
                         break;
                     case "contests":
-                        if (!this.location) {
+                        // console.log(this.location);
+                        // if (!this.location) {
                             this.adminLocation = [this.storage.firebase, 'options', 'contests'].join('/');
-                        }
+                        // }
                         break;
                     default:
                         // 

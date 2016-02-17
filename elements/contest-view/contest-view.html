@@ -262,13 +262,13 @@
 							<iron-icon class="trophy-icon" src="/img/trophy.svg"></iron-icon>
 							<span>Contest</span>
 						</a>
-						<a data-route="user" href="{{baseLocation}}user">
-							<iron-icon icon="info"></iron-icon>
-							<span>Users</span>
-						</a>
 						<a data-route="participants" href="{{baseLocation}}participants">
 							<iron-icon icon="info"></iron-icon>
 							<span>Participants</span>
+						</a>
+						<a data-route="user" href="{{baseLocation}}user">
+							<iron-icon icon="info"></iron-icon>
+							<span>Users</span>
 						</a>
 					</template>
 				</paper-menu>
@@ -289,6 +289,7 @@
 					<iron-pages attr-for-selected="data-route" selected="{{route}}">
 						<section data-route="register">
 							<contest-card
+								id="contestCard"
 								app-ready="[[apiLoaded]]"
 								location="{{location}}"
 								data="{{data}}"
@@ -297,7 +298,7 @@
 								ref="{{ref}}"
 								storage-label="[[storageLabel]]"
 								on-login-action="_handleLoginAction"
-							></contest-card>							
+							></contest-card>						
 						</section>
 						<template is="dom-if" if={{resp}}>
 							<section data-route="contest">
@@ -305,7 +306,8 @@
 									fire-user="{{user}}"
 									storage="{{storage}}"
 									data="{{data}}"
-									location="{{location}}"></contest-page>
+									location="{{location}}">
+								</contest-page>
 							</section>
 							<section data-route="user">
 								Hello user !
@@ -402,13 +404,6 @@
 								});
 								console.log('remove data-updated : "recordUser" event');
 								window.removeEventListener('data-updated', recordUser);
-							} else if (contestView.data.length > 0) {
-								// console.log(contestView.data[0].contest);
-								// contestView.set('data.0.contest.id', user.contestId);
-								// contestView.set('data.0.contest.id', "plop");
-								// contestView.set('data.0.contest.role', user.contestRole);
-								console.log('remove data-updated : "recordUser" event');
-								window.removeEventListener('data-updated', recordUser);
 							}
 						}
 					};
@@ -423,11 +418,13 @@
 				// console.log(this.user);
 			},
 			loginSuccess: function (e, detail) {
+				this.set('user.contestRole', this.$.contestCard.contestRole);
+				this.set('user.currentContest', this.$.contestCard.currentContest)
 				// Action to perform on user logged in
 				this.$.defaultPage.hidden = true;
 				// FIXME: Redirect the contest page with the contest ID => for facebook link
 				// window.page.redirect(this.baseLocation + 'contest' + this.user.contestId);
-				console.warn(this.user);
+				// console.warn(this.user);
 				window.page.redirect(this.baseLocation + 'contest');
 				this._routeChanged(this.route);
 			},
@@ -460,8 +457,10 @@
 					case "contest":
 						if (this.user) {
 							this.location = [this.storage.firebase, 'users', this.user.uid].join('/');
-							// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
 						}
+						break;
+					case "user":
+						this.location = [this.storage.firebase, 'plop'].join('/');
 						break;
 				}
 			}

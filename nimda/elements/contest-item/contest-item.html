@@ -106,7 +106,7 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-				<paper-date-picker date="{{start}}"></paper-date-picker>
+				<paper-date-picker date="{{start}}" max-date="{{start}}" min-date="{{start}}"></paper-date-picker>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
 					<paper-button dialog-dismiss>Cancel</paper-button>
@@ -211,6 +211,7 @@
 				if (data.name) {
 					console.log("Init pickers");
 					this.start 	= new Date(data.start);
+					// FIXME: Set max and min allowed date if the contest is on going
 					this.end 	= new Date(data.end);
 					this.set('dateStartTxt', this.start.toLocaleDateString());
 					this.set('dateEndTxt', this.end.toLocaleDateString());
@@ -332,13 +333,13 @@
 					this.$.message.open();
 					return false;
 				}
-				var today = new Date();
-					today = today.setHours(0,0,0,0);
-				if (dStart < today || dEnd < today) {
-					this.$.message.text = "The contest can not start before after today !";
-					this.$.message.open();
-					return false;
-				}
+				// var today = new Date();
+				// 	today = today.setHours(0,0,0,0);
+				// if (dStart < today || dEnd < today) {
+				// 	this.$.message.text = "The contest can not start before today !";
+				// 	this.$.message.open();
+				// 	return false;
+				// }
 
 				var data = this.allData;
 				for (var i = 0; i < data.length; i++) {
