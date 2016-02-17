@@ -109,14 +109,21 @@
         observer: "_participantChanged"
       },
       storageLabel: String,
-      storage: {},
-      participantData: {},
+      storage: {
+        notify: true
+      },
+      participantData: {
+        notify: true
+      },
       participantPhotoUrl: String,
       location: {
         notify: true
       },
       data: {
         type: Object,
+        notify: true
+      },
+      fireUser: {
         notify: true
       },
       sharedElements: {
@@ -160,8 +167,7 @@
     _participantChanged: function(data){
       var participantShowcase = this;
       if (data) {
-        var uid = 'facebook:' + data;
-        uid = uid.replace(":", "%3A");
+        var uid = this.fireUser.uid;
         this.location = [this.location, uid].join('/');
       }
       var dataUser = function(e) {
@@ -173,7 +179,7 @@
     },
     _getPhotoUrl: function(photo){
         var participantShowcase = this;
-        this.location = [this.location, photo.__firebaseKey__, 'photo'].join('/');
+        this.location = [this.location, photo.__firebaseKey__, 'contests', 'photos'].join('/');
         var dataPhoto = function(e) {
             window.removeEventListener("data-updated", dataPhoto);
             participantShowcase.querySelector('.contestPhoto').src = participantShowcase.data[0].photoSourceUrl;
