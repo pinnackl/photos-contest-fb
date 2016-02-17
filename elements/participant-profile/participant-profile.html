@@ -93,10 +93,12 @@
         if ((m = re.exec(str)) !== null) {
             if (m[0] == "users"){
                 var tmp = [];
-                for (var key in participants[0]) {
-                    if(key != "__firebaseKey__"){
-                        var participant = participants[0][key];
-                        tmp.push(participant);
+                for(var i = 0; i <= participants.length; i++){
+                    for (var key in participants[i]) {
+                        if(key != "__firebaseKey__"){
+                            var participant = participants[i][key];
+                            tmp.push(participant);
+                        }
                     }
                 }
                 return tmp;
