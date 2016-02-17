@@ -109,16 +109,22 @@
         observer: "_participantChanged"
       },
       storageLabel: String,
-      storage: {},
-      participantData: {},
+      storage: {
+        notify: true
+      },
+      participantData: {
+        notify: true
+      },
       participantPhotoUrl: String,
       location: {
         notify: true
       },
       data: {
         type: Object,
-        notify: true,
-        observer: "_dataChanged"
+        notify: true
+      },
+      fireUser: {
+        notify: true
       },
       sharedElements: {
         value: function(){
@@ -158,12 +164,10 @@
     _closeCard: function(){
       this.fire("changePage","participantProfile");
     },
-
     _participantChanged: function(data){
       var participantShowcase = this;
       if (data) {
-        var uid = 'facebook:' + data;
-        uid = uid.replace(":", "%3A");
+        var uid = this.fireUser.uid;
         this.location = [this.location, uid].join('/');
       }
       var dataUser = function(e) {
@@ -173,25 +177,14 @@
       };
       window.addEventListener("data-updated", dataUser);
     },
-    _dataChanged: function(data){
-    },
     _getPhotoUrl: function(photo){
         var participantShowcase = this;
-        this.location = [this.location, photo.__firebaseKey__, 'photo'].join('/');
+        this.location = [this.location, photo.__firebaseKey__, 'contests', 'photos'].join('/');
         var dataPhoto = function(e) {
             window.removeEventListener("data-updated", dataPhoto);
             participantShowcase.querySelector('.contestPhoto').src = participantShowcase.data[0].photoSourceUrl;
         };
         window.addEventListener("data-updated", dataPhoto);
     }
-
-    // _storageChanged: function(user){
-    //   console.log(user);
-    //   if (user) {
-    //     var uid = this.participant;
-    //     uid = uid.replace(":", "%3A");
-    //     this.participantLocation = [user.firebase, 'users', uid].join('/');
-    //   }
-    // }
   })
 </script>

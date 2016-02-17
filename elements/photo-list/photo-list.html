@@ -86,6 +86,10 @@
 				},
 				fireUser: {
 					notify: true
+				},
+				pushed:{
+					type: Boolean,
+					value: false
 				}
 			},
 			listeners: {
@@ -94,17 +98,18 @@
 			},
 			browsePhoto: function (e) {
 				var photoList = this;
-				var firebaseKey = this.data[0].__firebaseKey__;
 
 				// Check of the url is already on the user photo node
-				var re = /(photo)$/;
-				if (!((m = re.exec(this.location)) !== null)) {
+				//  var re = /(contests\/photos)$/;
+				//  if (!((m = re.exec(this.location)) !== null)) {
 					this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
-				}
+				// }
 
-				var getPhotoRegistered = function(e) {
+				var getPhotoContest = function(e){
+					window.removeEventListener("data-updated", getPhotoContest);
 					if(typeof photoList.data[0] != 'undefined'){
 						var photoRegistered = photoList.data[0].photoSourceUrl;
+						this.selectedPhoto = photoList.data[0].photoSourceUrl;
 					}
 
 					FB.api(
@@ -130,10 +135,13 @@
 												}
 												var source = response.data[photo].images[0].source;
 												var selected = false;
-												if(source == photoRegistered){
+												if(source == photoRegistered && photoList.pushed === false){
 													selected = true;
+													photoList.unshift('photos', {image: image, source: source, selected: selected});
+													photoList.pushed = true;
+												}else{
+													photoList.push('photos', {image: image, source: source, selected: selected});
 												}
-												photoList.push('photos', {image: image, source: source, selected: selected});
 											}
 										}
 									);
@@ -144,29 +152,37 @@
 								document.querySelector('#message').open();
 							}
 						}
-					);
-					window.removeEventListener("data-updated", getPhotoRegistered);
+					);					
+				}
+
+				var getPhotoContestNode = function(e) {
+					window.removeEventListener("data-updated", getPhotoContestNode);
+					window.addEventListener("data-updated", getPhotoContest);
+					photoList.location = [photoList.location, photoList.data[0].__firebaseKey__, 'contests', 'photos'].join('/');
 				};
-				window.addEventListener("data-updated", getPhotoRegistered);
+				window.addEventListener("data-updated", getPhotoContestNode);
 			},
 			_handleSelectImage: function (e, detail) {
 				console.log(this.data);
 				if (this.data.length > 0) {
 					console.log('-----');
 					console.info('Update registred photo');
-					// this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
-					// this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
-					// this.set('data.'+0+'.status', this.photoData.status);
+					this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
+					this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
+					this.set('data.'+0+'.status', this.photoData.status);
+					this.photos = [];
+					this.pushed = false;
 				} else {
 					console.log('-----');
 					console.info('Set registred photo');
 					// console.log(this.data);
-					// this.push('data', this.photoData);
+					this.push('data', this.photoData);
 				}
 			},
 			_dialogOpened: function (e) {
 			},
 			_dialogClosed: function (e) {
+				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
 			},
 			_accessArray: function (arr, idx) {
 				return arr[idx];
