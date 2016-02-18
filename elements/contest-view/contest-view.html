@@ -258,9 +258,9 @@
 						<span>Register</span>
 					</a>
 					<template is="dom-if" if={{resp}}>
-						<a data-route="contest" href="{{baseLocation}}contest">
+						<a data-route="contest" href="{{baseLocation}}contest/{{user.currentContest.__firebaseKey__}}">
 							<iron-icon class="trophy-icon" src="/img/trophy.svg"></iron-icon>
-							<span>Contest</span>
+							<span>Contests</span>
 						</a>
 						<a data-route="participants" href="{{baseLocation}}participants">
 							<iron-icon icon="info"></iron-icon>
@@ -302,21 +302,21 @@
 						</section>
 						<template is="dom-if" if={{resp}}>
 							<section data-route="contest">
-								<contest-page id="contestPage"
+								<!-- <contest-page id="contestPage"
 									fire-user="{{user}}"
 									storage="{{storage}}"
 									data="{{data}}"
 									location="{{location}}">
-								</contest-page>
+								</contest-page> -->
 							</section>
 							<section data-route="user">
 								Hello user !
 							</section>
 							<section data-route="participants">
-								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
+								<!-- <neon-animated-pages attr-for-selected="id" selected="participantProfile">
  									<participant-profile id="participantProfile" storage-label="[[storageLabel]]" storage="{{storage}}" location="{{location}}" participants="{{data}}"></participant-profile>
 									<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]" storage="{{storage}}" fire-user="{{user}}" location="{{location}}" data="{{data}}"></participant-profile>
-								</neon-animated-pages> 
+								</neon-animated-pages> --> 
 							</section>
 						</template>
 					</iron-pages>
@@ -378,38 +378,42 @@
 			},
 			// Property "apiLoaded" observer
 			_apiLoaded: function (loaded) {
+				if (loaded) {
+					this._eLoaded = true;
+					this._routeChanged(this.route);
+				}
 				// As we want to both log in the user and register it to an actual contest
 				// the signin action is bound to the contest register action
 				// But in case the user is already logged in the contest register action
 				// fired by the <contest-register-button> is handled by the contest card
 				// 
 				// FIXME: consider merging the both behaviour and here only register user to the database
-				if (loaded) {
-					// Test if the location is on the user node
-					var contestView = this;
-					var recordUser = function(e) {
-						if (contestView.user != null) {
-							var user = contestView.user;
-							// If the user is not in the database
-							if (contestView.data.length == 0) {
-								contestView.push('data', {
-									email: user.facebook.email,
-									name: user.facebook.displayName,
-									photoUrl: user.facebook.profileImageURL,
-									id: user.facebook.id,
-									currentContest: {
-										id: user.contestId,
-										role: user.contestRole
-									}
-								});
-								console.log('remove data-updated : "recordUser" event');
-								window.removeEventListener('data-updated', recordUser);
-							}
-						}
-					};
-					console.log('add event listener data-updated : "recordUser" events');
-					window.addEventListener("data-updated", recordUser);
-				}
+				// if (loaded) {
+				// 	// Test if the location is on the user node
+				// 	var contestView = this;
+				// 	var recordUser = function(e) {
+				// 		if (contestView.user != null) {
+				// 			var user = contestView.user;
+				// 			// If the user is not in the database
+				// 			if (contestView.data.length == 0) {
+				// 				contestView.push('data', {
+				// 					email: user.facebook.email,
+				// 					name: user.facebook.displayName,
+				// 					photoUrl: user.facebook.profileImageURL,
+				// 					id: user.facebook.id,
+				// 					currentContest: {
+				// 						id: contestView.$.contestCard.contestId,
+				// 						role: contestView.$.contestCard.contestRole
+				// 					}
+				// 				});
+				// 				console.log('remove data-updated : "recordUser" event');
+				// 				window.removeEventListener('data-updated', recordUser);
+				// 			}
+				// 		}
+				// 	};
+				// 	console.log('add event listener data-updated : "recordUser" events');
+				// 	window.addEventListener("data-updated", recordUser);
+				// }
 			},
 			_handleLoginAction: function (e) {
 				this.$.loginbtn.login();
@@ -421,19 +425,21 @@
 				this.set('user.contestRole', this.$.contestCard.contestRole);
 				this.set('user.currentContest', this.$.contestCard.currentContest)
 				// Action to perform on user logged in
-				this.$.defaultPage.hidden = true;
+				// this.$.defaultPage.hidden = true;
 				// FIXME: Redirect the contest page with the contest ID => for facebook link
-				// window.page.redirect(this.baseLocation + 'contest' + this.user.contestId);
-				// console.warn(this.user);
-				window.page.redirect(this.baseLocation + 'contest');
-				this._routeChanged(this.route);
+				// console.log(this.$.contestCard.contestId);
+				// console.log("Redirect to contest page");
+				// console.log(this.$.contestCard.contestId);
+				// window.page.redirect(this.baseLocation + 'contest/' + this.$.contestCard.contestId);
+				// window.page.redirect(this.baseLocation + 'contest');
+				// this._routeChanged(this.route);
 			},
 			loginCancel: function () {
 				this.$.message.open();
 			},
 			fbNotConnected: function (e, detail) {
 				// Redirect to the register page if the user is not connected
-				window.page.redirect(this.baseLocation + 'register');
+				this._pageRedirect(['register']);
 				this.$.message.text = "Login to use this app !";
 				this.$.message.open();
 			},
@@ -444,13 +450,22 @@
 				// console.log(storage);
 			},
 			_dataChanged: function (data) {
-				// console.log(data);
+				if (this._eLoaded) {
+					this._routeChanged(this.route);
+				}
 			},
 			_locationChanged: function (e) {
 				// console.log(this.data);
 			},
-			_routeChanged: function(route){
+			_pageRedirect: function (path) {
+				window.page.redirect(this.baseLocation + path.join('/'));
+			},
+			_routeChanged: function(route) {
+				console.info("The app route is :" + route);
 				switch(route){
+					case "register":
+						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+						break;
 					case "participants":
 						this.location = [this.storage.firebase, 'users'].join('/');
 						break;
@@ -461,6 +476,9 @@
 						break;
 					case "user":
 						this.location = [this.storage.firebase, 'plop'].join('/');
+						break;
+					default: 
+						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
 						break;
 				}
 			}

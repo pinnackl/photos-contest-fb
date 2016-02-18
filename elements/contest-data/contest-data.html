@@ -51,10 +51,10 @@
 			},
 			_userChanged: function (user) {
 				if (user) {
-					console.info('Move firebase to the user node !');
-					var uid = this.fireUser.uid;
-						uid = uid.replace("%3A", ":");
-					this.location = [this._storage.firebase, 'users', uid].join('/');
+					// console.info('Move firebase to the user node !');
+					// var uid = this.fireUser.uid;
+					// 	uid = uid.replace("%3A", ":");
+					// this.location = [this._storage.firebase, 'users', uid].join('/');
 				}
 			},
 			_refChanged: function (ref) {
