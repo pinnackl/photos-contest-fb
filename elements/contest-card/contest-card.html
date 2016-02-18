@@ -90,73 +90,50 @@
 				},
 				location: {
 					notify: true,
-					value: "",
-					observer: '_locationChanged'
+					value: ""
 				},
 				fireLocation: {
-					type: String,
-					observer: '_fireLocationChanged'
+					type: String
 				},
 				data: {
-					notify: true,
-					observer: '_dataChanged'
+					notify: true
 				},
 				response: {
 					notify: true
 				},
 				fireUser: {
-					notify: true,
-					observer: '_userChanged'
+					notify: true
 				},
 				ref: {},
 				storageLabel: {},
 				storage: {
 					observer: '_storageReady'
+				},
+				currentContest: {
 				}
 			},
 			ready: function () {
 				var _this = this;
-				window.addEventListener('fb-login-success', function (e) {
-					console.log("Action to perform on login success");
-					_this.fireLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
+				window.addEventListener('active-contest-loaded', function (e) {
+					console.log('active-contest-loaded');
+					_this.fireLocation = _this.tmpFireLocation;
 					_this.activeRecord = true;
 				});
-				// var contestCard = this;
-				// var updateCallback = function (e) {
-				// 	contestCard.location = [contestCard.storage.firebase, 'options', 'contests'].join('/');
-				// 	// Remove the listner
-				// 	window.removeEventListener('data-updated', updateCallback);
-				// };
-				// window.addEventListener('data-updated', updateCallback);
+				window.addEventListener('login', function (e) {
+					console.log("Action to perform on login success");
+					_this.tmpFireLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
+				});
 			},
 			login: function (e) {
 				this.fire('login-action');
 			},
 			_appReady: function (loaded) {
-				// this.$.ls.reload();
-			},
-			_dataChanged: function (data) {
-				// if (this.fireUser) {
-				// 	var re = new RegExp("/("+this.fireUser.uid+")$/");
-				// 	if (!((m = re.exec(this.location)) !== null)) {
-				// 		console.log("Get user data");
-				// 		if (this.data[0] && this.data[0].currentContest) {
-				// 			this.contestId = this.data[0].currentContest.id;
-				// 			console.log(this.contestId);
-				// 		}
-				// 		// this._contestRegister();
-
-				// 	}
-				// }
 			},
 			_firebaseLoaded: function () {
 				if (this.fireUser && this.activeRecord) {
-					if (this.fireData.length == 0 && this.activeRecord && this.currentContest) {
+					if (this.fireData.length == 0 && this.currentContest) {
 						console.log("The user does not exist in database");
-						console.log(this.fireLocation);
-						console.log(this.fireData);
 						var user = this.fireUser;
-
 						this.push("fireData", {
 							email: user.facebook.email,
 							name: user.facebook.displayName,
@@ -169,36 +146,26 @@
 						});
 					} else if (this.activeRecord && this.currentContest) {
 						console.log("The user already exist in database");
-						console.log(this.fireLocation);
-						console.log(this.fireData);
-
-						// var re = new RegExp("("+this.fireUser.uid+")$");
-						// if ((m = re.exec(this.fireLocation)) !== null) {
-						//     if (m.index === re.lastIndex) {re.lastIndex++;}
-						// 	this.fireLocation = [
-						// 		this.fireLocation,
-						// 		this.fireData[0].__firebaseKey__
-						// 	].join('/');
-						// }
-						// if (this.activeRecord) {
-						// 	return;
-						// }
-						// if ()
-						// this.set('fireData.0.email')
-						// this.set('fireData.0.name')
-						// this.set('fireData.0.photoUrl')
-						// this.set('fireData.0.id')
-						// this.set('fireData.0.currentContest.0.id', "plop2");
+						var re = new RegExp("("+this.fireUser.uid+")$");
+						if ((m = re.exec(this.fireLocation)) !== null) {
+						    if (m.index === re.lastIndex) {re.lastIndex++;}
+							this.fireLocation = [
+								this.fireLocation,
+								this.fireData[0].__firebaseKey__
+							].join('/');
+						}
 					}
 					this.activeRecord = false;
+				} 
+				else if (this.fireUser && !this.activeRecord && !this._workEnded) {
+					if (this.fireData.length != 0) {
+						console.log("register-success");
+						this.fire('register-success', {contest: this.currentContest});
+					}
+					this._workEnded = true;
 				}
 			},
-			_locationChanged: function (location) {
-			},
-			_fireLocationChanged: function (fireLocation) {
-			},
 			_storageReady: function (storage) {
-				// console.log(storage);
 			},
 			_getActiveContest: function (contest) {
 				var re = /contests$/;
@@ -209,24 +176,18 @@
 						var today = new Date().getTime();
 						if (contest.isactive
 							&& (today >= contest.start && today <= contest.end)) {
+							console.log("get the contest info");
 							this.currentContest = contest;
 							this.userStatus = this.getContestRegistration();
 
-							console.log("get the contest info");
-							if (!this.contestId)
+							if (!this.contestId) {
 								this.contestId = this.currentContest.__firebaseKey__;
+							}
+							this.fire('active-contest-loaded');
 							return true;
 						}
 						return false;
 				    }
-				}
-			},
-			_userChanged: function (user) {
-				if (user && this.currentContest) {
-					this.contestId = this.currentContest.__firebaseKey__;
-					this.contestRole = this.getContestRegistration();
-				} else if (user) {
-					// console.warn(this.data);
 				}
 			},
 			getContestRegistration: function () {
@@ -243,26 +204,6 @@
 			_toLocalDate: function (date) {
 				return new Date(date).toLocaleDateString();
 			},
-			loginSuccess: function (e, detail) {
-				// body...
-			},
-			registerUser: function (e, detail) {
-				// Move the firebase location to the use node
-				// update the user contest node (as the user is already registered in firebase)
-				// Need to trigger the change event or
-				// directly update the user here
-				// this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
-			},
-			_contestRegister: function () {
-				// this.set('data.0.contest.id', this.currentContest.__firebaseKey__);
-				// this.set('data.0.contest.role', this.getContestRegistration());
-			},
-			fbNotConnected: function (e, detail) {
-				// this.location = [this.storage.firebase, 'options', 'contests'].join('/');
-			},
-			loginCancel: function (e, detail) {
-				// body...
-			}
 		});
 	</script>
 </dom-module>

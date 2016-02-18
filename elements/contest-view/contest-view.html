@@ -243,7 +243,6 @@
 			ref="{{ref}}"
 			storage-label="[[storageLabel]]"
 			text="Register as [[userStatus]]"
-			on-fb-login-success="loginSuccess"
 			on-fb-not-connected="fbNotConnected"
 			on-fb-login-canceled="loginCancel">
 		</fb-login>
@@ -258,7 +257,7 @@
 						<span>Register</span>
 					</a>
 					<template is="dom-if" if={{resp}}>
-						<a data-route="contest" href="{{baseLocation}}contest/{{user.currentContest.__firebaseKey__}}">
+						<a data-route="contest" href="{{baseLocation}}contest/{{contestData.__firebaseKey__}}">
 							<iron-icon class="trophy-icon" src="/img/trophy.svg"></iron-icon>
 							<span>Contests</span>
 						</a>
@@ -298,6 +297,7 @@
 								ref="{{ref}}"
 								storage-label="[[storageLabel]]"
 								on-login-action="_handleLoginAction"
+								on-register-success="_handleRegisterSuccess"
 							></contest-card>						
 						</section>
 						<template is="dom-if" if={{resp}}>
@@ -343,8 +343,7 @@
 					observer: '_apiLoaded'
 				},
 				user: {
-					notify: true,
-					observer: 'userChanged'
+					notify: true
 				},
 				autoLogin: {
 					type: Boolean,
@@ -382,57 +381,16 @@
 					this._eLoaded = true;
 					this._routeChanged(this.route);
 				}
-				// As we want to both log in the user and register it to an actual contest
-				// the signin action is bound to the contest register action
-				// But in case the user is already logged in the contest register action
-				// fired by the <contest-register-button> is handled by the contest card
-				// 
-				// FIXME: consider merging the both behaviour and here only register user to the database
-				// if (loaded) {
-				// 	// Test if the location is on the user node
-				// 	var contestView = this;
-				// 	var recordUser = function(e) {
-				// 		if (contestView.user != null) {
-				// 			var user = contestView.user;
-				// 			// If the user is not in the database
-				// 			if (contestView.data.length == 0) {
-				// 				contestView.push('data', {
-				// 					email: user.facebook.email,
-				// 					name: user.facebook.displayName,
-				// 					photoUrl: user.facebook.profileImageURL,
-				// 					id: user.facebook.id,
-				// 					currentContest: {
-				// 						id: contestView.$.contestCard.contestId,
-				// 						role: contestView.$.contestCard.contestRole
-				// 					}
-				// 				});
-				// 				console.log('remove data-updated : "recordUser" event');
-				// 				window.removeEventListener('data-updated', recordUser);
-				// 			}
-				// 		}
-				// 	};
-				// 	console.log('add event listener data-updated : "recordUser" events');
-				// 	window.addEventListener("data-updated", recordUser);
-				// }
 			},
 			_handleLoginAction: function (e) {
 				this.$.loginbtn.login();
 			},
-			userChanged: function (user) {
-				// console.log(this.user);
-			},
-			loginSuccess: function (e, detail) {
-				this.set('user.contestRole', this.$.contestCard.contestRole);
-				this.set('user.currentContest', this.$.contestCard.currentContest)
-				// Action to perform on user logged in
-				// this.$.defaultPage.hidden = true;
-				// FIXME: Redirect the contest page with the contest ID => for facebook link
-				// console.log(this.$.contestCard.contestId);
-				// console.log("Redirect to contest page");
-				// console.log(this.$.contestCard.contestId);
-				// window.page.redirect(this.baseLocation + 'contest/' + this.$.contestCard.contestId);
-				// window.page.redirect(this.baseLocation + 'contest');
-				// this._routeChanged(this.route);
+			_handleRegisterSuccess: function (e, detail) {
+				this.$.defaultPage.hidden = true;
+				this.contestData = detail.contest;
+				this._pageRedirect(['contest', detail.contest.__firebaseKey__]);
+				this._routeChanged(this.route)
+				console.log(detail);
 			},
 			loginCancel: function () {
 				this.$.message.open();
