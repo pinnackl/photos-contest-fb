@@ -256,7 +256,7 @@
 						<iron-icon icon="input"></iron-icon>
 						<span>Register</span>
 					</a>
-					<template is="dom-if" if={{resp}}>
+					<template is="dom-if" if={{contestData}}>
 						<a data-route="contest" href="{{baseLocation}}contest/{{contestData.__firebaseKey__}}">
 							<iron-icon class="trophy-icon" src="/img/trophy.svg"></iron-icon>
 							<span>Contests</span>
@@ -300,23 +300,25 @@
 								on-register-success="_handleRegisterSuccess"
 							></contest-card>						
 						</section>
-						<template is="dom-if" if={{resp}}>
+						<template is="dom-if" if={{contestData}}>
 							<section data-route="contest">
-								<!-- <contest-page id="contestPage"
+								<contest-page id="contestPage"
+									route-param="[[param]]"
 									fire-user="{{user}}"
 									storage="{{storage}}"
 									data="{{data}}"
+									contest-data="[[contestData]]"
 									location="{{location}}">
-								</contest-page> -->
+								</contest-page>
 							</section>
 							<section data-route="user">
 								Hello user !
 							</section>
 							<section data-route="participants">
-								<!-- <neon-animated-pages attr-for-selected="id" selected="participantProfile">
+								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
  									<participant-profile id="participantProfile" storage-label="[[storageLabel]]" storage="{{storage}}" location="{{location}}" participants="{{data}}"></participant-profile>
 									<participant-showcase id="participantShowcase" storage-label="[[storageLabel]]" storage="{{storage}}" fire-user="{{user}}" location="{{location}}" data="{{data}}"></participant-profile>
-								</neon-animated-pages> --> 
+								</neon-animated-pages> 
 							</section>
 						</template>
 					</iron-pages>
@@ -336,6 +338,9 @@
 					type: String,
 					notify: true,
 					observer: "_routeChanged"
+				},
+				param: {
+
 				},
 				baseLocation: String,
 				apiLoaded: {
@@ -379,7 +384,8 @@
 			_apiLoaded: function (loaded) {
 				if (loaded) {
 					this._eLoaded = true;
-					this._routeChanged(this.route);
+					// this._routeChanged('register');
+					this._pageRedirect(['register']);
 				}
 			},
 			_handleLoginAction: function (e) {
@@ -390,7 +396,6 @@
 				this.contestData = detail.contest;
 				this._pageRedirect(['contest', detail.contest.__firebaseKey__]);
 				this._routeChanged(this.route)
-				console.log(detail);
 			},
 			loginCancel: function () {
 				this.$.message.open();
