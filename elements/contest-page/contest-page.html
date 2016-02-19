@@ -18,7 +18,7 @@
 			<div class="contest-container">
 				<template is="dom-if" if="{{_registeredStatus}}">
 					<h1>Choose your contest photo</h1>
-					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" data="{{data}}" location="{{location}}"></photo-list>
+					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" storage-label="[[storageLabel]]" data="{{data}}" location="{{location}}"></photo-list>
 				</template>
 				<template is="dom-if" if="{{_votesStarted}}">
 					<paper-button raised on-tap="startBattle">Start voting</paper-button>

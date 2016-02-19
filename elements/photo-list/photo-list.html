@@ -29,7 +29,12 @@
 		        border-top-right-radius: 2px;
 			}
 		</style>
-		<!-- <iron-localstorage id="ls" name="app-storage" value="{{storage}}"></iron-localstorage> -->
+		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
+		<firebase-collection
+			data="{{dataPhoto}}"
+			location="[[fireLocation]]"
+			on-firebase-value="_firebaseLoaded">
+		</firebase-collection>
 		<paper-button raised on-tap="browsePhoto">Browse Photos</paper-button>
 		<paper-dialog id="dialog" class="size-position">
 			<div class="layout horizontal">
@@ -84,99 +89,83 @@
 				location: {
 					notify: true
 				},
+				fireLocation: {
+					type: String
+				},
 				fireUser: {
 					notify: true
-				},
-				pushed:{
-					type: Boolean,
-					value: false
 				}
 			},
 			listeners: {
 				'iron-overlay-opened': '_dialogOpened',
 				'iron-overlay-closed': '_dialogClosed'
 			},
+			ready: function () {
+				var re = /(currentContest\/photos)$/;
+				if (!((m = re.exec(this.location)) !== null)) {
+					this.fireLocation = [this.storage.firebase, 'users', this.fireUser.uid, this.data[0].__firebaseKey__, 'currentContest', 'photos'].join('/');
+				}
+			},
+			_firebaseLoaded: function () {
+			},
 			browsePhoto: function (e) {
 				var photoList = this;
-
-				// Check of the url is already on the user photo node
-				//  var re = /(contests\/photos)$/;
-				//  if (!((m = re.exec(this.location)) !== null)) {
-					this.location = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
-				// }
-
-				var getPhotoContest = function(e){
-					window.removeEventListener("data-updated", getPhotoContest);
-					if(typeof photoList.data[0] != 'undefined'){
-						var photoRegistered = photoList.data[0].photoSourceUrl;
-						this.selectedPhoto = photoList.data[0].photoSourceUrl;
-					}
-
-					FB.api(
-						"/me/albums",
-						photoList.storage,
-						function (response) {
-							if (response && !response.error) {
-								for (album in response.data) {
-									FB.api(
-										response.data[album].id + '/photos?fields=images',
-										function (response) {
-											for (photo in response.data) {
-												if (response.data[photo].images[7]) {
-													var image = response.data[photo].images[7].source;
-												} else if (response.data[photo].images[6]) {
-													var image = response.data[photo].images[6].source;
-												} else if (response.data[photo].images[5]) {
-													var image = response.data[photo].images[5].source;
-												} else if (response.data[photo].images[4]) {
-													var image = response.data[photo].images[4].source;
-												} else {
-													var image = response.data[photo].images[1].source;
-												}
-												var source = response.data[photo].images[0].source;
-												var selected = false;
-												if(source == photoRegistered && photoList.pushed === false){
-													selected = true;
-													photoList.unshift('photos', {image: image, source: source, selected: selected});
-													photoList.pushed = true;
-												}else{
-													photoList.push('photos', {image: image, source: source, selected: selected});
-												}
+				if(typeof photoList.dataPhoto[0] != 'undefined'){
+					var photoRegistered = photoList.dataPhoto[0].photoSourceUrl;
+				}
+				photoList.photos = [];
+				FB.api(
+					"/me/albums",
+					photoList.storage,
+					function (response) {
+						if (response && !response.error) {
+							for (album in response.data) {
+								FB.api(
+									response.data[album].id + '/photos?fields=images',
+									function (response) {
+										for (photo in response.data) {
+											if (response.data[photo].images[7]) {
+												var image = response.data[photo].images[7].source;
+											} else if (response.data[photo].images[6]) {
+												var image = response.data[photo].images[6].source;
+											} else if (response.data[photo].images[5]) {
+												var image = response.data[photo].images[5].source;
+											} else if (response.data[photo].images[4]) {
+												var image = response.data[photo].images[4].source;
+											} else {
+												var image = response.data[photo].images[1].source;
+											}
+											var source = response.data[photo].images[0].source;
+											var selected = false;
+											if(source == photoRegistered){
+												selected = true;
+												photoList.unshift('photos', {image: image, source: source, selected: selected});
+											}else{
+												photoList.push('photos', {image: image, source: source, selected: selected});
 											}
 										}
-									);
-								}
-								photoList.$.dialog.open();
-							} else {
-								// If the user is not loged in we dispaly message
-								document.querySelector('#message').open();
+									}
+								);
 							}
+							photoList.$.dialog.open();
+						} else {
+							// If the user is not loged in we dispaly message
+							document.querySelector('#message').open();
 						}
-					);					
-				}
-
-				var getPhotoContestNode = function(e) {
-					window.removeEventListener("data-updated", getPhotoContestNode);
-					window.addEventListener("data-updated", getPhotoContest);
-					photoList.location = [photoList.location, photoList.data[0].__firebaseKey__, 'contests', 'photos'].join('/');
-				};
-				window.addEventListener("data-updated", getPhotoContestNode);
+					}
+				);					
 			},
 			_handleSelectImage: function (e, detail) {
-				console.log(this.data);
-				if (this.data.length > 0) {
+				if (this.dataPhoto.length > 0) {
 					console.log('-----');
 					console.info('Update registred photo');
-					this.set('data.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
-					this.set('data.'+0+'.photoUrl', this.photoData.photoUrl);
-					this.set('data.'+0+'.status', this.photoData.status);
-					this.photos = [];
-					this.pushed = false;
+					this.set('dataPhoto.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
+					this.set('dataPhoto.'+0+'.photoUrl', this.photoData.photoUrl);
+					this.set('dataPhoto.'+0+'.status', this.photoData.status);
 				} else {
 					console.log('-----');
 					console.info('Set registred photo');
-					// console.log(this.data);
-					this.push('data', this.photoData);
+					this.push('dataPhoto', this.photoData);
 				}
 			},
 			_dialogOpened: function (e) {
