@@ -103,7 +103,7 @@
 			ready: function () {
 				var re = /(currentContest\/photos)$/;
 				if (!((m = re.exec(this.location)) !== null)) {
-					this.fireLocation = [this.storage.firebase, 'users', this.fireUser.uid, this.data[0].__firebaseKey__, 'currentContest', 'photos'].join('/');
+					this.fireLocation = [this.storage.firebase, 'users', this.fireUser.uid, this.data[0].__firebaseKey__, 'contests', 'photos'].join('/');
 				}
 			},
 			_firebaseLoaded: function () {
