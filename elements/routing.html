@@ -40,22 +40,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     page(app.baseUrl, function() {
 		  app.route = 'register';
+      app.params = {};
     });
 
     page('/', function() {
       app.route = 'register';
+      app.params = {};
     });
 
     page('/user', function() {
       app.route = 'user';
+      app.params = {};
     });
 
     page('/contests', function() {
       app.route = 'contest';
+      app.params = {};
     });
 
     page('/contest', function() {
       app.route = 'contest';
+      app.params = {};
     });
 
     page('/contest/:id', function(data) {
@@ -63,12 +68,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.params = data.params;
     });
 
+    page('/contest/:id/battle', function(data) {
+      app.route = 'contest';
+      data.params.customBag = {
+        subRoute: 'battle'
+      };
+      app.params = data.params;
+    });
+
     page('/register', function() {
       app.route = 'register';
+      app.params = {};
     });
 
     page('/participants', function() {
       app.route = 'participants';
+      app.params = {};
     });
 
 

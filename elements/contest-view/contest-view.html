@@ -303,7 +303,8 @@
 						<template is="dom-if" if={{contestData}}>
 							<section data-route="contest">
 								<contest-page id="contestPage"
-									route-param="[[param]]"
+									base-location="[[baseLocation]]"
+									route-param="{{param}}"
 									fire-user="{{user}}"
 									storage="{{storage}}"
 									data="{{data}}"
@@ -340,7 +341,8 @@
 					observer: "_routeChanged"
 				},
 				param: {
-
+					notify: true,
+					observer: '_paramChanged'
 				},
 				baseLocation: String,
 				apiLoaded: {
@@ -444,6 +446,9 @@
 						this.location = [this.storage.firebase, 'options', 'contests'].join('/');
 						break;
 				}
+			},
+			_paramChanged: function (param) {
+				console.log(param);
 			}
 		});
 	</script>
