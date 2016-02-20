@@ -231,31 +231,31 @@
                 <!-- Drawer Content -->
                 <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
                     <!-- Default home menu to login page if no connected -->
-                    <a id="defaultPage" data-route="login" href="{{baseUrl}}login" hidden>
+                    <a id="defaultPage" data-route="login" href="{{baseLocation}}login" hidden>
                         <iron-icon icon="perm-identity"></iron-icon>
                         <span>Login</span>
                     </a>
                     <template is="dom-if" if={{adminReady}}>
-                        <a data-route="dashboard" href="{{baseUrl}}">
+                        <a data-route="dashboard" href="{{baseLocation}}">
                             <iron-icon icon="dashboard"></iron-icon>
                             <span>Dashboard</span>
                         </a>
-                        <a data-route="contests" href="{{baseUrl}}contests">
+                        <a data-route="contests" href="{{baseLocation}}contests">
                             <iron-icon icon="event"></iron-icon>
                             <span>Contests</span>
                         </a>
 
-                        <a data-route="challonge" href="{{baseUrl}}challonge-api">
+                        <a data-route="challonge" href="{{baseLocation}}challonge-api">
                             <iron-icon icon="extension"></iron-icon>
                             <span>Challonge API</span>
                         </a>
 
-                        <a data-route="users" href="{{baseUrl}}users">
+                        <a data-route="users" href="{{baseLocation}}users">
                             <iron-icon icon="info"></iron-icon>
                             <span>Users</span>
                         </a>
 
-                        <a data-route="contact" href="{{baseUrl}}contact">
+                        <a data-route="contact" href="{{baseLocation}}contact">
                             <iron-icon icon="mail"></iron-icon>
                             <span>Contact</span>
                         </a>
@@ -352,6 +352,9 @@
             _apiLoaded: function (loaded) {
                 if (loaded) {
                     this._eLoaded = true;
+                    if (!this.baseLocation){
+                        this.baseLocation = '/nimda/';
+                    }
                     this._pageRedirect(['login']);
                 }
 
@@ -360,7 +363,6 @@
                 this.$.loginbtn.login();
             },
             _handleRegisterSuccess: function (e, detail) {
-                console.log('variable');
                 this.$.defaultPage.hidden = true;
                 this.adminReady = true;
                 this._pageRedirect(['contests']);
@@ -418,7 +420,7 @@
                 // console.log(storage);
             },
             _dataChanged: function (data) {
-                console.log(data);
+                // console.log(data);
             },
             _locationChanged: function (e) {
                 // console.log(this.data);

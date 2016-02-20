@@ -1,0 +1,44 @@
+<dom-module id="challonge-input">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			.input-create paper-input {
+				display: inline-block;
+				width: 70%;
+			}
+		</style>
+		<div class="input-create">
+			<paper-input id="" label="Challonge private key" type="password" value="{{privateKey}}"></paper-input>
+			<paper-button id="btnCreate" raised on-tap="_add">Register key</paper-button>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'challonge-input',
+			properties: {
+				data: {
+					notify: true
+				},
+				privateKey: {
+					observer: '_enableCreate'
+				}
+			},
+			_enableCreate: function (text) {
+				this.$.btnCreate.disabled = false;
+				if (!text) {
+					this.$.btnCreate.disabled = true;
+				}
+			},
+			_add: function (e) {
+				if (this.data.length == 0) {
+					this.push('data', {privateKey: this.privateKey});
+					this.privateKey = "";
+					this.fire('register-key');
+				}
+			}
+		});
+	</script>
+</dom-module>
