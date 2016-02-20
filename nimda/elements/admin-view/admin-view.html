@@ -201,7 +201,20 @@
               @media all and (min-width: 1601px) and (max-width: 1920px) { }
         </style>
 
-        <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
+        <iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>        
+        <fb-login
+            id="loginbtn"
+            api-loaded="[[apiLoaded]]"
+            graph-url="me?fields=name, email"
+            scope="public_profile, email, user_photos"
+            response="{{resp}}"
+            fire-user="{{user}}"
+            ref="{{ref}}"
+            storage-label="[[storageName]]"
+            role="administrators"
+            on-fb-not-connected="accountNotConnected"
+            on-fb-login-canceled="loginCancel">
+        </fb-login>
         <paper-drawer-panel id="paperDrawerPanel">
             <!-- Drawer Scroll Header Panel -->
             <paper-header-panel drawer>
@@ -222,7 +235,7 @@
                         <iron-icon icon="perm-identity"></iron-icon>
                         <span>Login</span>
                     </a>
-                    <template is="dom-if" if={{resp}}>
+                    <template is="dom-if" if={{adminReady}}>
                         <a data-route="dashboard" href="{{baseUrl}}">
                             <iron-icon icon="dashboard"></iron-icon>
                             <span>Dashboard</span>
@@ -230,6 +243,11 @@
                         <a data-route="contests" href="{{baseUrl}}contests">
                             <iron-icon icon="event"></iron-icon>
                             <span>Contests</span>
+                        </a>
+
+                        <a data-route="challonge" href="{{baseUrl}}challonge-api">
+                            <iron-icon icon="extension"></iron-icon>
+                            <span>Challonge API</span>
                         </a>
 
                         <a data-route="users" href="{{baseUrl}}users">
@@ -263,28 +281,23 @@
                     <iron-pages attr-for-selected="data-route" selected="{{route}}">
                         <section data-route="login">
                             <h1>Login page</h1>
-                            <fb-login
-                                id="loginbtn1"
-                                graph-url="me?fields=name, email"
-                                scope="public_profile, email, user_photos"
-                                response="{{resp}}"
+                            <admin-login
                                 fire-user="{{user}}"
-                                ref="{{ref}}"
-                                storage-label="[[storageName]]"
-                                role="administrators"
-                                on-fb-login-success="loginSuccess"
-                                on-fb-role-login-success="loginSuccess"
-                                on-fb-login-canceled="loginCancel"
-                                on-fb-login-aborded="loginAborded"
-                                on-fb-not-connected="accountNotConnected">
-                            </fb-login>
+                                on-login-action="_handleLoginAction"
+                                on-register-success="_handleRegisterSuccess"
+                                ></admin-login>
                         </section>
-                        <template is="dom-if" if={{resp}}>
+                        <template is="dom-if" if={{adminReady}}>
                             <section data-route="dashboard">
                                 <h1>Dashboard</h1>
                             </section>
                             <section data-route="contests">
                                 <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
+                            </section>
+                            <section data-route="challonge">
+                                <challonge-view
+                                    data="{{data}}">
+                                </challonge-view>
                             </section>
                             <section data-route="users">
                             Hello world ! users
@@ -313,7 +326,7 @@
                     notify: true,
                     observer: '_routeChanged'
                 },
-                baseUrl: String,
+                baseLocation: String,
                 apiLoaded: {
                     notify: true,
                     observer: '_apiLoaded'
@@ -338,20 +351,34 @@
             // Property "apiLoaded" observer
             _apiLoaded: function (loaded) {
                 if (loaded) {
-                    this.$.loginbtn1.apiLoaded = true;
+                    this._eLoaded = true;
+                    this._pageRedirect(['login']);
                 }
+
             },
-            // Routing observer
+            _handleLoginAction: function (e) {
+                this.$.loginbtn.login();
+            },
+            _handleRegisterSuccess: function (e, detail) {
+                console.log('variable');
+                this.$.defaultPage.hidden = true;
+                this.adminReady = true;
+                this._pageRedirect(['contests']);
+                this._routeChanged(this.route);
+            },
+            _pageRedirect: function (path) {
+                window.page.redirect(this.baseLocation + path.join('/'));
+            },
             _routeChanged: function (e) {
                 switch(this.route) {
                     case "dashboard":
                         // code block
                         break;
                     case "contests":
-                        // console.log(this.location);
-                        // if (!this.location) {
-                            this.adminLocation = [this.storage.firebase, 'options', 'contests'].join('/');
-                        // }
+                        this.location = [this.storage.firebase, 'options', 'contests'].join('/');
+                        break;
+                    case "challonge":
+                        this.location = [this.storage.firebase, 'options', 'challonge'].join('/');
                         break;
                     default:
                         // 
@@ -360,10 +387,11 @@
             // Handle login actions
             loginSuccess: function (e, detail) {
                 // Action to perform on user logged in
-                this.$.defaultPage.hidden = true;
-                this.route = 'contests';
+                // console.log('variable');
+                // this.$.defaultPage.hidden = true;
+                // this.route = 'contests';
 
-                this.location = this.adminLocation;
+                // this.location = this.adminLocation;
             },
             loginCancel: function () {
                 this.$.message.open();
@@ -390,7 +418,7 @@
                 // console.log(storage);
             },
             _dataChanged: function (data) {
-                // console.log(data);
+                console.log(data);
             },
             _locationChanged: function (e) {
                 // console.log(this.data);
