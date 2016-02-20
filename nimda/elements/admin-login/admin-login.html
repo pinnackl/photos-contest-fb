@@ -1,0 +1,28 @@
+<dom-module id="admin-login">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-button raised on-tap="login">Login</paper-button>
+	</template>
+	<script>
+		Polymer({
+			is: 'admin-login',
+			properties: {
+				fireUser: {
+					observer: '_fireUserChanged'
+				}
+			},
+			login: function () {
+				this.fire('login-action');
+			},
+			_fireUserChanged: function (fireUser) {
+				if (fireUser) {
+					this.fire('register-success');
+				}
+			}
+		});
+	</script>
+</dom-module>
