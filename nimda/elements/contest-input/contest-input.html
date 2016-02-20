@@ -19,6 +19,9 @@
 				display: block;
 				overflow: auto;
 			}
+			.upload-photo {
+				float: right;
+			}
 		</style>
 		<div class="input-create">
 			<paper-input label="Create a new contest :" value="{{contestName}}"></paper-input>
@@ -43,6 +46,9 @@
 							</paper-listbox>
 						</paper-menu>
 					</paper-dropdown-menu>
+				</div>
+				<div class="upload-photo">
+					<fb-upload-photo id="fbUploadPhoto"></fb-upload-photo>
 				</div>
 				<paper-date-picker date="{{dateStart}}"></paper-date-picker>
 				<div class="buttons">
