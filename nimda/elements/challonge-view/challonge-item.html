@@ -1,0 +1,31 @@
+<dom-module id="challonge-item">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			.input-create paper-input {
+				display: inline-block;
+				width: 70%;
+			}
+		</style>
+		<div class="input-create">
+			<paper-input label="Challonge private key" type="password" value="[[data.privateKey]]" readonly></paper-input>
+			<paper-button id="btnCreate" raised on-tap="_remove">Remove key</paper-button>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'challonge-item',
+			properties: {
+				data: {
+					notify: true
+				}
+			},
+			_remove: function () {
+				this.fire('delete-privatekey', {privateKey: this.data});
+			}
+		});
+	</script>
+</dom-module>

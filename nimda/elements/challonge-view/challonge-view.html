@@ -1,0 +1,46 @@
+<dom-module id="challonge-view">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			
+			.challonge-input-container {
+				padding-left: 2em;
+			}			
+		</style>
+		<h1>Challonge API</h1>
+		<div class="challonge-input-container">
+			<template is="dom-repeat" items={{data}} as=item index-as=index>
+				<challonge-item data="{{item}}" on-delete-privatekey="_delete"></challonge-item>
+			</template>
+			<template is="dom-if" if={{isEnabled}}>
+				<challonge-input data="{{data}}" on-register-key="_handleRegiserKey"></challonge-input>
+			</template>
+			
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'challonge-view',
+			properties: {
+				data: {
+					observer: '_dataChanged',
+					notify: true
+				}
+			},
+			_dataChanged: function (data) {
+				if (!data.length) {
+					this.isEnabled = true;
+				}
+			},
+			_handleRegiserKey: function () {
+				this.isEnabled = false;
+			},
+			_delete: function (e, detail) {
+				this.arrayDelete('data', e.detail.privateKey);
+				this.set('isEnabled', true);
+			}
+		});
+	</script>
+</dom-module>
