@@ -13,6 +13,11 @@
 				padding-left: 2em;
 			}
 		</style>
+		<challonge-api 
+			id="challongeApi"
+			storage="[[storage]]"
+			on-api-response="_handleApiResponse">
+		</challonge-api>
 		<h1>Contest console</h1>
 		<div class="contest-input-container">
 			<contest-input id="contestInput" data="{{data}}" storage="[[storage]]"></contest-input>
@@ -48,9 +53,15 @@
 				this.$.contestInput.open();
 			},
 			deleteContest: function (e) {
-				this.arrayDelete('data', e.detail.contest);
-				this.$.message.text = "The contest has been successfully removed!";
-				this.$.message.open();
+				this.pendingContest = e.detail.contest;
+				this.$.challongeApi.tDelete(e.detail.contest.id);
+			},
+			_handleApiResponse: function (e, detail) {
+				if (detail.result) {
+					this.arrayDelete('data', this.pendingContest);
+					this.$.message.text = "The contest has been successfully removed!";
+					this.$.message.open();
+				}
 			}
 		});
 	</script>
