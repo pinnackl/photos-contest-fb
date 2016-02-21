@@ -47,7 +47,7 @@
                 color: #757575;
               }
 
-              paper-material {
+              paper-material {  
                 border-radius: 2px;
                 height: 100%;
                 padding: 16px 0 16px 0;
@@ -206,7 +206,7 @@
             id="loginbtn"
             api-loaded="[[apiLoaded]]"
             graph-url="me?fields=name, email"
-            scope="public_profile, email, user_photos"
+            scope="public_profile, email, user_photos, manage_pages, pages_show_list, pages_manage_cta, publish_actions, read_page_mailboxes, manage_pages, publish_pages"
             response="{{resp}}"
             fire-user="{{user}}"
             ref="{{ref}}"
@@ -295,6 +295,7 @@
                                 <admin-contest
                                     api-loaded="{{isLoaded}}"
                                     data="{{data}}"
+                                    fire-user="{{user}}"
                                     storage="{{storage}}">
                                 </admin-contest>
                             </section>

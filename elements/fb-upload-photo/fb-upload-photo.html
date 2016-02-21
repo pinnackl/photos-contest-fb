@@ -1,5 +1,4 @@
 <link rel="import" href="../../vendor/polymer/polymer.html">
-<link rel="import" href="../fb-file/fb-file.html">
 
 <dom-module id="fb-upload-photo">
 	<template>
@@ -17,11 +16,16 @@
 				background-color: #F1F1F1;
 			}
 		</style>
+		<iron-localstorage id="ls" name="app-storage" value="{{storage}}"></iron-localstorage>
+		<iron-ajax
+			id="ajax"
+		    handle-as="json"
+		    on-response="handleResponse"></iron-ajax>
 		<paper-button raised on-tap="uploadPhoto" class="upload-button">Upload Photos</paper-button>
 		<paper-dialog id="dialog" class="size-position">
 			<h2>Upload photo</h2>
 			<paper-dialog-scrollable class="scroll-section">
-				<fb-file id="fbFile" data="{{uploadedPhoto}}" method="POST" raised="true" accept="image/*" dropText="Drop files here" droppable target="/">CHOOSE FILE</fb-file>
+				<fb-file id="fbUploadPhoto" data="{{uploadedPhoto}}" method="POST" raised="true" accept="image/*" dropText="Drop files here" droppable target="/">CHOOSE FILE</fb-file>
 			</paper-dialog-scrollable>
 			<div class="buttons">
 				<paper-button on-tap="_handleCancelImage">Cancel</paper-button>
@@ -39,13 +43,130 @@
 						type: Array,
 						value: [],
 						notify: true
+					},
+					albumName: {
+						notify: true
+					},
+					albumId:{
+						notify: true
+					},
+					fireUser: {
+						notify: true
+					},
+					photoUrl: {
+						notify: true
+					},
+					pageAccessToken: {
+						notify: true
 					}
 				},
 				uploadPhoto: function(e, detail){
 					this.$.dialog.open();
 				},
+				handleResponse: function(e){
+					var fbUploadPhoto = this;
+					FB.api(
+						'/' + fbUploadPhoto.albumId + '/photos?fields=images',
+						{
+							access_token: fbUploadPhoto.pageAccessToken
+						},
+						function(response){
+							for (var photo in response.data) {
+								fbUploadPhoto.photoUrl = response.data[photo].images[0].source;
+								break;
+							}
+							var photoStart = document.getElementById("photo-start");
+							var photoEnd = document.getElementById("photo-end");
+							photoStart.src = fbUploadPhoto.photoUrl;
+							photoStart.style = "width: 48px;height: 48px;";
+							photoEnd.src = fbUploadPhoto.photoUrl;
+							photoEnd.style = "width: 48px;height: 48px;";
+						}
+					);
+				},
 				_handleCancelImage: function(e, detail){
 					this.$.dialog.close();
+				},
+				_handleUploadImage: function(e, detail){
+					var oForm = document.forms['uploadPhoto'];
+					var oFileInput = oForm.elements["fileInput"];
+					var file = oFileInput.files[0];
+
+					var FR = new FileReader();
+					var imgB64 = "";
+        			FR.onload = function(e) {
+        			    imgB64 = e.target.result;
+        			};       
+        			FR.readAsDataURL(file);
+
+				    var fbUploadPhoto = this;
+				    fbUploadPhoto.$.ls.reload();
+				    var access_token = fbUploadPhoto.storage.access_token;
+				    var pageId = "/" + fbUploadPhoto.storage.pageId + "/albums";
+
+				    FB.api(
+				        pageId,
+				        function(response){
+				        	var alreadyCreated = false;
+				    	    for(var album in response.data){
+					            if(response.data[album].name === fbUploadPhoto.albumName){
+					                alreadyCreated = true;
+					                fbUploadPhoto.albumId = response.data[album].id;
+					            }
+				            }
+				            FB.api(
+				            	'/' + fbUploadPhoto.storage.pageId + '?fields=access_token',
+				            	{access_token: fbUploadPhoto.fireUser.facebook.accessToken},
+				            	function(response){
+				            		var pageAccessToken = response.access_token;
+				            		this.pageAccessToken = pageAccessToken;
+				            		function dataURItoBlob(dataURI) {
+										var byteString = atob(dataURI.split(',')[1]);
+										var ab = new ArrayBuffer(byteString.length);
+										var ia = new Uint8Array(ab);
+										for (var i = 0; i < byteString.length; i++) {
+										    ia[i] = byteString.charCodeAt(i);
+										}
+										return new Blob([ab], { type: 'image/png' });
+									}
+			        			    var blob = dataURItoBlob(imgB64);
+
+			        			    var fd = new FormData();
+			        			    fd.append("access_token", pageAccessToken);
+			        			    fd.append("source", blob);
+			        			    fd.append("name", "TESTTTTT");
+
+							        if(alreadyCreated === false){
+						            FB.api(
+						                pageId,
+						                'post',
+						                {
+						                  access_token: pageAccessToken,
+						                  name: fbUploadPhoto.albumName,
+						                  message: "Album used to store contest's photos"
+						                },
+						                function(response){
+						                	fbUploadPhoto.albumId = response.id;
+						                  	var url = "https://graph.facebook.com/" + fbUploadPhoto.albumId + "/photos?access_token=" + pageAccessToken;
+						            		var data = fd;
+						            		fbUploadPhoto.$.ajax.method = 'POST';
+						            		fbUploadPhoto.$.ajax.body = data;
+						            		fbUploadPhoto.$.ajax.url = url;
+						            		fbUploadPhoto.$.ajax.generateRequest();
+						                }
+						              );
+						            }else{
+						            	var url = "https://graph.facebook.com/" + fbUploadPhoto.albumId + "/photos?access_token=" + pageAccessToken;
+						            	var data = fd;
+						            	fbUploadPhoto.$.ajax.method = 'POST';
+						            	fbUploadPhoto.$.ajax.body = data;
+						            	fbUploadPhoto.$.ajax.url = url;
+						            	fbUploadPhoto.$.ajax.generateRequest();
+						            }			            		
+				            	}
+				            );
+				          }
+				        );					
 				}
 			});
 		})();

@@ -33,10 +33,11 @@
 			},
 			handleResponse: function (e) {
 				var fbApi = this;
-				var appId, firebase, access_token, appToken;
+				var appId, pageId, firebase, access_token, appToken;
 				fbApi.$.ls.reload();
 
 				appId 			= e.detail.response.appId;
+				pageId			= e.detail.response.pageId;
 				firebase 		= e.detail.response.firebase;
 				access_token 	= e.detail.response.access_token;
 				appToken 		= e.detail.response.appToken;
@@ -44,6 +45,7 @@
 
 				fbApi.set('config', {
 					appId: appId,
+					pageId: pageId,
 					firebase: firebase,
 					access_token: access_token,
 					appToken: appToken,
