@@ -63,7 +63,7 @@
 		</style>
 		<paper-card elevation="1" on-tap="_handleSelectImage">
 			<div class="card-content">
-					<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain"></iron-image>
+					<iron-image id="img[[index]]" class="photos" src="[[photo]]" sizing="contain" preload></iron-image>
 			</div>
 			<div class="card-actions">
 				<paper-icon-button id="radioBtn" class="img-selector"
@@ -82,7 +82,7 @@
 			</div>
 			<h2>Photo view</h2>
 			<paper-dialog-scrollable>
-				<iron-image id="img[[index]]" class="photo-source" src="[[photoSource]]" sizing="contain"></iron-image>
+				<iron-image id="img[[index]]" class="photo-source" src="[[photoSource]]" sizing="contain" preload></iron-image>
 			</paper-dialog-scrollable>
 		</paper-dialog>
 	</template>

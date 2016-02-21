@@ -200,8 +200,6 @@
 						access_token = param.user.facebook.accessToken;
 
 					console.info("Get access token");
-					if (fbLogin.storage.access_token)
-						throw "plop";
 					fbLogin.storage.access_token = access_token;
 
 					// Admin connection, provided with a role checkin

@@ -15,7 +15,7 @@
 			}
 		</style>
 		<paper-material elevation="1">
-			<div class="contest-container">
+			<div id="photoPicker" class="contest-container">
 				<template is="dom-if" if="{{_registeredStatus}}">
 					<h1>Choose your contest photo</h1>
 					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" storage-label="[[storageLabel]]" data="{{data}}" location="{{location}}"></photo-list>
@@ -23,14 +23,26 @@
 				<template is="dom-if" if="{{_votesStarted}}">
 					<paper-button raised on-tap="startBattle">Start voting</paper-button>
 				</template>
-				<iron-pages attr-for-selected="data-route" selected="[[routeParam.customBag.subRoute]]">
-					<section data-route="battle">
-						Photo battle
-					</section>
-					<section></section>
-					<section></section>
-				</iron-pages>
 			</div>
+			<iron-pages attr-for-selected="data-route" selected="[[routeParam.customBag.subRoute]]">
+				<section data-route="battle">
+					Photo battle
+					<!-- <neon-animated-pages
+						selected="[[selected]]"
+						entry-animation="[[entryAnimation]]"
+						exit-animation="[[exitAnimation]]" >
+						<neon-animatable>
+							<contest-game></contest-game>
+						</neon-animatable>
+						<neon-animatable>
+							<contest-game></contest-game>
+						</neon-animatable>
+					</neon-animated-pages> -->
+					<!-- <paper-button raised on-tap="_test">Next</paper-button> -->
+				</section>
+				<section></section>
+				<section></section>
+			</iron-pages>
 		</paper-material>
 	</template>
 	<script>
@@ -59,9 +71,17 @@
 				}
 			},
 			ready: function () {
+				this.selected = 0;
+			},
+			_test: function () {
+				console.log('variable');
+				this.entryAnimation = 'slide-from-right-animation';
+				this.exitAnimation = 'slide-left-animation';
+				this.selected++;
 			},
 			startBattle: function (e) {
 				if (this.routeParam.id) {
+					this.$.photoPicker.hidden = true;
 					this._pageRedirect(['contest', this.routeParam.id, 'battle']);
 				}
 			},
@@ -70,7 +90,7 @@
 			},
 			// Define the ability of the user
 			_getRegisteredStatus: function (userData) {
-				if (userData && userData[0].currentContest) {
+				if (userData && userData[0] && userData[0].currentContest) {
 					if (userData[0].currentContest.role != 'judge') {
 						this._registeredStatus = true;
 						return true;
@@ -93,12 +113,6 @@
 				}
 			},
 			_routeParamChanged: function (routeParam) {
-				if (routeParam.customBag) {
-					console.log(routeParam.customBag);
-				}
-				if (routeParam.customBag && routeParam.customBag.subRoute) {
-					console.log('variable');
-				}
 			}
 		});
 	</script>

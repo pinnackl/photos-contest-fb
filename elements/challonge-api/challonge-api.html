@@ -69,6 +69,7 @@
 				this.$.ajax.generateRequest();
 			},
 			tUpdate: function (id, name) {
+				name = this.sanitize(name);
 				this.requestLocation = this.buildQuery(['tournament', 'update', this.privateKey, id, name]);
 				this.$.ajax.generateRequest();
 			},

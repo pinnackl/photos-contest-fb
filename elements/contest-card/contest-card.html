@@ -146,6 +146,14 @@
 						});
 					} else if (this.activeRecord && this.currentContest) {
 						console.log("The user already exist in database");
+
+				// 		if (this.fireData[0].currentContest.id != this.currentContest.__firebaseKey__) {
+				// 			// console.log("Change user current contest");
+				// 			// console.log(this.fireData[0]);
+				// 			// console.log(this.currentContest);
+				// 			// this.set('fireData.0.currentContest.id', this.currentContest.__firebaseKey__);
+				// 		}
+
 						var re = new RegExp("("+this.fireUser.uid+")$");
 						if ((m = re.exec(this.fireLocation)) !== null) {
 						    if (m.index === re.lastIndex) {re.lastIndex++;}
