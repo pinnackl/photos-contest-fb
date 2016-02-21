@@ -41,13 +41,15 @@
 				firebase 		= e.detail.response.firebase;
 				access_token 	= e.detail.response.access_token;
 				appToken 		= e.detail.response.appToken;
+				challongeApi 	= e.detail.response.challongeApi;
 
 				fbApi.set('config', {
 					appId: appId,
 					pageId: pageId,
 					firebase: firebase,
 					access_token: access_token,
-					appToken: appToken
+					appToken: appToken,
+					challongeApi: challongeApi
 				});
 
 				fbApi.$.ls.autoSaveDisabled = false;

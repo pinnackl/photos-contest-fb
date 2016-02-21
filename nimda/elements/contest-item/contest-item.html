@@ -45,6 +45,11 @@
 			}
 		</style>
 		<!-- Display contest information -->
+		<challonge-api 
+			id="challongeApi"
+			storage="[[storage]]"
+			on-api-response="_handleApiResponse">
+		</challonge-api>
 		<paper-card elevation="1">
 			<div class="card-content">
 				<div class="input-edit">
@@ -114,7 +119,7 @@
 				</div>
 				<div class="photo-contest">
 					<paper-date-picker date="{{start}}" max-date="{{start}}" min-date="{{start}}"></paper-date-picker>
-					<img src="[[data.photoUrl]]" style="width: 250px;height: 250px;">
+					<!-- <img src="[[data.photoUrl]]" style="width: 250px;height: 250px;"> -->
 				</div>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
@@ -157,7 +162,7 @@
 				</div>
 				<div class="photo-contest">
 					<paper-date-picker date="{{end}}"></paper-date-picker>
-					<img src="[[data.photoUrl]]" style="width: 250px;height: 250px;">
+					<!-- <img src="[[data.photoUrl]]" style="width: 250px;height: 250px;"> -->
 				</div>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
@@ -209,6 +214,8 @@
 		Polymer({
 			is: 'contest-item',
 			properties: {
+				storage: {
+				},
 				data: {
 					observer: '_dataChanged'
 				},
@@ -312,8 +319,11 @@
 			_save: function () {
 				var datestart 	= this.start.getTime();
 				var dateend 	= this.end.getTime();
-				
+				this.data.challongename = this.challongeResponse.challongeName;
+				this.data.livebraquet = this.challongeResponse.liveBraquet;
 				this.set('data.name', this.$.ctstName.value);
+				// this.set('data.challongename', this.challongeResponse.challongeName);
+				// this.set('data.livebraquet', this.challongeResponse.liveBraquet);
 				this.set('data.start', datestart);
 				this.set('data.end', dateend);
 				this.set('data.isactive', this.isActive);
@@ -393,12 +403,22 @@
 					this.$.message.open();
 					return false;
 				}
-				this._save();
-
-				var dialogs = this.querySelectorAll('paper-dialog');
-				for (var i = 0; i < dialogs.length; i++) {
-					dialogs[i].close();
-				};
+				
+				this.$.challongeApi.tUpdate(this.data.id, ctstName);
+			},
+			_handleApiResponse: function (e, detail) {
+				if (detail.result) {
+					this.challongeResponse = {
+						challongeName: detail.result.name,
+						liveBraquet: detail.result['live-image-url']
+					};
+					this._save();
+					
+					var dialogs = this.querySelectorAll('paper-dialog');
+					for (var i = 0; i < dialogs.length; i++) {
+						dialogs[i].close();
+					};
+				}
 			}
 		});
 	</script>

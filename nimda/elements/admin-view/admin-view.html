@@ -47,7 +47,7 @@
                 color: #757575;
               }
 
-              paper-material {
+              paper-material {  
                 border-radius: 2px;
                 height: 100%;
                 padding: 16px 0 16px 0;
@@ -292,7 +292,12 @@
                                 <h1>Dashboard</h1>
                             </section>
                             <section data-route="contests">
-                                <admin-contest api-loaded="{{isLoaded}}" fire-user="{{user}}" data="{{data}}"></admin-contest>
+                                <admin-contest
+                                    api-loaded="{{isLoaded}}"
+                                    data="{{data}}"
+                                    fire-user="{{user}}"
+                                    storage="{{storage}}">
+                                </admin-contest>
                             </section>
                             <section data-route="challonge">
                                 <challonge-view

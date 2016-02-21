@@ -13,12 +13,17 @@
 				padding-left: 2em;
 			}
 		</style>
+		<challonge-api 
+			id="challongeApi"
+			storage="[[storage]]"
+			on-api-response="_handleApiResponse">
+		</challonge-api>
 		<h1>Contest console</h1>
 		<div class="contest-input-container">
-			<contest-input id="contestInput" fire-user="{{fireUser}}" data="{{data}}"></contest-input>
+			<contest-input id="contestInput" fire-user="{{fireUser}}" data="{{data}}" storage="[[storage]]"></contest-input>
 		</div>
 		<template is="dom-repeat" items={{data}} as=contest index-as=index>
-			<contest-item data="{{contest}}" all-data="[[data]]" on-delete-contest="deleteContest"></contest-item>
+			<contest-item data="{{contest}}" all-data="[[data]]" storage="[[storage]]" on-delete-contest="deleteContest"></contest-item>
 		</template>
 		<paper-toast id="message" text="" duration="5000"></paper-toast>
 	</template>
@@ -26,9 +31,9 @@
 		Polymer({
 			is: 'admin-contest',
 			properties: {
+				storage: {
+				},
 				apiLoaded: {
-					type: String,
-					value: 'false',
 					notify: true,
 					observer: '_apiLoaded'
 				},
@@ -46,9 +51,15 @@
 				this.$.contestInput.open();
 			},
 			deleteContest: function (e) {
-				this.arrayDelete('data', e.detail.contest);
-				this.$.message.text = "The contest has been successfully removed!";
-				this.$.message.open();
+				this.pendingContest = e.detail.contest;
+				this.$.challongeApi.tDelete(e.detail.contest.id);
+			},
+			_handleApiResponse: function (e, detail) {
+				if (detail.result) {
+					this.arrayDelete('data', this.pendingContest);
+					this.$.message.text = "The contest has been successfully removed!";
+					this.$.message.open();
+				}
 			}
 		});
 	</script>

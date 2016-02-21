@@ -26,6 +26,11 @@
 				display: inline-flex;
 			}
 		</style>
+		<challonge-api 
+			id="challongeApi"
+			storage="[[storage]]"
+			on-api-response="_handleApiResponse">
+		</challonge-api>
 		<div class="input-create">
 			<paper-input label="Create a new contest :" value="{{contestName}}"></paper-input>
 			<paper-button id="btnCreate" on-tap="open" raised>Create</paper-button>
@@ -117,6 +122,9 @@
 		Polymer({
 			is: 'contest-input',
 			properties: {
+				storage: {
+
+				},
 				contestName: {
 					observer: '_enableCreate'
 				},
@@ -136,6 +144,9 @@
 					type: String,
 					notify: true
 				}
+			},
+			testApi: function () {
+				this.$.challongeApi.tGetAll();
 			},
 			_enableCreate: function (text) {
 				this.$.btnCreate.disabled = false;
@@ -184,7 +195,10 @@
 					isactive: true,
 					registration: this.$.registration.value,
 					albumName: this.albumName,
-					photoUrl: this.photoUrl
+					photoUrl: this.photoUrl,
+					id: this.challongeResponse.id,
+					challongename: this.challongeResponse.challongeName,
+					livebraquet: this.challongeResponse.liveBraquet
 				});
 			},
 			_switchToEnd: function (e) {
@@ -261,13 +275,23 @@
 					return false;
 				}
 
-				this._add();
+				this.$.challongeApi.tCreate(ctstName);
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {
 					dialogs[i].close();
 				};
-				this.$.ctstName.value = "";
+			},
+			_handleApiResponse: function (e, detail) {
+				if (detail.result) {
+					this.challongeResponse = {
+						id: detail.result.id,
+						challongeName: detail.result.name,
+						liveBraquet: detail.result['live-image-url']
+					};
+					this._add();
+					this.$.ctstName.value = "";
+				}
 			}
 		});
 	</script>
