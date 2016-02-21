@@ -40,7 +40,7 @@
 			<div class="layout horizontal">
 				<h2>Header</h2>
 				<div class="flex"></div>
-				<fb-upload-photo id="fbUploadPhoto"></fb-upload-photo>
+				<fb-upload-photo id="fbUploadPhoto" fire-user="{{fireUser}}" source="front" on-refresh-photo-list="browsePhoto"></fb-upload-photo>
 			</div>
 			<paper-dialog-scrollable class="scroll-section">
 				<template is="dom-repeat" items={{photos}} as=photo index-as=index>
