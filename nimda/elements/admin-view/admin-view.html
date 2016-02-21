@@ -292,7 +292,11 @@
                                 <h1>Dashboard</h1>
                             </section>
                             <section data-route="contests">
-                                <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
+                                <admin-contest
+                                    api-loaded="{{isLoaded}}"
+                                    data="{{data}}"
+                                    storage="{{storage}}">
+                                </admin-contest>
                             </section>
                             <section data-route="challonge">
                                 <challonge-view
