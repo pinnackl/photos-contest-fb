@@ -23,7 +23,7 @@
 			<contest-input id="contestInput" data="{{data}}" storage="[[storage]]"></contest-input>
 		</div>
 		<template is="dom-repeat" items={{data}} as=contest index-as=index>
-			<contest-item data="{{contest}}" all-data="[[data]]" on-delete-contest="deleteContest"></contest-item>
+			<contest-item data="{{contest}}" all-data="[[data]]" storage="[[storage]]" on-delete-contest="deleteContest"></contest-item>
 		</template>
 		<paper-toast id="message" text="" duration="5000"></paper-toast>
 	</template>
@@ -34,8 +34,6 @@
 				storage: {
 				},
 				apiLoaded: {
-					type: String,
-					value: 'false',
 					notify: true,
 					observer: '_apiLoaded'
 				},

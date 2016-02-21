@@ -173,8 +173,8 @@
 					isactive: true,
 					registration: this.$.registration.value,
 					id: this.challongeResponse.id,
-					challongeName: this.challongeResponse.challongeName,
-					liveBraquet: this.challongeResponse.liveBraquet
+					challongename: this.challongeResponse.challongeName,
+					livebraquet: this.challongeResponse.liveBraquet
 
 				});
 			},
@@ -253,7 +253,6 @@
 				}
 
 				this.$.challongeApi.tCreate(ctstName);
-				// this._add();
 
 				var dialogs = this.querySelectorAll('paper-dialog');
 				for (var i = 0; i < dialogs.length; i++) {
