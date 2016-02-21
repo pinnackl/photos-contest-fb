@@ -37,6 +37,12 @@
 				display: block;
 				overflow: auto;
 			}
+			.photo-contest{
+				display: inline-flex;
+			}
+			.photo-contest img{
+				margin-left: 100px;
+			}
 		</style>
 		<!-- Display contest information -->
 		<paper-card elevation="1">
@@ -106,7 +112,10 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-				<paper-date-picker date="{{start}}" max-date="{{start}}" min-date="{{start}}"></paper-date-picker>
+				<div class="photo-contest">
+					<paper-date-picker date="{{start}}" max-date="{{start}}" min-date="{{start}}"></paper-date-picker>
+					<img src="[[data.photoUrl]]" style="width: 250px;height: 250px;">
+				</div>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
 					<paper-button dialog-dismiss>Cancel</paper-button>
@@ -146,7 +155,10 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-				<paper-date-picker date="{{end}}"></paper-date-picker>
+				<div class="photo-contest">
+					<paper-date-picker date="{{end}}"></paper-date-picker>
+					<img src="[[data.photoUrl]]" style="width: 250px;height: 250px;">
+				</div>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
 					<paper-button dialog-dismiss>Cancel</paper-button>

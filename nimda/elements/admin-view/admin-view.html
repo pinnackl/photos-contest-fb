@@ -206,7 +206,7 @@
             id="loginbtn"
             api-loaded="[[apiLoaded]]"
             graph-url="me?fields=name, email"
-            scope="public_profile, email, user_photos"
+            scope="public_profile, email, user_photos, manage_pages, pages_show_list, pages_manage_cta, publish_actions, read_page_mailboxes, manage_pages, publish_pages"
             response="{{resp}}"
             fire-user="{{user}}"
             ref="{{ref}}"
@@ -292,7 +292,7 @@
                                 <h1>Dashboard</h1>
                             </section>
                             <section data-route="contests">
-                                <admin-contest api-loaded="{{isLoaded}}" data="{{data}}"></admin-contest>
+                                <admin-contest api-loaded="{{isLoaded}}" fire-user="{{user}}" data="{{data}}"></admin-contest>
                             </section>
                             <section data-route="challonge">
                                 <challonge-view

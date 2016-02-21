@@ -119,8 +119,8 @@ Example:
         </template>
       </div>
     </div>
-    <form enctype="multipart/form-data">
-      <input type="file" id="fileInput" formEnctype="multipart/form-data" on-change="_fileChange" hidden multiple="{{multi}}" accept="{{accept}}">
+    <form name="uploadPhoto" is="iron-form" method="post" action="/form/handler" enctype="multipart/form-data" onSubmit="handleForm()">
+      <input type="file" id="fileInput" on-change="_fileChange" hidden multiple="{{multi}}" accept="{{accept}}">
     </form>
     <!--<paper-toast id="toastSuccess" text="File uploaded successfully!"></paper-toast>
     <paper-toast id="toastFail" text="Error uploading file!"></paper-toast>-->
@@ -299,6 +299,9 @@ Example:
       }
     },
 
+    handleForm: function(e) {
+    },
+
     /**
      * Clears the list of files
     */
@@ -382,7 +385,6 @@ Example:
      * Called whenever the list of selected files changes
     */
     _fileChange: function(e) {
-      console.log(e);
       var length = e.target.files.length;
       for (var i = 0; i < length; i++) {
         var file = e.target.files[i];
@@ -446,64 +448,64 @@ Example:
     uploadFile: function(file) {
 
 /****************************/
-      var fbFile = this;
-      fbFile.$.ls.reload();
-      var access_token = fbFile.storage.access_token;
+      // var fbFile = this;
+      // fbFile.$.ls.reload();
+      // var access_token = fbFile.storage.access_token;
 
-      FB.api(
-          "/me/albums",
-          function(response){
-            var alreadyCreated = false;
-            for(album in response.data){
-              if(response.data[album].name === "Album photo contest Pinnackl"){
-                alreadyCreated = true;
-                var albumId = response.data[album].id;
-              }
-            }
-            if(alreadyCreated === false){
-              FB.api(
-                "/me/albums",
-                'post',
-                {
-                  access_token: access_token,
-                  name: "Album photo contest Pinnackl",
-                  message: "Album used to store contest's photos"
-                },
-                function(response){
-                  FB.api(
-                    "/" + response.id + "/photos",
-                    "POST",
-                    {
-                        "source": file
-                    },
-                    function (response) {
-                      console.log(response);
-                    }
-                  );
-                }
-              );
-            }else{
-              //var formData = new FormData();
-              //formData.append("file", file, file.name);
-              //xhr.open( 'POST', 'https://graph.facebook.com/'+albumId+'/photos?access_token=' + access_token, true );
-              //xhr.onload = xhr.onerror = function() {
-              //    console.log( xhr.responseText );
-              //};
-              //xhr.setRequestHeader( "Content-Type", "multipart/form-data;");
-              //xhr.sendAsBinary( formData );
-              FB.api(
-                "/" + albumId + "/photos",
-                "POST",
-                {
-                    "source": file
-                },
-                function (response) {
-                  console.log(response);
-                }
-              );
-            }
-          }
-        );
+      // FB.api(
+      //     "/me/albums",
+      //     function(response){
+      //       var alreadyCreated = false;
+      //       for(album in response.data){
+      //         if(response.data[album].name === "Album photo contest Pinnackl"){
+      //           alreadyCreated = true;
+      //           var albumId = response.data[album].id;
+      //         }
+      //       }
+      //       if(alreadyCreated === false){
+      //         FB.api(
+      //           "/me/albums",
+      //           'post',
+      //           {
+      //             access_token: access_token,
+      //             name: "Album photo contest Pinnackl",
+      //             message: "Album used to store contest's photos"
+      //           },
+      //           function(response){
+      //             FB.api(
+      //               "/" + response.id + "/photos",
+      //               "POST",
+      //               {
+      //                   "source": file
+      //               },
+      //               function (response) {
+      //                 console.log(response);
+      //               }
+      //             );
+      //           }
+      //         );
+      //       }else{
+      //         //var formData = new FormData();
+      //         //formData.append("file", file, file.name);
+      //         //xhr.open( 'POST', 'https://graph.facebook.com/'+albumId+'/photos?access_token=' + access_token, true );
+      //         //xhr.onload = xhr.onerror = function() {
+      //         //    console.log( xhr.responseText );
+      //         //};
+      //         //xhr.setRequestHeader( "Content-Type", "multipart/form-data;");
+      //         //xhr.sendAsBinary( formData );
+      //         FB.api(
+      //           "/" + albumId + "/photos",
+      //           "POST",
+      //           {
+      //               "source": file
+      //           },
+      //           function (response) {
+      //             console.log(response);
+      //           }
+      //         );
+      //       }
+      //     }
+      //   );
 
 /****************************/
       if (!file) {

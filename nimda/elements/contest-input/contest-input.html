@@ -22,6 +22,9 @@
 			.upload-photo {
 				float: right;
 			}
+			.photo-contest{
+				display: inline-flex;
+			}
 		</style>
 		<div class="input-create">
 			<paper-input label="Create a new contest :" value="{{contestName}}"></paper-input>
@@ -48,9 +51,14 @@
 					</paper-dropdown-menu>
 				</div>
 				<div class="upload-photo">
-					<fb-upload-photo id="fbUploadPhoto"></fb-upload-photo>
+					<fb-upload-photo id="fbUploadPhoto" photo-url="{{photoUrl}}" fire-user="{{fireUser}}" album-name="{{albumName}}"></fb-upload-photo>
 				</div>
-				<paper-date-picker date="{{dateStart}}"></paper-date-picker>
+				<div class="photo-contest">
+					<paper-date-picker date="{{dateStart}}"></paper-date-picker>
+					<paper-material elevation="1">
+						<img id="photo-start" src="">
+					</paper-material>
+				</div>
 				<div class="buttons">
 					<paper-button dialog-dismiss>Cancel</paper-button>
 					<paper-button on-tap="_closePicker">
@@ -85,7 +93,12 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-				<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
+				<div class="photo-contest">
+					<paper-date-picker date="{{dateEnd}}"></paper-date-picker>
+					<paper-material elevation="1">
+						<img id="photo-end" src="">
+					</paper-material>
+				</div>
 				<div class="buttons">
 					<paper-button dialog-dismiss>Cancel</paper-button>
 					<paper-button on-tap="_closePicker">
@@ -112,6 +125,16 @@
 				},
 				dateEnd: {
 					observer: '_upadteStringEnd'
+				},
+				albumName: {
+					type: String,
+					value: function(){
+						return new Date().getTime();
+					}
+				},
+				photoUrl: {
+					type: String,
+					notify: true
 				}
 			},
 			_enableCreate: function (text) {
@@ -154,13 +177,14 @@
 			_add: function () {
 				var datestart 	= this.dateStart.getTime();
 				var dateend 	= this.dateEnd.getTime();
-
 				this.push('data', {
 					name: this.$.ctstName.value,
 					start: datestart,
 					end: dateend,
 					isactive: true,
-					registration: this.$.registration.value
+					registration: this.$.registration.value,
+					albumName: this.albumName,
+					photoUrl: this.photoUrl
 				});
 			},
 			_switchToEnd: function (e) {
