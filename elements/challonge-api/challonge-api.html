@@ -86,6 +86,22 @@
 				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'get', this.privateKey, participantId]);
 				this.$.ajax.generateRequest();
 			},
+			mGetAll: function (id) {
+				this.requestLocation = this.buildQuery(['tournament', id, 'matches', 'get', this.privateKey]);
+				this.$.ajax.generateRequest();
+			},
+			mGet: function (id, matchId) {
+				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'get', this.privateKey, matchId]);
+				this.$.ajax.generateRequest();
+			},
+			mUpdateScore: function (id, matchId, score) {
+				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'update', this.privateKey, matchId, 'score', score]);
+				this.$.ajax.generateRequest();
+			},
+			mUpdateWinner: function (id, matchId, score, winnerId) {
+				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'update', this.privateKey, matchId, 'score', score, 'winner', winnerId]);
+				this.$.ajax.generateRequest();
+			},
 			// sanityse string
 			ready: function () {
 				var Latinise={};
