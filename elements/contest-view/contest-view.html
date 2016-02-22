@@ -362,7 +362,6 @@
 					notify: true
 				},
 				data: {
-					type: Object,
 					notify: true,
 					observer: '_dataChanged'
 				},
@@ -416,6 +415,7 @@
 				// console.log(storage);
 			},
 			_dataChanged: function (data) {
+				console.log("View data changed");
 				if (this._eLoaded) {
 					this._routeChanged(this.route);
 				}
@@ -449,7 +449,7 @@
 				}
 			},
 			_paramChanged: function (param) {
-				console.log(param);
+				// console.log(param);
 			}
 		});
 	</script>

@@ -77,7 +77,15 @@
 				this.requestLocation = this.buildQuery(['tournament', 'delete', this.privateKey, id]);
 				this.$.ajax.generateRequest();
 			},
-
+			// participants
+			pCreate: function (id, name) {
+				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'create', this.privateKey, name]);
+				this.$.ajax.generateRequest();
+			},
+			pGet: function (id, participantId) {
+				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'get', this.privateKey, participantId]);
+				this.$.ajax.generateRequest();
+			},
 			// sanityse string
 			ready: function () {
 				var Latinise={};

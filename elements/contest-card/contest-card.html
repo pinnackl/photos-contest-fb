@@ -25,6 +25,18 @@
 			.contest-info {
 				margin-top: 1em;
 			}
+
+			.no-contest-card {
+				--paper-card-header-image: {
+					width: 150px;
+					heigth: 150px;
+					float: right;
+				};
+
+				--paper-card-header: {
+					background-color: #4db6ac;
+				};
+			}
 		</style>
 		<iron-localstorage id="ls" name="[[storageLabel]]" value="{{storage}}"></iron-localstorage>
 		<firebase-collection
@@ -32,6 +44,16 @@
 			location="[[fireLocation]]"
 			on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
+		<firebase-collection
+			data="{{fireUserData}}"
+			location="[[fireUserLocation]]"
+			on-firebase-value="_firebaseUserLoaded">
+		</firebase-collection>
+		<challonge-api
+			id="challongeApi"
+			storage="[[storage]]"
+			on-api-response="_handleApiResponse">
+		</challonge-api>
 		<template is="dom-if" if={{appReady}}>
 			<template is="dom-repeat" items="{{data}}" as=contest index-as=index
 				filter="_getActiveContest"
@@ -74,11 +96,18 @@
 						</script>
 					</div>
 				</paper-card>
-			</template><!-- 
-			<paper-card heading="No contest available" image="" elevation="1" animated-shadow="false" hidden>
-				<div class="card-content">Plop</div>
-				<div class="card-actions"></div>
-			</paper-card> -->
+			</template>
+			<template is="dom-if" if="{{_noItemCard}}">
+				<paper-card id="noContestCard" class="no-contest-card"
+					heading="No contest available"
+					image="/img/dog.png"
+					elevation="1"
+					animated-shadow="false">
+					<div class="card-content">
+						No contest are currently running.
+					</div>
+				</paper-card>
+			</template>
 		</template>
 	</template>
 	<script>
@@ -110,6 +139,7 @@
 					observer: '_storageReady'
 				},
 				currentContest: {
+					observer: '_currentContestChanged'
 				}
 			},
 			ready: function () {
@@ -121,7 +151,24 @@
 				});
 				window.addEventListener('login', function (e) {
 					console.log("Action to perform on login success");
-					_this.tmpFireLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
+					// _this.tmpFireLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
+					if (_this.currentContest) {
+						_this.fire('data-updated', {customEvent: 'login'});
+					}
+				});
+				window.addEventListener('data-updated', function (e) {
+					console.info('Custom data updated listener');
+					// Display or not the default contest card
+					_this._noItemCard = _this._isNoRunningContest(_this.data);
+
+					if (e.detail.customEvent) {
+						console.warn(e.detail.customEvent);
+						console.log(!_this._noItemCard);
+						console.log((_this.fireUser && _this.fireUser.uid));
+						if (!_this._noItemCard && (_this.fireUser && _this.fireUser.uid)) {
+							_this.fireUserLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
+						}
+					}
 				});
 			},
 			login: function (e) {
@@ -129,49 +176,89 @@
 			},
 			_appReady: function (loaded) {
 			},
-			_firebaseLoaded: function () {
-				if (this.fireUser && this.activeRecord) {
-					if (this.fireData.length == 0 && this.currentContest) {
-						console.log("The user does not exist in database");
+			_currentContestChanged: function (currentContest) {
+				if (currentContest) {
+					this.fire('data-updated', {customEvent: 'login'});
+				}
+			},
+			_isNoRunningContest: function (data) {
+				if (data && data.length > 0) {
+					var found = false;
+					for (var i = 0; i < data.length; i++) {
+						if (this._getActiveContest(data[i])) {
+							found = true;
+							break;
+						}
+					};
+					if (!found) {
+						return true;
+					}
+				}
+				return false;
+			},
+			_handleApiResponse: function (e, detail) {
+				if (detail.result) {
+					if (this.fireUserData[0] && this.fireUserData[0].currentContest) {
+						if (this.currentContest && this.currentContest.id) {
+							if ((this.fireUserData[0].currentContest.tId == this.currentContest.id) && (this.fireUserData[0].currentContest.key == this.currentContest.__firebaseKey__)) {
+								console.log('%c ' + "Already registered" , 'background: #222; color: #00FFFF');
+							} else {
+								console.log('%c ' + "Not registered" , 'background: #222; color: #00FFFF');
+								this.set('fireUserData.0.currentContest', {
+									tId: this.currentContest.id,
+									pId: detail.result.id,
+									key: this.currentContest.__firebaseKey__,
+									role: this.getContestRegistration()
+								});
+							}
+						}
+					} else {
+						console.log('%c ' + "Not in the database" , 'background: #222; color: #00FFFF');
 						var user = this.fireUser;
-						this.push("fireData", {
+						this.push("fireUserData", {
 							email: user.facebook.email,
 							name: user.facebook.displayName,
 							photoUrl: user.facebook.profileImageURL,
 							id: user.facebook.id,
 							currentContest: {
-								id: this.currentContest.__firebaseKey__,
+								key: this.currentContest.__firebaseKey__,
+								tId: this.currentContest.id,
+								pId: detail.result.id,
 								role: this.getContestRegistration()
 							}
 						});
-					} else if (this.activeRecord && this.currentContest) {
-						console.log("The user already exist in database");
+					}
+				}
+			},
+			_firebaseUserLoaded: function () {
+				console.warn("Check for contest registration");
+				if (this.fireUserData[0] && this.fireUserData[0].currentContest) {
+					console.log("The user already exist in database");
+					if (this.currentContest && this.currentContest.id) {
+						console.log(this.currentContest.__firebaseKey__);
+						if ((this.fireUserData[0].currentContest.tId == this.currentContest.id) && (this.fireUserData[0].currentContest.key == this.currentContest.__firebaseKey__)) {
+							console.warn("User already register for this contest");
 
-				// 		if (this.fireData[0].currentContest.id != this.currentContest.__firebaseKey__) {
-				// 			// console.log("Change user current contest");
-				// 			// console.log(this.fireData[0]);
-				// 			// console.log(this.currentContest);
-				// 			// this.set('fireData.0.currentContest.id', this.currentContest.__firebaseKey__);
-				// 		}
+							console.log("register-success");
+							this.fire('register-success', {contest: this.currentContest});
+						} else {
+							console.warn("User not register for this contest");
+							var user = this.fireUser;
 
-						var re = new RegExp("("+this.fireUser.uid+")$");
-						if ((m = re.exec(this.fireLocation)) !== null) {
-						    if (m.index === re.lastIndex) {re.lastIndex++;}
-							this.fireLocation = [
-								this.fireLocation,
-								this.fireData[0].__firebaseKey__
-							].join('/');
+							// Challonge api register
+							this.$.challongeApi.pCreate(this.currentContest.id, user.facebook.displayName);
 						}
 					}
-					this.activeRecord = false;
-				} 
-				else if (this.fireUser && !this.activeRecord && !this._workEnded) {
-					if (this.fireData.length != 0) {
-						console.log("register-success");
-						this.fire('register-success', {contest: this.currentContest});
-					}
-					this._workEnded = true;
+				} else {
+					console.warn("The user does not exist in database");
+					var user = this.fireUser;
+
+					// Challonge api register
+					this.$.challongeApi.pCreate(this.currentContest.id, user.facebook.displayName);
 				}
+
+			},
+			_firebaseLoaded: function () {
 			},
 			_storageReady: function (storage) {
 			},
@@ -183,7 +270,7 @@
 				    if (m[0] == "contests") {
 						var today = new Date().getTime();
 						if (contest.isactive
-							&& (today >= contest.start && today <= contest.end)) {
+							&& (today >= contest.start && today <= (contest.end + 86400000))) {
 							console.log("get the contest info");
 							this.currentContest = contest;
 							this.userStatus = this.getContestRegistration();
