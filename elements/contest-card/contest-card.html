@@ -166,7 +166,7 @@
 						console.log(!_this._noItemCard);
 						console.log((_this.fireUser && _this.fireUser.uid));
 						if (!_this._noItemCard && (_this.fireUser && _this.fireUser.uid)) {
-							_this.fireUserLocation = [_this.storage.firebase, 'users', this.fireUser.uid].join('/');
+							_this.fireUserLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
 						}
 					}
 				});
