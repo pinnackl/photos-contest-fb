@@ -119,7 +119,9 @@
 				</div>
 				<div class="photo-contest">
 					<paper-date-picker date="{{start}}" max-date="{{start}}" min-date="{{start}}"></paper-date-picker>
-					<!-- <img src="[[data.photoUrl]]" style="width: 250px;height: 250px;"> -->
+					<template is="dom-if" if={{data.photoUrl}}>
+						<img src="[[data.photoUrl]]" style="width: 250px;height: 250px;">
+					</template>
 				</div>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
@@ -162,7 +164,9 @@
 				</div>
 				<div class="photo-contest">
 					<paper-date-picker date="{{end}}"></paper-date-picker>
-					<!-- <img src="[[data.photoUrl]]" style="width: 250px;height: 250px;"> -->
+					<template is="dom-if" if={{data.photoUrl}}>
+						<img src="[[data.photoUrl]]" style="width: 250px;height: 250px;">
+					</template>
 				</div>
 				<paper-textarea label="autoresizing textarea input"></paper-textarea>
 				<div class="buttons">
