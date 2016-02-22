@@ -111,6 +111,7 @@
         			    imgB64 = e.target.result;
         			};       
         			FR.readAsDataURL(file);
+        			console.log(fbUploadPhoto.source);
 					if(fbUploadPhoto.source == "admin"){
 					    var pageId = "/" + fbUploadPhoto.storage.pageId + "/albums";
 
@@ -118,8 +119,11 @@
 					        pageId,
 					        function(response){
 					        	var alreadyCreated = false;
+					        	console.log(response.data);
 					    	    for(var album in response.data){
-						            if(response.data[album].name === fbUploadPhoto.albumName){
+					    	    	console.log(response.data[album].name);
+					    	    	console.log(fbUploadPhoto.albumName);
+						            if(response.data[album].name == fbUploadPhoto.albumName){
 						                alreadyCreated = true;
 						                fbUploadPhoto.albumId = response.data[album].id;
 						            }
@@ -145,7 +149,7 @@
 				        			    fd.append("access_token", pageAccessToken);
 				        			    fd.append("source", blob);
 				        			    fd.append("name", "Contest Photo");
-
+				        			    console.log(alreadyCreated);
 								        if(alreadyCreated === false){
 							            FB.api(
 							                pageId,
@@ -166,6 +170,21 @@
 							                }
 							              );
 							            }else{
+							            	FB.api(
+							            		'/' + fbUploadPhoto.albumId + '/photos',
+							            		function(response){
+							            			var idPhotoToDelete = response.data[0].id;
+							            			FB.api(
+							            				'/' + idPhotoToDelete,
+							            				'DELETE',
+							            				{
+							            					access_token: pageAccessToken
+							            				},
+							            				function(response){
+							            				}
+							            			);
+							            		}
+							            	);
 							            	var url = "https://graph.facebook.com/" + fbUploadPhoto.albumId + "/photos?access_token=" + pageAccessToken;
 							            	var data = fd;
 							            	fbUploadPhoto.$.ajax.method = 'POST';
