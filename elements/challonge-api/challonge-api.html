@@ -26,7 +26,11 @@
 				storage: {
 					observer: '_storageChanged'
 				},
-				requestLocation: String
+				requestLocation: String,
+				apiKey: {
+					type: String,
+					value: "WiBA5GtfApj0jbziG7K1ETbh7mx8SCp3zBzfw8dd"
+				}
 			},
 			_storageChanged: function (storage) {
 				if (storage) {
@@ -87,7 +91,7 @@
 				this.$.ajax.generateRequest();
 			},
 			mGetAll: function (id) {
-				this.requestLocation = this.buildQuery(['tournament', id, 'matches', 'get', this.privateKey]);
+				this.requestLocation = this.buildQuery(['tournament', id, 'matches', 'get', this.apiKey]);
 				this.$.ajax.generateRequest();
 			},
 			mGet: function (id, matchId) {

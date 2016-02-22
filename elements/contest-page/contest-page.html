@@ -27,18 +27,7 @@
 			<iron-pages attr-for-selected="data-route" selected="[[routeParam.customBag.subRoute]]">
 				<section data-route="battle">
 					Photo battle
-					<!-- <neon-animated-pages
-						selected="[[selected]]"
-						entry-animation="[[entryAnimation]]"
-						exit-animation="[[exitAnimation]]" >
-						<neon-animatable>
-							<contest-game></contest-game>
-						</neon-animatable>
-						<neon-animatable>
-							<contest-game></contest-game>
-						</neon-animatable>
-					</neon-animated-pages> -->
-					<!-- <paper-button raised on-tap="_test">Next</paper-button> -->
+					<contest-game route-param="[[routeParam]]" storage="[[storage]]"></contest-game>
 				</section>
 				<section></section>
 				<section></section>

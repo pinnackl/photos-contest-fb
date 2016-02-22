@@ -5,11 +5,102 @@
 				display: block;
 			}
 		</style>
-		
+		<firebase-collection
+			data="{{dataGame}}"
+			location="[[contestLocation]]"
+			on-firebase-value="_contestDataFirebaseLoaded">
+		</firebase-collection>
+		<firebase-collection
+			data="{{dataUsers}}"
+			location="[[userLocation]]"
+			on-firebase-value="_usersDatafirebaseLoaded">
+		</firebase-collection>
+		<firebase-collection
+			data="{{dataSecondUser}}"
+			location="[[secondUserLocation]]"
+			on-firebase-value="_secondUserDatafirebaseLoaded">
+		</firebase-collection>
+		<challonge-api id="challongeApi" storage="[[storage]]" on-api-response="_handleApiResponse"></challonge-api>
+		<paper-button>Plop</paper-button>
 	</template>
 	<script>
 		Polymer({
-			is: 'contest-game'
+			is: 'contest-game',
+			properties: {
+				storage: {
+					notify: true
+				},
+				contestLocation: {
+					notify: true,
+					type: String
+				},
+				firstUserLocation: {
+					notify: true,
+					type: String
+				},
+				secondUserLocation: {
+					notify: true,
+					type: String
+				},
+				routeParam: {
+					notify: true,
+					observer: "_handleRouteParamChanged"
+				},
+				currentContest: {},
+				matches: {},
+				player1Id: {},
+				player2Id: {}
+			},
+			_handleApiResponse: function(e, detail) {
+				this.matches = detail.result.match[0];
+
+				this.player1Id = this.matches['player1-id'];
+				this.player2Id = this.matches['player2-id'];
+
+				this.userLocation = [this.storage.firebase, 'users'].join('/');
+			},
+			_contestDataFirebaseLoaded: function(e, detail) {
+				this.getCurrentContest();
+				var contestId = this.currentContest.id;
+				this.$.challongeApi.mGetAll(contestId);
+			},
+			_usersDatafirebaseLoaded: function(e, detail) {
+				var players = this.dataUsers;
+				var tmp = [];
+                for(var i = 0; i <= players.length; i++){
+                    for (var key in players[i]) {
+                        if(key != "__firebaseKey__"){
+                            var player = players[i][key];
+                            if(player.currentContest.pId == this.player1Id){
+                            	var player1 = player;
+                            }else if (player.currentContest.pId == this.player2Id) {
+                            	var player2 = player;
+                            }
+                            if(player1 && player2) {
+                            	break;
+                            }
+                        }
+                    }
+                }
+                console.log(player1);
+                console.log(player2);
+			},
+			_secondUserDatafirebaseLoaded: function(e, detail) {
+
+			},
+			_handleRouteParamChanged: function(routeParam) {
+				if(routeParam.customBag){
+					this.contestLocation = [this.storage.firebase, 'options', 'contests'].join('/');
+				}
+			},
+			getCurrentContest: function(){
+				for(var contest in this.dataGame){
+					if(this.dataGame[contest].__firebaseKey__ == this.routeParam.id){
+						this.currentContest = this.dataGame[contest];
+					}
+				}
+				return false;
+			}
 		});
 	</script>
 </dom-module>
