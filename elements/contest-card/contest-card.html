@@ -166,7 +166,7 @@
 						console.log(!_this._noItemCard);
 						console.log((_this.fireUser && _this.fireUser.uid));
 						if (!_this._noItemCard && (_this.fireUser && _this.fireUser.uid)) {
-							_this.fireUserLocation = [_this.storage.firebase, 'users', _this.fireUser.uid].join('/');
+							_this.fireUserLocation = [_this.storage.firebase, 'users', this.fireUser.uid].join('/');
 						}
 					}
 				});
@@ -235,26 +235,49 @@
 				if (this.fireUserData[0] && this.fireUserData[0].currentContest) {
 					console.log("The user already exist in database");
 					if (this.currentContest && this.currentContest.id) {
-						console.log(this.currentContest.__firebaseKey__);
 						if ((this.fireUserData[0].currentContest.tId == this.currentContest.id) && (this.fireUserData[0].currentContest.key == this.currentContest.__firebaseKey__)) {
-							console.warn("User already register for this contest");
+							console.warn("User already register for this contest as participant");
 
 							console.log("register-success");
 							this.fire('register-success', {contest: this.currentContest});
 						} else {
 							console.warn("User not register for this contest");
 							var user = this.fireUser;
-
-							// Challonge api register
-							this.$.challongeApi.pCreate(this.currentContest.id, user.facebook.displayName);
+							if (this.getContestRegistration() == "judge") {
+								this.set('fireUserData.0.currentContest', {
+									tId: this.currentContest.id,
+									pId: 'N/A',
+									key: this.currentContest.__firebaseKey__,
+									role: this.getContestRegistration()
+								});
+							} else {
+								// Challonge api register
+								this.$.challongeApi.pCreate(this.currentContest.id, user.facebook.displayName);
+							}
 						}
 					}
 				} else {
 					console.warn("The user does not exist in database");
 					var user = this.fireUser;
 
-					// Challonge api register
-					this.$.challongeApi.pCreate(this.currentContest.id, user.facebook.displayName);
+					if (this.getContestRegistration() == "judge") {
+						var user = this.fireUser;
+						this.push("fireUserData", {
+							email: user.facebook.email,
+							name: user.facebook.displayName,
+							photoUrl: user.facebook.profileImageURL,
+							id: user.facebook.id,
+							currentContest: {
+								key: this.currentContest.__firebaseKey__,
+								tId: this.currentContest.id,
+								pId: 'N/A',
+								role: this.getContestRegistration()
+							}
+						});						
+					} else {
+						// Challonge api register
+						this.$.challongeApi.pCreate(this.currentContest.id, user.facebook.displayName);
+					}
 				}
 
 			},
@@ -288,7 +311,7 @@
 			getContestRegistration: function () {
 				var day = 86400000;
 				var today = new Date().getTime();
-				var registationPeriod = this.currentContest.start + this.currentContest.registration*day;
+				var registationPeriod = this.currentContest.start + this.currentContest.registration*day + 86400000;
 				if (today <= registationPeriod) {
 					return "participant";
 				} else {
