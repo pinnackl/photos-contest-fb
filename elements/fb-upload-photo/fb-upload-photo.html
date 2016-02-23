@@ -119,10 +119,7 @@
 					        pageId,
 					        function(response){
 					        	var alreadyCreated = false;
-					        	console.log(response.data);
 					    	    for(var album in response.data){
-					    	    	console.log(response.data[album].name);
-					    	    	console.log(fbUploadPhoto.albumName);
 						            if(response.data[album].name == fbUploadPhoto.albumName){
 						                alreadyCreated = true;
 						                fbUploadPhoto.albumId = response.data[album].id;
