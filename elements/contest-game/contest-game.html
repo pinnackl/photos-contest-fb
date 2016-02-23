@@ -4,6 +4,12 @@
 			:host {
 				display: block;
 			}
+			contest-like {
+				text-align: center;
+			}
+			paper-card {
+				width: 49%;
+			}
 		</style>
 		<firebase-collection
 			data="{{dataGame}}"
@@ -71,6 +77,8 @@
 				this.matches = detail.result.match[this.round];
 				this.matchId = this.matches.id;
 
+				console.log(this.matches["player1-id"]);
+
 				// var currentMatch = this.round + 1;
 				// var nbMatches = detail.result.match.length;
 				// var oneDayHours = 60*60*1000;
@@ -91,6 +99,7 @@
 				// console.log(nbHoursPerStep);
 				// console.log(timeFromStart);
 				// if(this.matches.state == 'pending'){
+				if(typeof this.matches["player1-id"] == 'string'){
 					this.player1Id = this.matches['player1-id'];
 					this.player2Id = this.matches['player2-id'];
 
@@ -100,6 +109,9 @@
 					}else{
 						this._usersDatafirebaseLoaded();
 					}
+				}else{
+					//vote finished
+				}	
 				// }
 			},
 			_handleVoteApiResponse: function(e, detail) {
@@ -113,7 +125,8 @@
 				    "/" + photoId + "/likes?summary=has_liked,total_count,can_like",
 				    function (response) {
 				    	console.log(response);
-				    	var nbLikes = response.summary.total_count;
+				    	var nbLikes = response.summary.total_count + 1;
+				    	console.log(nbLikes);
 				    	if(response.summary.can_like && !response.summary.has_liked){
 					     	FB.api(
 							    "/" + photoId + "/likes",
@@ -126,6 +139,7 @@
 				    						function (response) {
 				    							console.log(response);
 				    							score = score + "-" + response.summary.total_count;
+				    							console.log(score);
 				    							_this.$.challongeApiSetVote.mUpdateScore(_this.currentContest.id, _this.matchId, score);
 				    						}
 				    					);
