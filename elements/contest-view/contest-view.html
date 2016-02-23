@@ -265,10 +265,10 @@
 							<iron-icon icon="info"></iron-icon>
 							<span>Participants</span>
 						</a>
-						<a data-route="user" href="{{baseLocation}}user">
+						<!-- <a data-route="user" href="{{baseLocation}}user">
 							<iron-icon icon="info"></iron-icon>
 							<span>Users</span>
-						</a>
+						</a> -->
 					</template>
 				</paper-menu>
 			</paper-header-panel>
@@ -313,9 +313,9 @@
 									location="{{location}}">
 								</contest-page>
 							</section>
-							<section data-route="user">
+							<!-- <section data-route="user">
 								Hello user !
-							</section>
+							</section> -->
 							<section data-route="participants">
 								<neon-animated-pages attr-for-selected="id" selected="participantProfile">
  									<participant-profile id="participantProfile" storage-label="[[storageLabel]]" storage="{{storage}}" fire-user="{{user}}" location="{{location}}" participants="{{data}}"></participant-profile>
