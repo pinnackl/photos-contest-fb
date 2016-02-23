@@ -10,6 +10,14 @@
 				padding: 1em;
 			}
 
+			paper-card {
+				padding: 1em;
+			}
+
+			photo-list {
+				margin-bottom: 10px;
+			}
+
 			.contest-container {
 				margin: 1em 1em;
 			}
@@ -18,11 +26,13 @@
 			<div id="photoPicker" class="contest-container">
 				<!-- <template is="dom-if" if="{{_registeredStatus}}"> -->
 					<h1>Choose your contest photo</h1>
-					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" storage-label="[[storageLabel]]" data="{{data}}" location="{{location}}"></photo-list>
+					<paper-card elevation="1">
+						<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" storage-label="[[storageLabel]]" data="{{data}}" location="{{location}}"></photo-list>
 				<!-- </template> -->
-				<template is="dom-if" if="{{_votesStarted}}">
-					<paper-button raised on-tap="startBattle">Start voting</paper-button>
-				</template>
+						<template is="dom-if" if="{{_votesStarted}}">
+							<paper-button raised on-tap="startBattle">Start voting</paper-button>
+						</template>
+					</paper-card>
 			</div>
 			<iron-pages attr-for-selected="data-route" selected="[[routeParam.customBag.subRoute]]">
 				<section data-route="battle">
