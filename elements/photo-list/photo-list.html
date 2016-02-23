@@ -177,7 +177,9 @@
 					this.set('dataInsertPhoto.'+0+'.photoUrl', this.photoData.photoUrl);
 					this.set('dataInsertPhoto.'+0+'.status', this.photoData.status);
 					this.set('dataInsertPhoto.'+0+'.id', this.photoData.id);
+					this.set('dataInsertPhoto.'+0+'.likes', this.photoData.likes);
 				} else {
+					console.warn(this.photoData);
 					console.log('-----');
 					console.info('Set registred photo');
 					console.log(this.photoData);
