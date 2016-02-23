@@ -99,7 +99,7 @@
 				this.$.ajax.generateRequest();
 			},
 			mUpdateScore: function (id, matchId, score) {
-				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'update', this.privateKey, matchId, 'score', score]);
+				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'update', this.apiKey, matchId, 'score', score]);
 				this.$.ajax.generateRequest();
 			},
 			mUpdateWinner: function (id, matchId, score, winnerId) {

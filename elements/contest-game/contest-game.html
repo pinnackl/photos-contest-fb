@@ -16,6 +16,7 @@
 			on-firebase-value="_usersDatafirebaseLoaded">
 		</firebase-collection>
 		<challonge-api id="challongeApi" storage="[[storage]]" on-api-response="_handleApiResponse"></challonge-api>
+		<challonge-api id="challongeApiSetVote" storage="[[storage]]" on-api-response="_handleVoteApiResponse"></challonge-api>
 		<template is="dom-repeat" items=[[players]] as=player>
 			<paper-card heading="[[player.name]]" image="[[player.contestPhoto]]" elevation="1">
 				<div class="card-content">
@@ -25,7 +26,6 @@
 				</div>
 			</paper-card>
 		</template>
-		<paper-button>Plop</paper-button>
 	</template>
 	<script>
 		Polymer({
@@ -52,8 +52,15 @@
 				},
 				currentContest: {},
 				matches: {},
-				player1Id: {},
-				player2Id: {},
+				matchId: {},
+				idPlayer1: {},
+				idPlayer2: {},
+				photo1Id: {},
+				photo2Id: {},
+				round: {
+					notify: true,
+					value: 0
+				},
 				players: {
 					notify: true,
 					type: Array,
@@ -61,26 +68,84 @@
 				}
 			},
 			_handleApiResponse: function(e, detail) {
-				this.matches = detail.result.match[0];
+				this.matches = detail.result.match[this.round];
+				this.matchId = this.matches.id;
 
-				this.player1Id = this.matches['player1-id'];
-				this.player2Id = this.matches['player2-id'];
+				// var currentMatch = this.round + 1;
+				// var nbMatches = detail.result.match.length;
+				// var oneDayHours = 60*60*1000;
+				// var start = this.currentContest.start;
+				// var end = this.currentContest.end;
+				// var contestDurationHours = Math.round(Math.abs((start - end)/(oneDayHours)));
+				// var nbSteps = Math.sqrt(nbMatches);
+				// var nbHoursPerStep = contestDurationHours / nbSteps;
+				// var todaysDate = new Date().getTime();
+				// var timeFromStart = Math.round(Math.abs((start - todaysDate)/(oneDayHours)));
+				// var currentStep = Math.ceil(timeFromStart / nbHoursPerStep);
+				// var currentMatchsStep = nbMatches / 2 * currentStep;
+				// var nbMatchToBePlayed = nbSteps - currentStep;
 
-				this.userLocation = [this.storage.firebase, 'users'].join('/');
+				// if(currentMatch >)
+
+				// console.log(currentStep);
+				// console.log(nbHoursPerStep);
+				// console.log(timeFromStart);
+				// if(this.matches.state == 'pending'){
+					this.player1Id = this.matches['player1-id'];
+					this.player2Id = this.matches['player2-id'];
+
+					var re = /users$/;
+					if (!((m = re.exec(this.userLocation)) !== null)) {
+						this.userLocation = [this.storage.firebase, 'users'].join('/');
+					}else{
+						this._usersDatafirebaseLoaded();
+					}
+				// }
+			},
+			_handleVoteApiResponse: function(e, detail) {
+				console.log(detail);
 			},
 			_registerVote: function(e, detail) {
+				var _this = this;
 				var photoId = detail.photoId;
+				console.log(detail);
 				FB.api(
 				    "/" + photoId + "/likes?summary=has_liked,total_count,can_like",
 				    function (response) {
-				    	if(response.summary.can_like && !response.summary.can_like){
+				    	console.log(response);
+				    	var nbLikes = response.summary.total_count;
+				    	if(response.summary.can_like && !response.summary.has_liked){
 					     	FB.api(
 							    "/" + photoId + "/likes",
-							    "POST"
+							    "POST",
 							    function (response) {
-								
+							    	if(_this.idPlayer1 == photoId){
+							    		var score = nbLikes;
+							    		FB.api(
+				    						"/" + _this.idPlayer2 + "/likes?summary=has_liked,total_count,can_like",
+				    						function (response) {
+				    							console.log(response);
+				    							score = score + "-" + response.summary.total_count;
+				    							_this.$.challongeApiSetVote.mUpdateScore(_this.currentContest.id, _this.matchId, score);
+				    						}
+				    					);
+							    	}else{
+							    		var score = nbLikes;
+							    		FB.api(
+				    						"/" + _this.idPlayer1 + "/likes?summary=has_liked,total_count,can_like",
+				    						function (response) {
+				    							score = response.summary.total_count + "-" + score;
+				    							_this.$.challongeApiSetVote.mUpdateScore(_this.currentContest.id, _this.matchId, score);
+				    						}
+				    					);
+							    	}
+								    _this.round = _this.round + 1;
+								    _this.$.challongeApi.mGetAll(_this.currentContest.id);
 							    }
 							);
+				    	}else{
+				    		_this.round = _this.round + 1;
+				    		_this.$.challongeApi.mGetAll(_this.currentContest.id);
 				    	}
 				    }
 				);
@@ -93,6 +158,7 @@
 			_usersDatafirebaseLoaded: function(e, detail) {
 				var players = this.dataUsers;
 				var tmp = [];
+				console.log(players);
                 for(var i = 0; i <= players.length; i++){
                     for (var key in players[i]) {
                         if(key != "__firebaseKey__"){
@@ -102,14 +168,14 @@
                             	var nodePhotoPlayer1 = player1.contests.photos;
                             	for(var k in nodePhotoPlayer1) {
                             		var photoPlayer1 = nodePhotoPlayer1[k].photoSourceUrl;
-                            		var idPlayer1 = nodePhotoPlayer1[k].id;
+                            		this.idPlayer1 = nodePhotoPlayer1[k].id;
                             	}
                             }else if (player.currentContest.pId == this.player2Id) {
                             	var player2 = player;
                             	var nodePhotoPlayer2 = player2.contests.photos;
                             	for(var k in nodePhotoPlayer2) {
                             		var photoPlayer2 = nodePhotoPlayer2[k].photoSourceUrl;
-                            		var idPlayer2 = nodePhotoPlayer2[k].id;
+                            		this.idPlayer2 = nodePhotoPlayer2[k].id;
                             	}
                             }
                             if(player1 && player2) {
@@ -121,12 +187,12 @@
                 player1.contestPhoto = photoPlayer1;
                 player2.contestPhoto = photoPlayer2;
 
-                player1.photoId = idPlayer1;
-                player2.photoId = idPlayer2;
+                player1.photoId = this.idPlayer1;
+                player2.photoId = this.idPlayer2;
 
+                this.players = [];
                 this.push('players', player1);
                 this.push('players', player2);
-                console.log(this.players);
 			},
 			_handleRouteParamChanged: function(routeParam) {
 				if(routeParam.customBag){
