@@ -1,0 +1,23 @@
+<dom-module id="contest-like">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-fab icon="favorite" on-tap="_handleRegisterVote"></paper-fab>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-like',
+			properties: {
+				photoId: {
+
+				}
+			},
+			_handleRegisterVote: function () {
+				this.fire('register-vote', {photoId: this.photoId});
+			}
+		});
+	</script>
+</dom-module>
