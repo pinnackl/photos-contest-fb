@@ -9,6 +9,15 @@
 			}
 			paper-card {
 				width: 49%;
+				background-color: #ffffff;
+				--paper-card-header-image: {
+					max-height: 300px;
+				};
+				--paper-card-header-text: {
+				};
+				--paper-card-content: {
+					font-weight: bold;
+				};
 			}
 		</style>
 		<firebase-collection
@@ -24,8 +33,9 @@
 		<challonge-api id="challongeApi" storage="[[storage]]" on-api-response="_handleApiResponse"></challonge-api>
 		<challonge-api id="challongeApiSetVote" storage="[[storage]]" on-api-response="_handleVoteApiResponse"></challonge-api>
 		<template is="dom-repeat" items=[[players]] as=player>
-			<paper-card heading="[[player.name]]" image="[[player.contestPhoto]]" elevation="1">
+			<paper-card heading="" image="[[player.contestPhoto]]" elevation="1">
 				<div class="card-content">
+					[[player.name]]
 				</div>
 				<div class="card-actions">
 					<contest-like icon="favorite" title="heart" photo-id="[[player.photoId]]" on-register-vote="_registerVote"></contest-like>
