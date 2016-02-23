@@ -35,6 +35,10 @@
 			location="[[fireLocation]]"
 			on-firebase-value="_firebaseLoaded">
 		</firebase-collection>
+		<firebase-collection
+			data="{{dataInsertPhoto}}"
+			location="[[savePhotoLocation]]">
+		</firebase-collection>
 		<paper-button raised on-tap="browsePhoto">Browse Photos</paper-button>
 		<paper-dialog id="dialog" class="size-position">
 			<div class="layout horizontal">
@@ -94,6 +98,9 @@
 				},
 				fireUser: {
 					notify: true
+				},
+				photoRegistered: {
+					notify: true
 				}
 			},
 			listeners: {
@@ -103,16 +110,21 @@
 			ready: function () {
 				var re = /(contests\/photos)$/;
 				if (!((m = re.exec(this.location)) !== null)) {
-					this.fireLocation = [this.storage.firebase, 'users', this.fireUser.uid, this.data[0].__firebaseKey__, 'contests', 'photos'].join('/');
+					this.fireLocation = [this.storage.firebase, 'users', this.fireUser.uid].join('/');
 				}
 			},
 			_firebaseLoaded: function () {
 			},
 			browsePhoto: function (e) {
 				var photoList = this;
-				if(typeof photoList.dataPhoto[0] != 'undefined'){
-					var photoRegistered = photoList.dataPhoto[0].photoSourceUrl;
+				this.savePhotoLocation = [this.fireLocation, this.dataPhoto[0].__firebaseKey__, 'contests', 'photos'].join('/');
+				if(this.dataPhoto[0].contests){
+					var nodePhoto = this.dataPhoto[0].contests.photos;
+					for(var key in nodePhoto){
+						photoList.photoRegistered = nodePhoto[key].photoSourceUrl;
+					}
 				}
+
 				photoList.photos = [];
 				FB.api(
 					"/me/albums",
@@ -137,7 +149,7 @@
 											}
 											var source = response.data[photo].images[0].source;
 											var selected = false;
-											if(source == photoRegistered){
+											if(source == photoList.photoRegistered){
 												selected = true;
 												photoList.unshift('photos', {image: image, source: source, selected: selected});
 											}else{
@@ -156,16 +168,18 @@
 				);					
 			},
 			_handleSelectImage: function (e, detail) {
-				if (this.dataPhoto.length > 0) {
+				if (this.photoRegistered) {
 					console.log('-----');
 					console.info('Update registred photo');
-					this.set('dataPhoto.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
-					this.set('dataPhoto.'+0+'.photoUrl', this.photoData.photoUrl);
-					this.set('dataPhoto.'+0+'.status', this.photoData.status);
+					this.set('dataInsertPhoto.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
+					this.set('dataInsertPhoto.'+0+'.photoUrl', this.photoData.photoUrl);
+					this.set('dataInsertPhoto.'+0+'.status', this.photoData.status);
 				} else {
 					console.log('-----');
 					console.info('Set registred photo');
-					this.push('dataPhoto', this.photoData);
+					console.log(this.photoData);
+					console.log(this.savePhotoLocation);
+					this.push('dataInsertPhoto', this.photoData);
 				}
 			},
 			_dialogOpened: function (e) {

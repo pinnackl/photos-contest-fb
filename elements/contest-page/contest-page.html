@@ -16,10 +16,10 @@
 		</style>
 		<paper-material elevation="1">
 			<div id="photoPicker" class="contest-container">
-				<template is="dom-if" if="{{_registeredStatus}}">
+				<!-- <template is="dom-if" if="{{_registeredStatus}}"> -->
 					<h1>Choose your contest photo</h1>
 					<photo-list id="photoList" fire-user="{{fireUser}}" storage="{{storage}}" storage-label="[[storageLabel]]" data="{{data}}" location="{{location}}"></photo-list>
-				</template>
+				<!-- </template> -->
 				<template is="dom-if" if="{{_votesStarted}}">
 					<paper-button raised on-tap="startBattle">Start voting</paper-button>
 				</template>

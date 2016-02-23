@@ -15,12 +15,18 @@
 			location="[[userLocation]]"
 			on-firebase-value="_usersDatafirebaseLoaded">
 		</firebase-collection>
-		<firebase-collection
-			data="{{dataSecondUser}}"
-			location="[[secondUserLocation]]"
-			on-firebase-value="_secondUserDatafirebaseLoaded">
-		</firebase-collection>
 		<challonge-api id="challongeApi" storage="[[storage]]" on-api-response="_handleApiResponse"></challonge-api>
+		[[players]]
+		<template is="dom-repeat" items=[[players]] as=player>
+			<paper-card heading="[[player.name]]" image="[[player.contestPhoto]]" elevation="1">
+				<div class="card-content">
+
+				</div>
+				<div class="card-actions">
+
+				</div>
+			</paper-card>
+		</template>
 		<paper-button>Plop</paper-button>
 	</template>
 	<script>
@@ -38,7 +44,7 @@
 					notify: true,
 					type: String
 				},
-				secondUserLocation: {
+				firstPhotoDataLocation: {
 					notify: true,
 					type: String
 				},
@@ -49,7 +55,12 @@
 				currentContest: {},
 				matches: {},
 				player1Id: {},
-				player2Id: {}
+				player2Id: {},
+				players: {
+					notify: true,
+					type: Array,
+					value: []
+				}
 			},
 			_handleApiResponse: function(e, detail) {
 				this.matches = detail.result.match[0];
@@ -73,8 +84,16 @@
                             var player = players[i][key];
                             if(player.currentContest.pId == this.player1Id){
                             	var player1 = player;
+                            	var nodePhotoPlayer1 = player1.contests.photos;
+                            	for(var k in nodePhotoPlayer1) {
+                            		var photoPlayer1 = nodePhotoPlayer1[k].photoSourceUrl;
+                            	}
                             }else if (player.currentContest.pId == this.player2Id) {
                             	var player2 = player;
+                            	var nodePhotoPlayer2 = player2.contests.photos;
+                            	for(var k in nodePhotoPlayer2) {
+                            		var photoPlayer2 = nodePhotoPlayer2[k].photoSourceUrl;
+                            	}
                             }
                             if(player1 && player2) {
                             	break;
@@ -82,11 +101,11 @@
                         }
                     }
                 }
-                console.log(player1);
-                console.log(player2);
-			},
-			_secondUserDatafirebaseLoaded: function(e, detail) {
+                player1.contestPhoto = photoPlayer1;
+                player2.contestPhoto = photoPlayer2;
 
+                this.push('players', player1);
+                this.push('players', player2);
 			},
 			_handleRouteParamChanged: function(routeParam) {
 				if(routeParam.customBag){
