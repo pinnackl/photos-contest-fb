@@ -17,11 +17,15 @@
     section.contest-view{
       display: block;
     }
+
+    .fullName {
+      text-align: center;
+    }
   </style>
     <template>
       <template is="dom-repeat" items="{{_readParticipants(participants)}}" as="participant">
           <div class="participant">
-            <img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]" on-tap="_openProfile">
+            <img class="profile-picture" src="[[participant.photoUrl]]" alt="Avatar" data-route="[[participant.id]]">
             <p class="fullName">[[participant.name]]</p>
           </div>
       </template>
@@ -76,16 +80,16 @@
         notify: true
       }
     },
-      _openProfile: function(event){
-        if(event.target.classList.contains('participant-profile')){
-          this.fire("updateShowcase",event.model.__data__["participant.id"]);
-          this.sharedElements = {
-            'hero': event.target
-          }
+      // _openProfile: function(event){
+      //   if(event.target.classList.contains('participant-profile')){
+      //     this.fire("updateShowcase",event.model.__data__["participant.id"]);
+      //     this.sharedElements = {
+      //       'hero': event.target
+      //     }
 
-          this.fire("changePage","participantShowcase");
-        }  
-      },
+      //     this.fire("changePage","participantShowcase");
+      //   }  
+      // },
       _readParticipants: function(participants){
         var re = /users$/;
         var str = this.location;
