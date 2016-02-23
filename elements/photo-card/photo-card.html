@@ -103,6 +103,9 @@
 				selected: {
 					notify: true
 				},
+				likes: {
+					notify: true
+				},
 				index: {
 					notify: true
 				},
@@ -118,20 +121,24 @@
 			 	}
 			 },
 			_handleSelectImage: function (e) {
-				this.data = {
-					photoUrl: this.photo,
-					photoSourceUrl: this.photoSource,
-					status: 'selected',
-					id:  this.photoId
-				};
-				var imgs = document.querySelectorAll('.img-selector');
-					for (var i = 0; i < imgs.length; i++) {
-						imgs[i].icon = 'radio-button-unchecked';
-						imgs[i].removeAttribute('active');
+				var _this = this;
+				FB.api('/' + this.photoId + '/likes?summary=has_liked, total_count', function (response) {
+					_this.data = {
+						photoUrl: _this.photo,
+						photoSourceUrl: _this.photoSource,
+						status: 'selected',
+						id:  _this.photoId,
+						likes: response.summary.total_count
 					};
-				var img = this.$.radioBtn;
-					img.icon = 'check-circle';
-					img.active = true;
+					var imgs = document.querySelectorAll('.img-selector');
+						for (var i = 0; i < imgs.length; i++) {
+							imgs[i].icon = 'radio-button-unchecked';
+							imgs[i].removeAttribute('active');
+						};
+					var img = _this.$.radioBtn;
+						img.icon = 'check-circle';
+						img.active = true;
+				});
 			},
 			_handleOpenLightBox: function (e) {
 				this.$.lightbox.open();
