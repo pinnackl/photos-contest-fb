@@ -51,6 +51,7 @@
 				<photo-card
 					photo="[[photo.image]]"
 					photo-source="[[photo.source]]"
+					photo-id="[[photo.id]]"
 					selected="[[photo.selected]]"
 					index="[[index]]"
 					data="{{photoData}}">
@@ -148,12 +149,13 @@
 												var image = response.data[photo].images[1].source;
 											}
 											var source = response.data[photo].images[0].source;
+											var id = response.data[photo].id;
 											var selected = false;
 											if(source == photoList.photoRegistered){
 												selected = true;
-												photoList.unshift('photos', {image: image, source: source, selected: selected});
+												photoList.unshift('photos', {image: image, source: source, selected: selected, id: id});
 											}else{
-												photoList.push('photos', {image: image, source: source, selected: selected});
+												photoList.push('photos', {image: image, source: source, selected: selected, id: id});
 											}
 										}
 									}
@@ -174,9 +176,11 @@
 					this.set('dataInsertPhoto.'+0+'.photoSourceUrl', this.photoData.photoSourceUrl);
 					this.set('dataInsertPhoto.'+0+'.photoUrl', this.photoData.photoUrl);
 					this.set('dataInsertPhoto.'+0+'.status', this.photoData.status);
+					this.set('dataInsertPhoto.'+0+'.id', this.photoData.id);
 				} else {
 					console.log('-----');
 					console.info('Set registred photo');
+					console.log(this.photoData);
 					this.push('dataInsertPhoto', this.photoData);
 				}
 			},

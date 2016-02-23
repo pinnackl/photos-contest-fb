@@ -16,14 +16,12 @@
 			on-firebase-value="_usersDatafirebaseLoaded">
 		</firebase-collection>
 		<challonge-api id="challongeApi" storage="[[storage]]" on-api-response="_handleApiResponse"></challonge-api>
-		[[players]]
 		<template is="dom-repeat" items=[[players]] as=player>
 			<paper-card heading="[[player.name]]" image="[[player.contestPhoto]]" elevation="1">
 				<div class="card-content">
-
 				</div>
 				<div class="card-actions">
-
+					<contest-like icon="favorite" title="heart" photo-id="[[player.photoId]]" on-register-vote="_registerVote"></contest-like>
 				</div>
 			</paper-card>
 		</template>
@@ -70,6 +68,23 @@
 
 				this.userLocation = [this.storage.firebase, 'users'].join('/');
 			},
+			_registerVote: function(e, detail) {
+				var photoId = detail.photoId;
+				FB.api(
+				    "/" + photoId + "/likes?summary=has_liked,total_count,can_like",
+				    function (response) {
+				    	if(response.summary.can_like && !response.summary.can_like){
+					     	FB.api(
+							    "/" + photoId + "/likes",
+							    "POST"
+							    function (response) {
+								
+							    }
+							);
+				    	}
+				    }
+				);
+			},
 			_contestDataFirebaseLoaded: function(e, detail) {
 				this.getCurrentContest();
 				var contestId = this.currentContest.id;
@@ -87,12 +102,14 @@
                             	var nodePhotoPlayer1 = player1.contests.photos;
                             	for(var k in nodePhotoPlayer1) {
                             		var photoPlayer1 = nodePhotoPlayer1[k].photoSourceUrl;
+                            		var idPlayer1 = nodePhotoPlayer1[k].id;
                             	}
                             }else if (player.currentContest.pId == this.player2Id) {
                             	var player2 = player;
                             	var nodePhotoPlayer2 = player2.contests.photos;
                             	for(var k in nodePhotoPlayer2) {
                             		var photoPlayer2 = nodePhotoPlayer2[k].photoSourceUrl;
+                            		var idPlayer2 = nodePhotoPlayer2[k].id;
                             	}
                             }
                             if(player1 && player2) {
@@ -104,8 +121,12 @@
                 player1.contestPhoto = photoPlayer1;
                 player2.contestPhoto = photoPlayer2;
 
+                player1.photoId = idPlayer1;
+                player2.photoId = idPlayer2;
+
                 this.push('players', player1);
                 this.push('players', player2);
+                console.log(this.players);
 			},
 			_handleRouteParamChanged: function(routeParam) {
 				if(routeParam.customBag){

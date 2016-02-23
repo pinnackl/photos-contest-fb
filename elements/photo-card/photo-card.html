@@ -97,6 +97,9 @@
 					notify: true,
 					reflectToAttributes: true
 				},
+				photoId: {
+					notify: true
+				},
 				selected: {
 					notify: true
 				},
@@ -118,7 +121,8 @@
 				this.data = {
 					photoUrl: this.photo,
 					photoSourceUrl: this.photoSource,
-					status: 'selected'
+					status: 'selected',
+					id:  this.photoId
 				};
 				var imgs = document.querySelectorAll('.img-selector');
 					for (var i = 0; i < imgs.length; i++) {
