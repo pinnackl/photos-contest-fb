@@ -61,12 +61,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
     page('/users', function() {
+      app.params = {subRoute: 'users'};
       app.route = 'users';
+      console.log(app.params.subRoute);
     });
 
     page('/users/:name', function(data) {
-      app.route = 'user-info';
+      data.params.subRoute = 'user-info';
       app.params = data.params;
+      app.route = 'users';
     });
 
     page('/contact', function() {

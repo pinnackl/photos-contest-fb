@@ -1,0 +1,97 @@
+<dom-module id="squares-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      a {
+        text-decoration: none;
+        color: #ffffff;
+      }
+
+      paper-card {
+        width: 70%;
+        margin-left: 15%;
+        background-color: #607d8b;
+        --paper-card-content : {
+          text-align: center;
+          color: #ffffff;
+        };
+      }
+
+      paper-card .action-menu {
+        text-align: left;
+      }
+
+      paper-card .circle {
+        text-align: center;
+      }
+
+      .circle {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 100px;
+        height: 100px;
+        margin: 16px 16px 0px 16px ;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+
+      .circle img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+      }
+    </style>
+    <firebase-collection
+      data="{{_fireData}}"
+      location="[[_fireLocation]]"
+      on-firebase-value="_firebaseLoaded">
+    </firebase-collection>
+    <template is="dom-repeat" items={{_fireData}} as=user index-as=index>
+    <paper-card elevation="1" animated-shadow="false">
+      <div class="card-content">
+        <div class="action-menu">
+          <a href="[[baseLocation]]users"><iron-icon icon="arrow-back"></iron-icon></a>
+        </div>
+        <div class="info">
+          <div class="circle">
+            <template is="dom-if" if=[[user.photoUrl]]>
+              <img src="[[user.photoUrl]]">
+            </template>
+          </div>
+          <h3>[[user.name]]</h3>
+          <h3>[[user.email]]</h3>
+        </div>
+      </div>
+      <div class="card-actions">
+        
+      </div>
+    </paper-card>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'squares-page',
+      properties: {
+        storage: {},
+        baseLocation: String,
+        params: {
+          observer: 'paramsChanged'
+        },
+        _fireLocation: String,
+        _fireData: Object
+      },
+      paramsChanged: function (params) {
+        if (this.storage) {
+          this._fireLocation = [this.storage.firebase, 'users', params.name].join('/');
+        }
+      },
+      _firebaseLoaded: function (e) {
+        console.log(this._fireLocation);
+        console.log(this._fireData);
+      }
+    });
+  </script>
+</dom-module>

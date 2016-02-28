@@ -1,0 +1,84 @@
+<dom-module id="admin-users">
+	<template>
+		<style>
+			:host {
+				@apply(--layout-fullbleed);
+			}
+			neon-animated-pages {
+				height: 100%;
+			}
+		</style>
+		<h1>Users</h1>
+		<div class="user-card">
+			<iron-pages attr-for-selected="data-route" selected="{{params.subRoute}}">
+				<section data-route="users">
+					<circles-page
+						data="{{data}}"
+						base-location="[[baseLocation]]"
+						route="{{route}}"
+						params="{{params}}">
+					</circles-page>
+				</section>
+				<section data-route="user-info">
+					<squares-page
+						base-location="[[baseLocation]]"
+						route="{{route}}"
+						params="{{params}}"
+						storage="[[storage]]">
+					</squares-page>
+				</section>
+			</iron-pages>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'admin-users',
+			properties: {
+				baseLocation: String,
+				route: String,
+				params: {
+					notify: true,
+					observer: 'paramsChanged'
+				},
+				storage: {
+					observer: "_storageChanged"
+				},
+				_fireLocation: {
+
+				},
+				fireData: {
+
+				},
+				data: {
+
+				},
+				userData: {
+					type: Object
+				},
+				page: {
+					value: 0
+				}
+			},
+			paramsChanged: function (params) {
+			},
+			_storageChanged: function (storage) {
+				if (storage) {
+					this._fireLocation = [this.storage.firebase, 'users'].join('/');
+				}
+			},
+			_getNodeUser: function (user, index) {
+				for(key in user) {
+					if (key != "__firebaseKey__") {
+						return user[key][index];
+					}
+				}
+			},
+			_onCircleClick: function(event) {
+				this.page = 1;
+			},
+			_onSquaresClick: function(event) {
+				// this.selected = 0;
+			}
+		});
+	</script>
+</dom-module>

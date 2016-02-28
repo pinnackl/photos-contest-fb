@@ -1,0 +1,75 @@
+<dom-module id="circles-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      a {
+        text-decoration: none;
+        color: #333;
+      }
+
+      .card {
+        display: inline-block;
+        cursor: pointer;
+      }
+
+      .circle {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 100px;
+        height: 100px;
+        margin: 16px 16px 0px 16px ;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0px 0px 3px 1px #cccccc;
+      }
+
+      .circle img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+      }
+    </style>
+    <template is="dom-repeat" items={{data}} 
+      as=item index-as=index
+      filter="isUser">
+      <a href="[[baseLocation]]users/[[item.__firebaseKey__]]">
+        <div class="card">
+          <div class="circle">
+            <img src="{{getComputedObject(item, 'photoUrl')}}">
+          </div>
+          <h3>{{getComputedObject(item, 'name')}}</h3>
+        </div>
+      </a>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'circles-page',
+      properties: {
+        baseLocation: String,
+        route: String,
+        data: {
+
+        }
+      },
+      isUser: function () {
+        if (this.route == "users") {
+          return true;
+        }
+      },
+      getComputedObject: function (item, node) {
+        for (key in item) {
+          if (key != '__firebaseKey__' && node != '__firebaseKey__') {
+            return item[key][node];
+          }
+        }
+      },
+      _openPage: function (e) {
+        console.log(e);
+      }
+    });
+  </script>
+</dom-module>

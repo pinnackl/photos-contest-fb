@@ -251,14 +251,14 @@
                         </a>
 
                         <a data-route="users" href="{{baseLocation}}users">
-                            <iron-icon icon="info"></iron-icon>
+                            <iron-icon icon="face"></iron-icon>
                             <span>Users</span>
                         </a>
 
-                        <a data-route="contact" href="{{baseLocation}}contact">
+                        <!-- <a data-route="contact" href="{{baseLocation}}contact">
                             <iron-icon icon="mail"></iron-icon>
                             <span>Contact</span>
-                        </a>
+                        </a> -->
                     </template>
                 </paper-menu>
             </paper-header-panel>
@@ -305,10 +305,13 @@
                                 </challonge-view>
                             </section>
                             <section data-route="users">
-                            Hello world ! users
-                            </section>
-                            <section data-route="contact">
-                            Hello world ! contact
+                                <admin-users
+                                    storage='[[storage]]'
+                                    base-location="[[baseLocation]]"
+                                    route="{{route}}"
+                                    params="{{params}}"
+                                    data="{{data}}">
+                                </admin-users>
                             </section>
                         </template>
                         <section data-route="no-right">
@@ -330,6 +333,9 @@
                     type: String,
                     notify: true,
                     observer: '_routeChanged'
+                },
+                params: {
+                  notify: true
                 },
                 baseLocation: String,
                 apiLoaded: {
@@ -386,6 +392,9 @@
                         break;
                     case "challonge":
                         this.location = [this.storage.firebase, 'options', 'challonge'].join('/');
+                        break;
+                    case "users":
+                        this.location = [this.storage.firebase, 'users'].join('/');
                         break;
                     default:
                         // 
