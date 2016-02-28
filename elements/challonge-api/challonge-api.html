@@ -60,34 +60,34 @@
 			},
 			// tournaments
 			tGetAll: function () {
-				this.requestLocation = this.buildQuery(['tournaments', 'get', this.privateKey]);
+				this.requestLocation = this.buildQuery(['tournaments', 'get', this.apiKey]);
 				this.$.ajax.generateRequest();
 			},
 			tCreate: function (name) {
 				name = this.sanitize(name);
-				this.requestLocation = this.buildQuery(['tournament', 'create', this.privateKey, name]);
+				this.requestLocation = this.buildQuery(['tournament', 'create', this.apiKey, name]);
 				this.$.ajax.generateRequest();
 			},
 			tGet: function (id) {
-				this.requestLocation = this.buildQuery(['tournament', 'get', this.privateKey, id]);
+				this.requestLocation = this.buildQuery(['tournament', 'get', this.apiKey, id]);
 				this.$.ajax.generateRequest();
 			},
 			tUpdate: function (id, name) {
 				name = this.sanitize(name);
-				this.requestLocation = this.buildQuery(['tournament', 'update', this.privateKey, id, name]);
+				this.requestLocation = this.buildQuery(['tournament', 'update', this.apiKey, id, name]);
 				this.$.ajax.generateRequest();
 			},
 			tDelete: function (id) {
-				this.requestLocation = this.buildQuery(['tournament', 'delete', this.privateKey, id]);
+				this.requestLocation = this.buildQuery(['tournament', 'delete', this.apiKey, id]);
 				this.$.ajax.generateRequest();
 			},
 			// participants
 			pCreate: function (id, name) {
-				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'create', this.privateKey, name]);
+				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'create', this.apiKey, name]);
 				this.$.ajax.generateRequest();
 			},
 			pGet: function (id, participantId) {
-				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'get', this.privateKey, participantId]);
+				this.requestLocation = this.buildQuery(['tournament', id, 'participant', 'get', this.apiKey, participantId]);
 				this.$.ajax.generateRequest();
 			},
 			mGetAll: function (id) {
@@ -95,7 +95,7 @@
 				this.$.ajax.generateRequest();
 			},
 			mGet: function (id, matchId) {
-				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'get', this.privateKey, matchId]);
+				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'get', this.apiKey, matchId]);
 				this.$.ajax.generateRequest();
 			},
 			mUpdateScore: function (id, matchId, score) {
@@ -103,7 +103,7 @@
 				this.$.ajax.generateRequest();
 			},
 			mUpdateWinner: function (id, matchId, score, winnerId) {
-				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'update', this.privateKey, matchId, 'score', score, 'winner', winnerId]);
+				this.requestLocation = this.buildQuery(['tournament', id, 'match', 'update', this.apiKey, matchId, 'score', score, 'winner', winnerId]);
 				this.$.ajax.generateRequest();
 			},
 			// sanityse string
