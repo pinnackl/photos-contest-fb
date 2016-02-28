@@ -26,6 +26,11 @@
                 --menu-link-color: #111111;
               }
 
+              a {
+                text-decoration: none;
+                color: #333;
+              }
+
               /* General styles */
 
               #drawerToolbar {
@@ -272,7 +277,7 @@
                     <div class="title">
                         <h1 class="page-name">[[route]]</h1>
                     </div>
-                    <paper-icon-button id="exit-button" icon="exit-to-app" on-tap="appLogout"></paper-icon-button>
+                    <a id="exit-button" href="/"><iron-icon icon="exit-to-app"></iron-icon></a>
                     <paper-tooltip for="exit-button" position="left">Logout from this application</paper-tooltip>
                 </paper-toolbar>
 
