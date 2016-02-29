@@ -1,0 +1,61 @@
+<dom-module id="contest-braquet">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<paper-material elevation="1">
+			<template is="dom-repeat" items={{data}} 
+				as=item index-as=index
+				filter="_getActiveContest">
+					<template is="dom-if" if=[[item.livebraquet]]>
+						<iframe src="[[item.livebraquet]]" width="100%" height="500" frameborder="0" scrolling="auto" allowtransparency="true"></iframe>
+					</template>
+			</template>
+		</paper-material>
+	</template>
+	<script>
+		Polymer({
+			is: 'contest-braquet',
+			properties: {
+				data: {},
+				location: {}
+			},
+			_getActiveContest: function (contest) {
+				var re = /contests$/;
+				var str = this.location;
+				var m;
+				if ((m = re.exec(str)) !== null) {
+				    if (m[0] == "contests") {
+						var today = new Date().getTime();
+						if (contest.isactive
+							&& (today >= contest.start && today <= (contest.end + 86400000))) {
+							console.log("get the contest info");
+							this.currentContest = contest;
+							this.userStatus = this.getContestRegistration();
+
+							if (!this.contestId) {
+								this.contestId = this.currentContest.__firebaseKey__;
+							}
+							this.fire('active-contest-loaded');
+							return true;
+						}
+						return false;
+				    }
+				}
+			},
+			getContestRegistration: function () {
+				var day = 86400000;
+				var today = new Date().getTime();
+				var registationPeriod = this.currentContest.start + this.currentContest.registration*day + 86400000;
+				if (today <= registationPeriod) {
+					return "participant";
+				} else {
+					return "judge";
+				}
+
+			}
+		});
+	</script>
+</dom-module>

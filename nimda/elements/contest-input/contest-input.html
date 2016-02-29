@@ -293,11 +293,18 @@
 					this.challongeResponse = {
 						id: detail.result.id,
 						challongeName: detail.result.name,
-						liveBraquet: detail.result['live-image-url']
+						liveBraquet: this._getHttps(detail.result['full-challonge-url'] + '/module'),
 					};
 					this._add();
 					this.$.ctstName.value = "";
 				}
+			},
+			_getHttps: function (url) {
+				var re = /(http)/i;
+				var str = url;
+				var subst = '$1s';
+				var result = str.replace(re, subst);
+				return result;
 			}
 		});
 	</script>
