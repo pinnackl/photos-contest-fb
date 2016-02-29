@@ -43,6 +43,19 @@
         height: 100px;
         border-radius: 50%;
       }
+
+      .user-info {
+        text-align: left;
+      }
+
+      .user-info div {
+        display: inline-block;
+      }
+
+      iron-icon {
+        --iron-icon-fill-color: #ffffff;
+        --iron-icon-stroke-color  : #ffffff;
+      }
     </style>
     <firebase-collection
       data="{{_fireData}}"
@@ -62,7 +75,12 @@
             </template>
           </div>
           <h3>[[user.name]]</h3>
-          <h3>[[user.email]]</h3>
+          <div class="user-info">
+            <p><iron-icon src="/img/genders.png"></iron-icon>[[user.gender]]</p>
+            <p><iron-icon icon="mail"></iron-icon>[[user.email]]</p>
+            <p><iron-icon icon="social:cake"></iron-icon>[[user.birthday]]</p>
+            <p><iron-icon icon="account-circle"></iron-icon>[[user.bio]]</p>
+          </div>
         </div>
       </div>
       <div class="card-actions">
