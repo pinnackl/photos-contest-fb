@@ -249,6 +249,10 @@
 								fbLogin.response = {};
 								fbLogin.response = data;
 
+								if (fbLogin.fireUser.facebook) {
+									fbLogin.fireUser.facebook.userData = fbLogin.response;
+								}
+
 								console.info('Login success into Facebook');
 								fbLogin.fire('fb-login-success', param);
 							}

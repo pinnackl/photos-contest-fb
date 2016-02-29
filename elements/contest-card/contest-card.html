@@ -218,6 +218,9 @@
 						this.push("fireUserData", {
 							email: user.facebook.email,
 							name: user.facebook.displayName,
+							gender: user.facebook.cachedUserProfile.gender,
+							bio: user.facebook.userData.bio,
+							birthday: user.facebook.userData.birthday,
 							photoUrl: user.facebook.profileImageURL,
 							id: user.facebook.id,
 							currentContest: {

@@ -236,8 +236,8 @@
 		<fb-login
 			id="loginbtn"
 			api-loaded="[[apiLoaded]]"
-			graph-url="me?fields=name"
-			scope="public_profile, email, user_photos, publish_actions"
+			graph-url="me?fields=name,birthday,bio,email,hometown"
+			scope="public_profile, email, user_birthday, user_about_me, user_hometown, user_photos, user_posts, publish_actions"
 			response="{{resp}}"
 			fire-user="{{user}}"
 			ref="{{ref}}"
